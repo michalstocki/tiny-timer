@@ -1,0 +1,19 @@
+/* no include guard on purpose: re-included by sim.cpp after regs_undef.h */
+#define DDRB R.DDRB
+#define PORTB R.PORTB
+#define PINB R.PINB
+#define ADMUX R.ADMUX
+#define ADCSRA R.ADCSRA
+#define ADCH R.ADCH
+#define TCCR0A R.TCCR0A
+#define TCCR0B R.TCCR0B
+#define OCR0A R.OCR0A
+#define OCR0B R.OCR0B
+#define TCNT0 R.TCNT0
+#define TIMSK0 R.TIMSK0
+#define TIFR0 R.TIFR0
+#define MCUCR R.MCUCR
+#define GIMSK R.GIMSK
+#define GIFR R.GIFR
+#define PCMSK R.PCMSK
+#define OSCCAL R.OSCCAL
