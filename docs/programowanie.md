@@ -13,26 +13,35 @@ Wszystkie komendy w tym dokumencie są **nieprzetestowane na Twoim sprzęcie** (
 
 macOS: `/dev/cu.usbmodemXXXX`. Sprawdź po podłączeniu UNO: `ls /dev/cu.usbmodem*`. (Na innych systemach byłoby to `COM3` w Windows lub `/dev/ttyACM0` w Linuksie, ale po Twojej odpowiedzi instrukcja zostaje przy macOS.)
 
-## 2. Arduino UNO jako programator (jednorazowo)
+## 2. Programator: Twoja płytka z gniazdem DIP-8
 
-1. Podłącz UNO kablem USB. **Na razie nic więcej nie jest do niego podłączone** (zwłaszcza kondensator 10 µF).
-2. Arduino IDE → *Plik → Przykłady → 11.ArduinoISP → ArduinoISP*.
-3. Narzędzia → Płytka: *Arduino Uno*, Port: ten z UNO. Kliknij *Wgraj*.
-4. Po wgraniu odłącz kabel USB.
-5. Dopiero teraz wpnij kondensator 10 µF (krok z Etapu 1 w [instrukcji montażu](instrukcja-montazu.md)): **+** do RESET UNO, **−** do GND. Zapobiega on automatycznemu resetowaniu UNO przy otwarciu portu przez `avrdude`. Żeby wgrać ArduinoISP ponownie, kondensator trzeba wyjąć.
+Masz gotowy układ: Arduino UNO z wgranym ArduinoISP, gniazdo DIP-8 na ATtiny oraz kondensator 10 µF RESET–GND na UNO. **ATtiny programujesz poza płytką stykową**, więc na płytce stykowej nie ma żadnych przewodów programatora ani kondensatora 10 µF.
 
-## 3. Okablowanie i odczyt sygnatury (Etap 1)
+Sprawdź jednorazowo, że gniazdo jest połączone z UNO tak:
 
-| Arduino UNO | ATtiny13A | Funkcja |
+| Arduino UNO | Pin ATtiny13A | Funkcja |
 | --- | --- | --- |
-| D10 | pin 1 (RESET) | RESET |
-| D11 | pin 5 (PB0) | MOSI |
-| D12 | pin 6 (PB1) | MISO |
-| D13 | pin 7 (PB2) | SCK |
-| 5V | pin 8 (VCC) | zasilanie (przez szynę plus) |
-| GND | pin 4 (GND) | masa |
+| D10 | 1 (RESET) | RESET |
+| D11 | 5 (PB0) | MOSI |
+| D12 | 6 (PB1) | MISO |
+| D13 | 7 (PB2) | SCK |
+| 5V | 8 (VCC) | zasilanie |
+| GND | 4 (GND) | masa |
 
-Adresy otworów są w Etapie 1 instrukcji montażu. **Bateria odłączona.** Na czas programowania wyjmij też żółty przewód z b12, zielony z b14 i jedną nóżkę R2 (później, gdy te elementy będą już wmontowane).
+Kondensator 10 µF: **+** do RESET UNO, **−** do GND. Przy ponownym wgrywaniu szkicu ArduinoISP do UNO kondensator trzeba odłączyć.
+
+### Procedura wymiany układu (za każdym razem)
+
+1. **Odłącz baterię** od płytki stykowej (czerwony przewód z T+30).
+2. Wyjmij ATtiny z płytki stykowej równo (wyciągacz DIP albo mały śrubokręt podważany naprzemiennie z obu stron).
+3. Włóż go do gniazda programatora **wcięciem w stronę oznaczoną na gnieździe** (pin 1 = strona RESET/D10). Jeśli gniazdo jest ZIF, zamknij dźwignię.
+4. Podłącz UNO kablem USB, zaprogramuj (sekcje 3–5).
+5. Odłącz USB, wyjmij ATtiny z gniazda i włóż go do płytki stykowej: **wcięcie po lewej, pin 1 w f11**.
+6. Dopiero teraz wpnij baterię.
+
+Nigdy nie trzymaj ATtiny jednocześnie w płytce stykowej z baterią i w gnieździe z USB (dwa źródła zasilania). Powtarzane wkładanie zagina nóżki: prostuj je i nie używaj układu po złamaniu nóżki.
+
+## 3. Odczyt sygnatury (Etap 1, w gnieździe)
 
 ```bash
 cd firmware
@@ -43,7 +52,7 @@ make sig PORT=/dev/cu.usbmodemXXXX
 
 Opis flag: `-c stk500v1` protokół ArduinoISP, `-p t13` układ ATtiny13(A), `-P` port szeregowy, `-b 19200` prędkość portu UNO (zgodna ze szkicem ArduinoISP), `-v` więcej informacji.
 
-**Gdy sygnatura to 0x000000 lub 0xFFFFFF:** zob. [diagnostyka.md](diagnostyka.md) (zwykle zły kabel/zamienione MOSI/MISO, brak masy, brak pull-upu RESET lub kondensatora 10 µF).
+**Gdy sygnatura to 0x000000 lub 0xFFFFFF:** zob. [diagnostyka.md](diagnostyka.md) (zwykle układ krzywo w gnieździe, odwrócony, złe okablowanie gniazda albo brak kondensatora 10 µF).
 
 ## 4. Fuse'y (Etap 2)
 
@@ -92,17 +101,13 @@ make flash PROG=calib PORT=...                           # Etap 8
 
 Parametry przekazywane przy budowie: `make flash PROG=timer TONE_HZ=2500 OSCCAL_VAL=0x5A BEEP_MS=800 PORT=...` (po zmianie parametrów zrób `make clean`).
 
-## 6. Przejście na zasilanie z baterii
+## 6. Po programowaniu
 
-1. Odłącz kabel USB od UNO.
-2. Wyjmij z płytki **wszystkie** przewody programatora (D10–D13, 5V, GND, RESET UNO, kondensator 10 µF).
-3. Wpięty ma być OLED (żółty b12, zielony b14), R2 włożony na miejsce.
-4. Dopiero teraz wpnij baterię (T+30, T−30). **Nigdy jednocześnie bateria i 5 V z UNO.**
+Wróć do procedury wymiany układu (sekcja 2): ATtiny z powrotem w płytkę stykową, wcięcie po lewej, na końcu bateria.
 
-## Lista kontrolna trybu programowania
+## Lista kontrolna przed programowaniem
 
-- [ ] bateria wyjęta, USB wpięte
-- [ ] kondensator 10 µF wpięty (ArduinoISP już wgrany)
-- [ ] 6 przewodów ISP wpiętych zgodnie z tabelą
-- [ ] żółty przewód OLED wyjęty z b12, zielony z b14, jedna nóżka R2 wyjęta (jeśli już są)
+- [ ] bateria odłączona od płytki stykowej
+- [ ] ATtiny w gnieździe programatora, wcięcie zgodnie z gniazdem
+- [ ] UNO z ArduinoISP, kondensator 10 µF wpięty, USB wpięte
 - [ ] `make sig` zwraca `0x1e9007`

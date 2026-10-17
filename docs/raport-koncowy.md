@@ -26,13 +26,13 @@ Pełny raport: `dist/avr-size.txt`. Stos ma ok. 58 B (64 − 6).
 | Protokół I2C | ta sama symulacja: dekodowanie START/STOP, bajtów, obrazu (OCR pikseli) | OK; piny SDA/SCL tylko jako otwarty dren |
 | Plan B (ramka, dzwonek) | ta sama symulacja z `FEATURE_BAR/BELL` | OK |
 | Program kalibracyjny | symulacja | OK |
-| Sieć połączeń z kroków montażu = schemat z briefu | `tools/breadboard/design.py` (tryb programowania i pracy, z elementami opcjonalnymi i bez) | **ZGODNE**, brak podwójnie zajętych otworów, geometria rezystorów i obudów poprawna |
-| Czułość weryfikatora | 16 testów mutacyjnych (`test_design.py`) | wszystkie wykrywają błąd |
+| Sieć połączeń z kroków montażu = schemat z briefu | `tools/breadboard/design.py` (z elementami opcjonalnymi i bez) | **ZGODNE**, brak podwójnie zajętych otworów, geometria rezystorów i obudów poprawna |
+| Czułość weryfikatora | 14 testów mutacyjnych (`test_design.py`) | wszystkie wykrywają błąd |
 | Rysunki | wygenerowane z tych samych danych; obejrzane w przeglądarce | zgodne z adresami w krokach |
 
 ## 3. Czego NIE sprawdzono (do wykonania przez Ciebie)
 
-Prawdziwa dokładność oscylatora, działanie OLED (inicjalizacja SSD1306 to typowa sekwencja, parametry `OLED_FLIP`, `OLED_COM_CFG`, `OLED_ADDR` są do dobrania w Etapie 4), głośność i grzanie, rzeczywisty prąd uśpienia, zachowanie przycisków i progów ADC, I2C na realnych pull-upach (magistrala ok. 220 kHz wg zliczenia cykli, nie z pomiaru), komendy `avrdude` z UNO. Wszystkie testy odbiorcze: [testy-odbiorcze.md](testy-odbiorcze.md) (kolumna „Wynik” pusta).
+Prawdziwa dokładność oscylatora, działanie OLED (inicjalizacja SSD1306 to typowa sekwencja, parametry `OLED_FLIP`, `OLED_COM_CFG`, `OLED_ADDR` są do dobrania w Etapie 4), głośność i grzanie, rzeczywisty prąd uśpienia, zachowanie przycisków i progów ADC, I2C na realnych pull-upach (magistrala ok. 220 kHz wg zliczenia cykli, nie z pomiaru), komendy `avrdude` z Twoją płytką programatora (zgodność okablowania gniazda z tabelą w programowanie.md). Wszystkie testy odbiorcze: [testy-odbiorcze.md](testy-odbiorcze.md) (kolumna „Wynik” pusta).
 
 ## 4. Błędy i niejasności w briefie (zgłoszone, nie poprawiane po cichu)
 
@@ -47,6 +47,7 @@ Prawdziwa dokładność oscylatora, działanie OLED (inicjalizacja SSD1306 to ty
 - ATtiny13A w obudowie **DIP-8** i płytka 400 otworów (30 kolumn): **potwierdzone przez użytkownika.**
 - Adres OLED 0x3C, 128×32; sygnał 1 s na 2000 Hz (do wyboru testem tonów); minimalny czas 1:00; start odliczania: ekran 2:00, po 1 s 1:59.
 - System: **macOS** (potwierdzone); instrukcja programowania zostaje przy portach `/dev/cu.usbmodem*`.
+- **Programowanie poza układem:** użytkownik ma płytkę programatora z gniazdem DIP-8, UNO z ArduinoISP i kondensatorem 10 µF. Na płytce stykowej nie ma przewodów ISP, kondensatora 10 µF ani zasilania z UNO; zasilanie od Etapu 1 jest z baterii; po każdej zmianie programu ATtiny przechodzi między gniazdem a płytką (procedura w programowanie.md).
 - Kolory przewodów i nazwy szyn (T+, T−, B+, B−) nadaje instrukcja; nadruki na płytce nie mają znaczenia.
 - Progi przycisków: <25% VCC „+”, 25–75% „−”, powyżej „nic”; debounce 24 ms; długie przytrzymanie 2,0 s.
 

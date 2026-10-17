@@ -379,13 +379,10 @@ def main():
     os.makedirs(out, exist_ok=True)
     jobs = [
         (0, "work", 0, "Płytka stykowa 400 otworów: układ współrzędnych", "plansza.svg"),
-        (1, "isp", 1, "Etap 1: zasilanie z UNO, ATtiny13A, programator ISP", "etap-1.svg"),
-        (3, "isp", 3, "Etap 3: głośnik (tryb programowania: bez rezystora 470 Ω i bez OLED)", "etap-3-isp.svg"),
-        (3, "work", 3, "Etap 3: głośnik (rezystor 470 Ω włożony)", "etap-3.svg"),
+        (1, "work", 1, "Etap 1: zasilanie z baterii i ATtiny13A", "etap-1.svg"),
+        (3, "work", 3, "Etap 3: głośnik", "etap-3.svg"),
         (4, "work", 4, "Etap 4: wyświetlacz OLED", "etap-4.svg"),
-        (5, "work", 5, "Etap 5: przyciski", "etap-5.svg"),
-        (5, "isp", 5, "Tryb PROGRAMOWANIA (ISP): bez OLED, bez rezystora 470 Ω, zasilanie z UNO", "tryb-programowanie.svg"),
-        (6, "work", 6, "Tryb PRACY: zasilanie z baterii 3×AAA, bez przewodów programatora", "tryb-praca.svg"),
+        (5, "work", 5, "Etap 5: przyciski (układ kompletny)", "etap-5.svg"),
     ]
     for upto, mode, hl, title, name in jobs:
         render(upto, mode, hl, title, os.path.join(out, name))

@@ -2,7 +2,7 @@
 
 ## Mapa pinów ATtiny13A (DIP-8, wcięcie po lewej)
 
-| Pin | Port | Funkcja w minutniku | Połączenie | Rola przy programowaniu ISP |
+| Pin | Port | Funkcja w minutniku | Połączenie | Rola w gnieździe programatora |
 | --- | --- | --- | --- | --- |
 | 1 | PB5 / RESET | wolny | 10 kΩ (R1) do VCC | RESET (UNO D10) |
 | 2 | PB3 | przycisk „run” | przycisk do GND, wewnętrzny pull-up; PCINT3 budzi z uśpienia | — |
