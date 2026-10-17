@@ -43,7 +43,8 @@
 | Element | Ilość | Wartość / uwagi | Oznaczenia na schemacie |
 | --- | --- | --- | --- |
 | ATtiny13A, obudowa DIP-8 | 1 | DIP-8 (nie SOIC-8) | U1 |
-| Rezystor 10 kΩ | 3 | brązowy-czarny-pomarańczowy; zmierz multimetrem przed włożeniem | R1, R5, R6 |
+| Rezystor 15 kΩ | 1 | brązowy-zielony-pomarańczowy; zmierz multimetrem przed włożeniem | R1 |
+| Rezystor 8,2 kΩ | 2 | szary-czerwony-czerwony; zmierz multimetrem przed włożeniem | R5, R6 |
 | Rezystor 470 Ω | 1 | żółty-fioletowy-brązowy; zmierz multimetrem przed włożeniem | R2 |
 | Rezystor 47 kΩ | 1 | żółty-fioletowy-pomarańczowy; zmierz multimetrem przed włożeniem | R3 |
 | Rezystor 33 Ω | 1 | pomarańczowy-pomarańczowy-czarny; ½ W; zmierz multimetrem przed włożeniem | R4 |
@@ -75,7 +76,7 @@
 
 Dwa długie przewody (czerwony i czarny, ok. 10 cm) łączą górne i dolne szyny; do wtyków OLED potrzebne są 4 przewody żeńsko-męskie.
 
-> **Uwaga do briefu:** w tabeli elementów briefu są „2× 10 kΩ”, a układ potrzebuje **trzech** rezystorów 10 kΩ (R1 RESET, R5 pull-up PB4, R6 przycisk „−”). Ta instrukcja zakłada 3 sztuki.
+> **Uwaga do briefu i zamiana wartości:** brief zakłada „2× 10 kΩ”, a układ ma trzy rezystory tej klasy (R1 RESET, R5 pull-up PB4, R6 przycisk „−”). Nie masz 10 kΩ, więc użyto: **R1 = 15 kΩ** (wartość nie jest krytyczna), **R5 = R6 = 8,2 kΩ** (muszą być jednakowe: napięcie przy „−” to R6/(R5+R6) = 50% VCC, odczyt ADC ok. 128). Jeśli Twoje „8 kΩ” ma inne paski niż szary-czerwony-czerwony, zmierz je multimetrem: dopuszczalne są 7,5–9,1 kΩ, byle R5 i R6 były jednakowe. Rezystory 4,7 kΩ (R7, R8) potrzebne są tylko, gdy moduł OLED nie ma pull-upów.
 
 ## Etap 0: przygotowanie (bez wkładania czegokolwiek w płytkę)
 
@@ -85,7 +86,8 @@ Multimetr na zakres Ω. Odczyt powinien być w granicach tolerancji (±5%) warto
 
 | Rezystor | Kod kolorów | Odczyt |
 | --- | --- | --- |
-| 10 kΩ R1, R5, R6 (3 szt.) | brązowy-czarny-pomarańczowy | ______ |
+| 15 kΩ R1 | brązowy-zielony-pomarańczowy | ______ |
+| 8,2 kΩ R5, R6 (2 szt., jednakowe) | szary-czerwony-czerwony | ______ |
 | 470 Ω R2 | żółty-fioletowy-brązowy | ______ |
 | 47 kΩ R3 | żółty-fioletowy-pomarańczowy | ______ |
 | 33 Ω R4, ½ W | pomarańczowy-pomarańczowy-czarny | ______ |
@@ -140,7 +142,7 @@ Do dwóch wyprowadzeń głośnika dolutuj odcinki drutu (lub przewody połączen
 - [ ] **1.4** Przewód **czerwony**: z **T+15** do **B+15**. — łączy górną i dolną szynę plus (długi przewód).
 - [ ] **1.5** Przewód **czarny**: z **T−16** do **B−16**. — łączy górną i dolną szynę minus (długi przewód).
 - [ ] **1.6** Przewód **czerwony**: z **j8** do **B+8**. — plus na dolny pasek w kolumnie 8.
-- [ ] **1.7** Rezystor **10 kΩ** (brązowy-czarny-pomarańczowy) R1: nóżki w **h11** i **h8**. — RESET (pin 1) przez 10 kΩ do plusa.
+- [ ] **1.7** Rezystor **15 kΩ** (brązowy-zielony-pomarańczowy) R1: nóżki w **h11** i **h8**. — RESET (pin 1) przez 15 kΩ do plusa.
 - [ ] **1.8** Kondensator ceramiczny **100 nF** (oznaczenie „104”) C1, bez polaryzacji: nóżki w **T+9** i **T−9**. — odsprzęganie zasilania ATtiny.
 - [ ] **1.9** **Czerwony** przewód koszyka baterii (plus): koniec w **T+30**. — plus koszyka 3×AAA; baterię wpinaj dopiero po sprawdzeniu zwarć.
 - [ ] **1.10** **Czarny** przewód koszyka baterii (minus): koniec w **T−30**. — minus koszyka 3×AAA.
@@ -153,7 +155,7 @@ Do dwóch wyprowadzeń głośnika dolutuj odcinki drutu (lub przewody połączen
 - [ ] **T+9** ↔ **B+9**: **piszczy** (szyny plus są połączone długim czerwonym przewodem)
 - [ ] **T−9** ↔ **B−9**: **piszczy** (szyny minus są połączone długim czarnym przewodem)
 - [ ] **i8** ↔ **T+9**: **piszczy** (dolny pasek plusa w kolumnie 8 jest połączony z plusem)
-- [ ] **g11** ↔ **T+9**: rezystancja ≈ 10 kΩ (pin 1 (RESET) przez R1 do plusa; układ scalony może obniżyć odczyt)
+- [ ] **g11** ↔ **T+9**: rezystancja ≈ 15 kΩ (pin 1 (RESET) przez R1 do plusa; układ scalony może obniżyć odczyt)
 - [ ] **g11** ↔ **T−9**: **NIE piszczy** (RESET nie jest zwarty z masą)
 - [ ] **T+30** ↔ **d11**: **piszczy** (plus baterii dochodzi do pinu 8 ATtiny)
 - [ ] **T−30** ↔ **i14**: **piszczy** (minus baterii dochodzi do pinu 4 ATtiny)
@@ -265,7 +267,7 @@ Jeśli nie: `make OLED_FLIP=0` (obraz do góry nogami lub lustrzany), `make OLED
 
 Przed wsadzeniem każdego przycisku wykonaj kontrolę z punktu 0.2.
 
-- [ ] **5.1** Rezystor **10 kΩ** (brązowy-czarny-pomarańczowy) R5: nóżki w **i13** i **i8**. — PB4 (pin 3) przez 10 kΩ do plusa.
+- [ ] **5.1** Rezystor **8,2 kΩ** (szary-czerwony-czerwony) R5: nóżki w **i13** i **i8**. — PB4 (pin 3) przez 8,2 kΩ do plusa.
 - [ ] **5.2** Przycisk **„run”** S1: wciśnij w rowek środkowy; styki górne w **e7** i **e9**, dolne w **f7** i **f9** (najpierw kontrola z punktu 0.2).
 - [ ] **5.3** Przewód **czarny**: z **a7** do **T−7**. — „run”: górna para styków do masy.
 - [ ] **5.4** Przewód **pomarańczowy**: z **g9** do **h12**. — „run”: dolna para styków do PB3 (pin 2).
@@ -273,7 +275,7 @@ Przed wsadzeniem każdego przycisku wykonaj kontrolę z punktu 0.2.
 - [ ] **5.6** Przewód **czarny**: z **a4** do **T−4**. — „+”: górna para styków do masy.
 - [ ] **5.7** Przewód **niebieski**: z **g6** do **h13**. — „+”: dolna para styków do PB4 (pin 3).
 - [ ] **5.8** Przycisk **„−”** S3: wciśnij w rowek środkowy; styki górne w **e1** i **e3**, dolne w **f1** i **f3** (najpierw kontrola z punktu 0.2).
-- [ ] **5.9** Rezystor **10 kΩ** (brązowy-czarny-pomarańczowy) R6: nóżki w **b3** i **b6**. — „−”: górna para styków do masy przez 10 kΩ (kolumna 6 to masa „+”).
+- [ ] **5.9** Rezystor **8,2 kΩ** (szary-czerwony-czerwony) R6: nóżki w **b3** i **b6**. — „−”: górna para styków do masy przez 8,2 kΩ (kolumna 6 to masa „+”); R6 ma być taki sam jak R5.
 - [ ] **5.10** Przewód **niebieski**: z **g3** do **g13**. — „−”: dolna para styków do PB4 (pin 3).
 
 **Sprawdzenie (bateria odłączona):**
@@ -283,8 +285,8 @@ Przed wsadzeniem każdego przycisku wykonaj kontrolę z punktu 0.2.
 - [ ] **h12** ↔ **T−9**: przy wciśniętym przycisku **piszczy** („run” wciśnięty: PB3 zwarte z masą)
 - [ ] **h13** ↔ **T−9**: **NIE piszczy** („+” i „−” puszczone: PB4 nie jest zwarte z masą)
 - [ ] **h13** ↔ **T−9**: przy wciśniętym przycisku **piszczy** („+” wciśnięty: PB4 zwarte z masą)
-- [ ] **h13** ↔ **T−9**: przy wciśniętym przycisku rezystancja ≈ 10 kΩ („−” wciśnięty: PB4 do masy przez R6)
-- [ ] **h13** ↔ **i8**: rezystancja ≈ 10 kΩ (PB4 do plusa przez R5; układ scalony może obniżyć odczyt)
+- [ ] **h13** ↔ **T−9**: przy wciśniętym przycisku rezystancja ≈ 8,2 kΩ („−” wciśnięty: PB4 do masy przez R6)
+- [ ] **h13** ↔ **i8**: rezystancja ≈ 8,2 kΩ (PB4 do plusa przez R5; układ scalony może obniżyć odczyt)
 
 **Test na urządzeniu:** zaprogramuj `test_buttons.hex` (`make flash PROG=test_buttons`), włóż ATtiny, wpnij baterię. Ekran pokazuje `R:AAA`, gdzie R = 1 przy wciśniętym „run”, a AAA = odczyt ADC pinu PB4 (0–255).
 

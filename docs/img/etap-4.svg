@@ -535,7 +535,7 @@
 <circle cx="338.0" cy="304.2" r="6.5" fill="#aaa"/>
 <text x="338.0" y="307.2" font-size="9" fill="#000" text-anchor="middle" font-weight="bold" >8</text>
 <line x1="338.0" y1="408.2" x2="260.0" y2="408.2" stroke="#9a9a9a" stroke-width="2.2"/>
-<g transform="translate(299.0 408.2) rotate(180.0)"><rect x="-18.0" y="-6" width="36.0" height="12" rx="5" fill="#e8d3a6" stroke="#8d7a4a"/><rect x="-11.5" y="-6" width="3.2" height="12" fill="#7a4a21"/><rect x="-5.4" y="-6" width="3.2" height="12" fill="#111"/><rect x="0.7" y="-6" width="3.2" height="12" fill="#ef7d00"/><rect x="11.5" y="-6" width="3.2" height="12" fill="#c9a227"/></g>
+<g transform="translate(299.0 408.2) rotate(180.0)"><rect x="-18.0" y="-6" width="36.0" height="12" rx="5" fill="#e8d3a6" stroke="#8d7a4a"/><rect x="-11.5" y="-6" width="3.2" height="12" fill="#7a4a21"/><rect x="-5.4" y="-6" width="3.2" height="12" fill="#2e9e3e"/><rect x="0.7" y="-6" width="3.2" height="12" fill="#ef7d00"/><rect x="11.5" y="-6" width="3.2" height="12" fill="#c9a227"/></g>
 <line x1="286.0" y1="130.0" x2="286.0" y2="156.0" stroke="#9a9a9a" stroke-width="2.2"/>
 <rect x="278.0" y="135.0" width="16" height="16" rx="4" fill="#d8a63a" stroke="#8a6a1c"/>
 <text x="286.0" y="147.0" font-size="8" fill="#222" text-anchor="middle" font-weight="normal" >104</text>

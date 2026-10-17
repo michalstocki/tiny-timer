@@ -36,7 +36,7 @@ Prawdziwa dokładność oscylatora, działanie OLED (inicjalizacja SSD1306 to ty
 
 ## 4. Błędy i niejasności w briefie (zgłoszone, nie poprawiane po cichu)
 
-1. **Rezystory 10 kΩ:** brief wymienia „2× 10 kΩ”, a układ potrzebuje **3** (RESET, pull-up PB4, szereg przycisku „−”). Instrukcja zakłada 3.
+1. **Rezystory klasy 10 kΩ:** brief wymienia „2× 10 kΩ”, a układ potrzebuje **3** (RESET, pull-up PB4, szereg przycisku „−”). Użytkownik nie ma 10 kΩ: R1 = 15 kΩ, R5 = R6 = 8,2 kΩ (muszą być jednakowe; odczyt ADC „−” nadal ok. 128).
 2. **27 Ω ↔ 126 mA:** to wartość dla 4,5 V; przy 4,8 V wychodzi ok. 135 mA (dalej poniżej 200 mA szczytowo, ale powyżej „100 mA ciągłych” przy 100% wypełnienia; przy 50% średnio ok. 68 mA).
 3. **Szacunki flash z briefu są zbyt optymistyczne:** priorytet 1–2 zajmuje 1016 B (brief: ok. 620–860 B). Sam zapas jest minimalny: kolejne zmiany w kodzie 13A mogą przekroczyć 1024 B.
 4. **Fuse'y:** w briefie „RSTDISBL i DWEN pozostają niezmienione”; zgodnie z avr-libc dla ATtiny13A to bity 0 i 3 bajtu `hfuse` (nie bajtu low). Wymagany jest tylko `lfuse` 0x7A; `hfuse` zostaje 0xFF.

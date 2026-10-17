@@ -4,9 +4,9 @@
 
 | Pin | Port | Funkcja w minutniku | Połączenie | Rola w gnieździe programatora |
 | --- | --- | --- | --- | --- |
-| 1 | PB5 / RESET | wolny | 10 kΩ (R1) do VCC | RESET (UNO D10) |
+| 1 | PB5 / RESET | wolny | 15 kΩ (R1) do VCC | RESET (UNO D10) |
 | 2 | PB3 | przycisk „run” | przycisk do GND, wewnętrzny pull-up; PCINT3 budzi z uśpienia | — |
-| 3 | PB4 (ADC2) | przyciski „+” i „−” | drabinka: R5 10 kΩ do VCC; „+” do GND; „−” przez R6 10 kΩ do GND | — |
+| 3 | PB4 (ADC2) | przyciski „+” i „−” | drabinka: R5 8,2 kΩ do VCC; „+” do GND; „−” przez R6 8,2 kΩ do GND (R5 = R6) | — |
 | 4 | GND | masa | minus baterii | GND |
 | 5 | PB0 | SDA (I2C programowy) | SDA modułu OLED | MOSI (UNO D11) |
 | 6 | PB1 (OC0B) | głośnik | R2 470 Ω do bazy Q1 | MISO (UNO D12) |
@@ -30,7 +30,7 @@
 | kolektor | Q1.C, głośnik (wyprowadzenie B), D1.A (anoda) |
 | strona rezystora | głośnik (wyprowadzenie A), D1.K (katoda), R4.1 (33 Ω) |
 
-Elementy: R1, R5, R6 = 10 kΩ; R2 = 470 Ω; R3 = 47 kΩ; R4 = 33 Ω ½ W; R7, R8 = 4,7 kΩ (tylko gdy moduł OLED nie ma pull-upów); C1, C2 = 100 nF; C3 = 100 µF; C4 = 10 µF (tylko dla UNO jako ISP); Q1 = BC547A; D1 = dioda LED; S1 = „run”, S2 = „+”, S3 = „−”.
+Elementy: R1 = 15 kΩ; R5, R6 = 8,2 kΩ (jednakowe); R2 = 470 Ω; R3 = 47 kΩ; R4 = 33 Ω ½ W; R7, R8 = 4,7 kΩ (tylko gdy moduł OLED nie ma pull-upów); C1, C2 = 100 nF; C3 = 100 µF; C4 = 10 µF (tylko dla UNO jako ISP); Q1 = BC547A; D1 = dioda LED; S1 = „run”, S2 = „+”, S3 = „−”.
 
 Netlista jest zapisana maszynowo w `tools/breadboard/design.py` (`REF_WORK`, `REF_ISP`) i porównywana z krokami montażu.
 

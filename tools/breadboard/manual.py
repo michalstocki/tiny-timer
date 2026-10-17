@@ -21,7 +21,7 @@ EXT_PIN = {  # name of the pin / lead as used in sentences
     "UNO:D11": "D11", "UNO:D12": "D12", "UNO:D13": "D13",
     "OLED:VCC": "VCC", "OLED:GND": "GND", "OLED:SDA": "SDA", "OLED:SCL": "SCL",
 }
-RES_PL = {"10k": "10 kΩ", "470": "470 Ω", "47k": "47 kΩ", "33": "33 Ω", "4.7k": "4,7 kΩ"}
+RES_PL = {"10k": "10 kΩ", "15k": "15 kΩ", "8.2k": "8,2 kΩ", "470": "470 Ω", "47k": "47 kΩ", "33": "33 Ω", "4.7k": "4,7 kΩ"}
 COL_PL = {"0": "czarny", "1": "brązowy", "2": "czerwony", "3": "pomarańczowy", "4": "żółty",
           "5": "zielony", "6": "niebieski", "7": "fioletowy", "8": "szary", "9": "biały"}
 
@@ -163,7 +163,7 @@ STAGE_CHECKS = {
         cont("T+9", "B+9", "szyny plus są połączone długim czerwonym przewodem"),
         cont("T-9", "B-9", "szyny minus są połączone długim czarnym przewodem"),
         cont("i8", "T+9", "dolny pasek plusa w kolumnie 8 jest połączony z plusem"),
-        res("g11", "T+9", "R1", "≈ 10 kΩ|pin 1 (RESET) przez R1 do plusa; układ scalony może obniżyć odczyt"),
+        res("g11", "T+9", "R1", "≈ 15 kΩ|pin 1 (RESET) przez R1 do plusa; układ scalony może obniżyć odczyt"),
         cont("g11", "T-9", "RESET nie jest zwarty z masą", False),
         cont("T+30", "d11", "plus baterii dochodzi do pinu 8 ATtiny"),
         cont("T-30", "i14", "minus baterii dochodzi do pinu 4 ATtiny"),
@@ -195,8 +195,8 @@ STAGE_CHECKS = {
         cont("h12", "T-9", "„run” wciśnięty: PB3 zwarte z masą", True, pressed="S1"),
         cont("h13", "T-9", "„+” i „−” puszczone: PB4 nie jest zwarte z masą", False),
         cont("h13", "T-9", "„+” wciśnięty: PB4 zwarte z masą", True, pressed="S2"),
-        res("h13", "T-9", "R6", "≈ 10 kΩ|„−” wciśnięty: PB4 do masy przez R6", pressed="S3"),
-        res("h13", "i8", "R5", "≈ 10 kΩ|PB4 do plusa przez R5; układ scalony może obniżyć odczyt"),
+        res("h13", "T-9", "R6", "≈ 8,2 kΩ|„−” wciśnięty: PB4 do masy przez R6", pressed="S3"),
+        res("h13", "i8", "R5", "≈ 8,2 kΩ|PB4 do plusa przez R5; układ scalony może obniżyć odczyt"),
     ]),
 }
 
@@ -255,7 +255,7 @@ def bom_md():
     rows.append("| Element | Ilość | Wartość / uwagi | Oznaczenia na schemacie |")
     rows.append("| --- | --- | --- | --- |")
     rows.append("| ATtiny13A, obudowa DIP-8 | 1 | DIP-8 (nie SOIC-8) | U1 |")
-    for val, refs in (("10k", "R1, R5, R6"), ("470", "R2"), ("47k", "R3"), ("33", "R4")):
+    for val, refs in (("15k", "R1"), ("8.2k", "R5, R6"), ("470", "R2"), ("47k", "R3"), ("33", "R4")):
         n = sum(v for (k, vv, o), v in cnt.items() if vv == val and not o)
         extra = "; ½ W" if val == "33" else ""
         rows.append("| Rezystor %s | %d | %s%s; zmierz multimetrem przed włożeniem | %s |" % (
@@ -350,8 +350,11 @@ def build():
     w("")
     w(bom_md())
     w("")
-    w("> **Uwaga do briefu:** w tabeli elementów briefu są „2× 10 kΩ”, a układ potrzebuje **trzech** rezystorów "
-      "10 kΩ (R1 RESET, R5 pull-up PB4, R6 przycisk „−”). Ta instrukcja zakłada 3 sztuki.")
+    w("> **Uwaga do briefu i zamiana wartości:** brief zakłada „2× 10 kΩ”, a układ ma trzy rezystory tej klasy "
+      "(R1 RESET, R5 pull-up PB4, R6 przycisk „−”). Nie masz 10 kΩ, więc użyto: **R1 = 15 kΩ** (wartość nie jest krytyczna), "
+      "**R5 = R6 = 8,2 kΩ** (muszą być jednakowe: napięcie przy „−” to R6/(R5+R6) = 50% VCC, odczyt ADC ok. 128). "
+      "Jeśli Twoje „8 kΩ” ma inne paski niż szary-czerwony-czerwony, zmierz je multimetrem: dopuszczalne są 7,5–9,1 kΩ, "
+      "byle R5 i R6 były jednakowe. Rezystory 4,7 kΩ (R7, R8) potrzebne są tylko, gdy moduł OLED nie ma pull-upów.")
     w("")
     w("## Etap 0: przygotowanie (bez wkładania czegokolwiek w płytkę)")
     w("")
@@ -361,7 +364,7 @@ def build():
     w("")
     w("| Rezystor | Kod kolorów | Odczyt |")
     w("| --- | --- | --- |")
-    for val, refs in (("10k", "R1, R5, R6 (3 szt.)"), ("470", "R2"), ("47k", "R3"), ("33", "R4, ½ W"), ("4.7k", "R7, R8 (opcjonalnie)")):
+    for val, refs in (("15k", "R1"), ("8.2k", "R5, R6 (2 szt., jednakowe)"), ("470", "R2"), ("47k", "R3"), ("33", "R4, ½ W"), ("4.7k", "R7, R8 (opcjonalnie)")):
         w("| %s %s | %s | ______ |" % (RES_PL[val], refs, bands(val)))
     w("")
     w("### 0.2 Przyciski: orientacja styków (multimetr na piszczenie)")
