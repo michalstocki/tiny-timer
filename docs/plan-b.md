@@ -24,7 +24,7 @@ Ten sam kod (`firmware/src`) buduje się dla ATtiny25/45/85 z włączoną ramką
 | ATtiny45 | 1424 z 4096 | 15 |
 | ATtiny85 | 1424 z 8192 | 15 |
 
-Wyprowadzenia i okablowanie są **identyczne** jak dla ATtiny13A (DIP-8, te same funkcje pinów), więc płytka z instrukcji montażu się nie zmienia. Zmieniają się tylko:
+Gniazdo Twojego programatora (DIP-8, D10–D13, 5V, GND) działa dla ATtiny25/45/85 bez zmian okablowania. Wyprowadzenia i okablowanie są **identyczne** jak dla ATtiny13A (DIP-8, te same funkcje pinów), więc płytka z instrukcji montażu się nie zmienia. Zmieniają się tylko:
 
 - zegar: wewnętrzny oscylator **8 MHz** (nie 9,6 MHz), firmware dobiera tyk 8 ms automatycznie (`F_CPU=8000000`);
 - fuse'y: `lfuse` = **0xE2** (8 MHz, bez dzielnika; fabrycznie 0x62), `hfuse` bez zmian **0xDF** (RSTDISBL i DWEN nie zmieniać; BOD wyłączony: BODLEVEL = 111), `efuse` 0xFF;

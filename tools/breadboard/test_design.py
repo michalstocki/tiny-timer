@@ -36,8 +36,6 @@ run("emitter wire missing", lambda it: it.remove(find_wire(it, "a21", "T-21")), 
 run("run button upper pair on the plus rail (short)", lambda it: find_wire(it, "a7", "T-7").update(b="T+7"), "work", ["ZWARCIE"])
 run("two parts in one hole", lambda it: find_part(it, "R3")["pins"].update({"1": "a20"}), "work", ["w jednym otworze"])
 run("LED reversed", lambda it: find_part(it, "D1")["pins"].update(A="a27", K="a26"), "work", ["rozerwana"])
-run("R2 left in place in programming mode", lambda it: find_part(it, "R2").update(modes=d.BOTH), "isp", ["rozerwana", "nie występuje", "ZWARCIE"])
-run("ISP MOSI wire in the MISO column", lambda it: find_wire(it, "UNO:D11", "a14").update(b="b13"), "isp", ["ZWARCIE", "rozerwana"])
 run("battery + to the minus rail", lambda it: find_wire(it, "BAT:+", "T+30").update(b="T-30"), "work", ["ZWARCIE"])
 run("electrolytic C3 reversed", lambda it: find_part(it, "C3")["pins"].update({"+": "T-24", "-": "T+24"}), "work", ["ZWARCIE", "rozerwana"])
 run("R1 second leg in the ground strip", lambda it: find_part(it, "R1")["pins"].update({"2": "j14"}), "work", ["ZWARCIE", "rozerwana"])

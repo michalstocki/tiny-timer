@@ -7,7 +7,7 @@
 1. Pracuj etapami. **Każdy etap kończy się sprawdzeniem** (multimetrem lub testem na urządzeniu). Następny etap zaczynaj dopiero po wyniku „działa”. Dzięki temu błąd da się zlokalizować.
 2. Każdy krok to jedna czynność z adresem otworu. Odhaczaj pola `[ ]`.
 3. Rysunki (katalog `img/`) pokazują płytkę z góry **po** danym etapie. Numer w kółku to numer kroku, turkusowy = nowy w tym etapie.
-4. Programowanie (Arduino UNO jako ISP, fuse'y, wgrywanie) opisuje osobny dokument: [programowanie.md](programowanie.md). Etap 2 (fuse'y) jest tam.
+4. **Programowanie ATtiny odbywa się poza układem**: wyjmujesz go z płytki stykowej, wkładasz do swojej płytki programatora (gniazdo DIP-8), programujesz i wkładasz z powrotem. Na płytce stykowej nie ma więc żadnych przewodów programatora. Opisuje to [programowanie.md](programowanie.md); etap 2 (fuse'y) jest tam.
 
 ## Układ współrzędnych
 
@@ -31,12 +31,11 @@
 | --- | --- |
 | czerwony | VCC (plus zasilania) |
 | czarny | GND (masa) |
-| zielony | SDA / MOSI (PB0, pin 5) |
-| żółty | SCL / SCK (PB2, pin 7) |
+| zielony | SDA (PB0, pin 5) |
+| żółty | SCL (PB2, pin 7) |
 | pomarańczowy | przycisk „run” (PB3, pin 2) |
 | niebieski | przyciski „+” i „−” (PB4, pin 3) |
-| fioletowy | RESET (pin 1) |
-| szary | PB1 / MISO (pin 6); RESET płytki Arduino |
+| szary | PB1 (pin 6) |
 | biały | głośnik i kolektor tranzystora |
 
 ## Lista zakupów i elementów
@@ -51,31 +50,30 @@
 | Rezystor 4,7 kΩ | 2 (opcjonalnie) | żółty-fioletowy-czerwony; tylko jeśli moduł OLED nie ma pull-upów | R7, R8 |
 | Kondensator ceramiczny 100 nF („104”) | 2 | bez polaryzacji | C1, C2 |
 | Kondensator elektrolityczny 100 µF, min. 10 V | 1 | **polaryzacja**: długa nóżka = plus | C3 |
-| Kondensator elektrolityczny 10 µF, min. 6,3 V | 1 | tylko dla Arduino ISP; **polaryzacja** | C4 |
 | Tranzystor BC547A | 1 | wyprowadzenia C-B-E | Q1 |
 | Dioda LED, dowolna | 1 | **polaryzacja**: długa nóżka = anoda | D1 |
 | Przycisk tact (4 nóżki) | 3 | „run”, „+”, „−” | S1, S2, S3 |
 | Głośnik 6,4 Ω z zabawki | 1 | dwa przewody do przedłużenia | SPK |
 | Moduł OLED 128×32, SSD1306, I2C, 4 piny | 1 | adres 0x3C | OLED |
 | Koszyk 3×AAA z przewodami | 1 | 4,5 V | BAT |
-| Arduino UNO + kabel USB | 1 | programator ISP | UNO |
+| Płytka programatora ISP (UNO z ArduinoISP, gniazdo DIP-8, kondensator 10 µF) | 1 | Twoja, gotowa; ATtiny wkładasz do gniazda i programujesz poza układem | |
 | Płytka stykowa 400 otworów (30 kolumn) | 1 | szyny po obu stronach | |
 
 **Przewody połączeniowe** (liczby z tej instrukcji):
 
 | Kolor | Ilość | Znaczenie |
 | --- | --- | --- |
-| czerwony | 8 | VCC (plus) |
-| czarny | 10 | GND (minus) |
-| zielony | 3 | SDA / MOSI (PB0) |
-| żółty | 3 | SCL / SCK (PB2) |
+| czerwony | 7 | VCC (plus) |
+| czarny | 8 | GND (minus) |
+| zielony | 2 | SDA (PB0) |
+| żółty | 2 | SCL (PB2) |
 | pomarańczowy | 1 | PB3 („run”) |
 | niebieski | 2 | PB4 (przyciski „+” i „−”) |
-| fioletowy | 1 | RESET |
-| szary | 3 | PB1 / MISO / RESET Arduino |
+| fioletowy | 0 | RESET (nieużywany) |
+| szary | 1 | PB1 |
 | biały | 3 | głośnik i kolektor |
 
-Dwa długie przewody (czerwony i czarny, ok. 10 cm) łączą górne i dolne szyny; do wtyków OLED potrzebne są 4 przewody żeńsko-męskie, do Arduino męsko-męskie.
+Dwa długie przewody (czerwony i czarny, ok. 10 cm) łączą górne i dolne szyny; do wtyków OLED potrzebne są 4 przewody żeńsko-męskie.
 
 > **Uwaga do briefu:** w tabeli elementów briefu są „2× 10 kΩ”, a układ potrzebuje **trzech** rezystorów 10 kΩ (R1 RESET, R5 pull-up PB4, R6 przycisk „−”). Ta instrukcja zakłada 3 sztuki.
 
@@ -123,16 +121,16 @@ Do dwóch wyprowadzeń głośnika dolutuj odcinki drutu (lub przewody połączen
 
 ### Ostrzeżenia (obowiązują cały czas)
 
-- **Nigdy jednocześnie bateria i 5 V z Arduino.** Zasilanie z UNO tylko w trybie programowania, bateria wpięta tylko w trybie pracy. Przed wpięciem jednego odłącz drugie.
-- Układ scalony wkładaj i wyjmuj bez zasilania.
+- **Przed wyjęciem lub włożeniem ATtiny odłącz baterię** (wyjmij czerwony przewód z T+30). Nigdy nie wkładaj jej do płytki stykowej i do gniazda programatora jednocześnie (to dwa źródła zasilania).
+- ATtiny wyjmuj równo, najlepiej wyciągaczem do układów DIP lub małym śrubokrętem z obu stron po kolei; krzywo wyjęty układ gnie nóżki. Wkładając sprawdź **wcięcie po lewej**.
 - Elektrolity i LED mają polaryzację: odwrotne włożenie może je uszkodzić.
 - Zero zwarć: po każdym etapie sprawdź piszczeniem, że plus nie jest połączony z minusem.
 
-## Etap 1: zasilanie, ATtiny13A i programator ISP
+## Etap 1: zasilanie i ATtiny13A
 
-**Cel:** ATtiny13A zasilany z Arduino UNO, połączony tak, żeby `avrdude` odczytał jego sygnaturę.
+**Cel:** ATtiny13A zasilany z baterii, szyny i podciągnięcie RESET gotowe.
 
-**Zanim zaczniesz:** wgraj do Arduino UNO szkic **ArduinoISP** (opis w [programowanie.md](programowanie.md), sekcja 2) **zanim** wpniesz kondensator 10 µF z kroku 1.9.
+**Zanim zaczniesz:** zaprogramuj ATtiny **poza płytką stykową** (patrz [programowanie.md](programowanie.md), sekcje 3 i 4: odczyt sygnatury 0x1E 0x90 0x07 i fuse'y = Etap 2). Układ włóż do płytki stykowej dopiero potem. Baterii na razie nie wkładaj do koszyka.
 
 ![Etap 1](img/etap-1.svg)
 
@@ -144,17 +142,10 @@ Do dwóch wyprowadzeń głośnika dolutuj odcinki drutu (lub przewody połączen
 - [ ] **1.6** Przewód **czerwony**: z **j8** do **B+8**. — plus na dolny pasek w kolumnie 8.
 - [ ] **1.7** Rezystor **10 kΩ** (brązowy-czarny-pomarańczowy) R1: nóżki w **h11** i **h8**. — RESET (pin 1) przez 10 kΩ do plusa.
 - [ ] **1.8** Kondensator ceramiczny **100 nF** (oznaczenie „104”) C1, bez polaryzacji: nóżki w **T+9** i **T−9**. — odsprzęganie zasilania ATtiny.
-- [ ] **1.9** Kondensator elektrolityczny **10 µF** C4, **polaryzacja!**: długa nóżka (+) w **c29**, nóżka przy białym pasku (−) w **c30**. — tylko po wgraniu ArduinoISP do UNO. *(tylko na czas programowania; zdejmij przy zasilaniu z baterii)*
-- [ ] **1.10** Przewód **szary** (męsko-męski): jeden koniec w pin **RESET** Arduino UNO (złącze zasilania), drugi w **a29**. — RESET płytki UNO do plusa kondensatora 10 µF. *(tylko na czas programowania; zdejmij przy zasilaniu z baterii)*
-- [ ] **1.11** Przewód **czarny**: z **a30** do **T−29**. — minus kondensatora 10 µF do masy. *(tylko na czas programowania; zdejmij przy zasilaniu z baterii)*
-- [ ] **1.12** Przewód **czerwony** (męsko-męski): jeden koniec w pin **5V** Arduino UNO (złącze zasilania), drugi w **T+27**. — zasilanie 5 V z UNO (NIGDY razem z baterią). *(tylko na czas programowania; zdejmij przy zasilaniu z baterii)*
-- [ ] **1.13** Przewód **czarny** (męsko-męski): jeden koniec w pin **GND** Arduino UNO (złącze zasilania (dowolny GND)), drugi w **T−27**. *(tylko na czas programowania; zdejmij przy zasilaniu z baterii)*
-- [ ] **1.14** Przewód **fioletowy** (męsko-męski): jeden koniec w pin **D10** Arduino UNO (złącze cyfrowe), drugi w **j11**. — D10 UNO to RESET ATtiny (pin 1). *(tylko na czas programowania; zdejmij przy zasilaniu z baterii)*
-- [ ] **1.15** Przewód **zielony** (męsko-męski): jeden koniec w pin **D11** Arduino UNO (złącze cyfrowe), drugi w **a14**. — D11 UNO to MOSI = PB0 (pin 5). *(tylko na czas programowania; zdejmij przy zasilaniu z baterii)*
-- [ ] **1.16** Przewód **szary** (męsko-męski): jeden koniec w pin **D12** Arduino UNO (złącze cyfrowe), drugi w **b13**. — D12 UNO to MISO = PB1 (pin 6). *(tylko na czas programowania; zdejmij przy zasilaniu z baterii)*
-- [ ] **1.17** Przewód **żółty** (męsko-męski): jeden koniec w pin **D13** Arduino UNO (złącze cyfrowe), drugi w **a12**. — D13 UNO to SCK = PB2 (pin 7). *(tylko na czas programowania; zdejmij przy zasilaniu z baterii)*
+- [ ] **1.9** **Czerwony** przewód koszyka baterii (plus): koniec w **T+30**. — plus koszyka 3×AAA; baterię wpinaj dopiero po sprawdzeniu zwarć.
+- [ ] **1.10** **Czarny** przewód koszyka baterii (minus): koniec w **T−30**. — minus koszyka 3×AAA.
 
-**Sprawdzenie (Arduino i bateria odłączone, multimetr na piszczenie):**
+**Sprawdzenie (bateria odłączona, multimetr na piszczenie):**
 
 - [ ] **T+9** ↔ **T−9**: **NIE piszczy** (między szynami plus i minus nie może być zwarcia)
 - [ ] **d11** ↔ **T+9**: **piszczy** (pin 8 ATtiny jest połączony z plusem)
@@ -164,36 +155,36 @@ Do dwóch wyprowadzeń głośnika dolutuj odcinki drutu (lub przewody połączen
 - [ ] **i8** ↔ **T+9**: **piszczy** (dolny pasek plusa w kolumnie 8 jest połączony z plusem)
 - [ ] **g11** ↔ **T+9**: rezystancja ≈ 10 kΩ (pin 1 (RESET) przez R1 do plusa; układ scalony może obniżyć odczyt)
 - [ ] **g11** ↔ **T−9**: **NIE piszczy** (RESET nie jest zwarty z masą)
+- [ ] **T+30** ↔ **d11**: **piszczy** (plus baterii dochodzi do pinu 8 ATtiny)
+- [ ] **T−30** ↔ **i14**: **piszczy** (minus baterii dochodzi do pinu 4 ATtiny)
 
-**Sprawdzenie napięcia (UNO podłączone do USB, kable programatora wpięte):**
+**Sprawdzenie napięcia (włóż baterie do koszyka):**
 
-- [ ] Między **T+9** a **T−9**: **ok. 5,0 V**.
-- [ ] Między **d11** (pin 8) a **i14** (pin 4): **ok. 5,0 V**.
+- [ ] Napięcie koszyka (wolne wyprowadzenia): **4,5–4,8 V**.
+- [ ] Między **T+9** a **T−9**: **4,5–4,8 V**.
+- [ ] Między **d11** (pin 8) a **i14** (pin 4): **4,5–4,8 V**.
+- [ ] Między **g11** (pin 1, RESET) a **T−9**: **ok. 4,5 V** (pull-up R1).
 
-**Gdy wynik jest inny:** brak napięcia → sprawdź przewody 5V i GND z UNO (kroki 1.12 i 1.13) oraz długie przewody łączące górne i dolne szyny (1.4 i 1.5); napięcie poniżej 4 V → port USB o małej wydajności albo zwarcie; plus zwarty z minusem → rozłącz UNO i szukaj zwarcia: dotykające się końcówki przewodów lub nóżki kondensatorów.
+**Gdy wynik jest inny:** brak napięcia → sprawdź przewody baterii (1.9 i 1.10) oraz długie przewody łączące górne i dolne szyny (1.4 i 1.5); plus zwarty z minusem → wyjmij baterię i szukaj zwarcia (dotykające się końcówki przewodów, nóżki kondensatora); napięcie na RESET znacznie niższe niż 4,5 V → R1 w złych otworach lub zwarcie RESET z masą.
 
-**Test przejścia:** komenda `make sig` (lub `avrdude -v`) odczytuje sygnaturę **0x1E 0x90 0x07** (patrz [programowanie.md](programowanie.md), sekcja 3).
+**Test przejścia:** brak zwarć, napięcia jak wyżej. Odczyt sygnatury ATtiny robisz w gnieździe programatora (przed włożeniem do płytki).
 
 **Zdjęcie kontrolne #1:** po etapie 1 zrób zdjęcie płytki z góry (cała płytka w kadrze, rzędy i kolumny czytelne) i porównaj z rysunkiem Etapu 1. Zwróć uwagę: wcięcie ATtiny po lewej, pin 1 w f11, czerwony przewód w a11.
 
 ## Etap 2: fuse'y
 
-Bez zmian na płytce. Komendy i wyjaśnienie bitów: [programowanie.md](programowanie.md), sekcja 4.
+Bez zmian na płytce stykowej. Wykonujesz w gnieździe programatora: [programowanie.md](programowanie.md), sekcja 4.
 
 ## Etap 3: głośnik
 
 **Cel:** podłączyć głośnik przez tranzystor i wybrać najgłośniejszy ton.
 
-![Etap 3: tryb pracy](img/etap-3.svg)
-
-Rysunek pokazuje stan z włożonym R2 (470 Ω). **Na czas wgrywania programu nóżkę R2 (a17 lub a20) wyjmij z płytki**; tak wygląda tryb programowania:
-
-![Etap 3: tryb programowania](img/etap-3-isp.svg)
+![Etap 3](img/etap-3.svg)
 
 Bulwiaste części (tranzystor, dioda LED, elektrolity) zasłaniają sąsiednie otwory: **nie wkładaj w otwory pod ich obudową niczego innego** (instrukcja tego nie wymaga; to samo sprawdza skrypt weryfikacji).
 
 - [ ] **3.1** Przewód **szary**: z **a13** do **b17**. — PB1 (pin 6) do kolumny 17.
-- [ ] **3.2** Rezystor **470 Ω** (żółty-fioletowy-brązowy) R2: nóżki w **a17** i **a20**. — PB1 do bazy; w trybie programowania wyjęty z płytki. *(na czas programowania wyjmij jedną nóżkę z płytki)*
+- [ ] **3.2** Rezystor **470 Ω** (żółty-fioletowy-brązowy) R2: nóżki w **a17** i **a20**. — PB1 do bazy tranzystora.
 - [ ] **3.3** Tranzystor **BC547A** Q1 **płaską stroną do siebie** (do rzędu j), nóżkami w dół: lewa nóżka = kolektor (C) → **d19**, środkowa = baza (B) → **d20**, prawa = emiter (E) → **d21**. Sprawdź nadruk BC547A.
 - [ ] **3.4** Rezystor **47 kΩ** (żółty-fioletowy-pomarańczowy) R3: nóżki w **b20** i **b23**. — baza do masy.
 - [ ] **3.5** Przewód **czarny**: z **a21** do **T−21**. — emiter tranzystora do masy.
@@ -206,7 +197,7 @@ Bulwiaste części (tranzystor, dioda LED, elektrolity) zasłaniają sąsiednie 
 - [ ] **3.12** Wyprowadzenie głośnika **od strony rezystora 33 Ω** (przedłużone przewodem): koniec w **c27**. — głośnik, wyprowadzenie od strony rezystora 33 Ω.
 - [ ] **3.13** Kondensator elektrolityczny **100 µF** C3, **polaryzacja!**: długa nóżka (+) w **T+24**, nóżka przy białym pasku (−) w **T−24**. — elektrolit na szynach.
 
-**Sprawdzenie (bez zasilania, multimetr na piszczenie lub Ω):**
+**Sprawdzenie (bateria odłączona, multimetr na piszczenie lub Ω):**
 
 - [ ] **T+9** ↔ **T−9**: **NIE piszczy** (plus nie jest zwarty z minusem)
 - [ ] **d20** ↔ **T−9**: **NIE piszczy** (baza nie jest zwarta z masą)
@@ -221,11 +212,11 @@ Bulwiaste części (tranzystor, dioda LED, elektrolity) zasłaniają sąsiednie 
 
 **Test na urządzeniu:**
 
-1. R2 wyjęty. Wgraj `test_tone.hex` (`make flash PROG=test_tone`). Włóż R2 z powrotem (a17 i a20). Zasilanie nadal z UNO (5 V).
+1. Baterię odłącz, wyjmij ATtiny, zaprogramuj `test_tone.hex` w gnieździe (`make flash PROG=test_tone`), włóż układ z powrotem (wcięcie po lewej) i wpnij baterię.
 2. Program gra 7 tonów w kolejności: 500, 1000, 1500, 2000, 2500, 3000, 4000 Hz, po 0,5 s, z przerwami 0,5 s, potem 3 s ciszy i od nowa. **Powiedz, który (numer 1–7) brzmi najgłośniej** — wpiszę jego częstotliwość do stałej `TONE_HZ`.
-3. Test cieplny: wgraj `test_heat_2000Hz.hex` (`make heat FREQ=<najgłośniejszy ton>` zbuduje wersję na Twoją częstotliwość). Po 20 s ciągłego tonu dotknij palcem tranzystora, rezystora 33 Ω i diody: **nie mogą być gorące** (ledwo ciepłe jest OK).
+3. Test cieplny: `make heat FREQ=<najgłośniejszy ton>` i `make flash PROG=test_heat` (albo gotowy `dist/attiny13a/test_heat_2000Hz.hex`). Po 20 s ciągłego tonu dotknij palcem tranzystora, rezystora 33 Ω i diody: **nie mogą być gorące** (ledwo ciepłe jest OK).
 
-**Gdy brak dźwięku:** sprawdź kolejność nóżek tranzystora (C-B-E), biały przewód b19–d26, czy R2 jest włożony, czy głośnik jest w c26 i c27 oraz czy program na pewno się wgrał (`make sig`). Zmierz napięcie DC na kolektorze (d19) względem T− w trakcie tonu: ma pokazywać wartość pośrednią, a nie stałe 0 V ani stałe 4,5 V. Odwrócona dioda LED nie wycisza dźwięku, ale przestaje chronić tranzystor.
+**Gdy brak dźwięku:** sprawdź kolejność nóżek tranzystora (C-B-E), biały przewód b19–d26, czy głośnik jest w c26 i c27 oraz czy program na pewno się wgrał (odczyt w gnieździe: `make sig`). Zmierz napięcie DC na kolektorze (d19) względem T− w trakcie tonu: ma pokazywać wartość pośrednią, a nie stałe 0 V ani stałe 4,5 V. Odwrócona dioda LED nie wycisza dźwięku, ale przestaje chronić tranzystor.
 
 ## Etap 4: wyświetlacz OLED
 
@@ -238,15 +229,15 @@ Bulwiaste części (tranzystor, dioda LED, elektrolity) zasłaniają sąsiednie 
 - [ ] **4.1** Przewód **czerwony** (żeńsko-męski): żeński koniec na pin **VCC** modułu OLED (czytaj nazwę z nadruku modułu), męski koniec w **i20**.
 - [ ] **4.2** Przewód **czerwony**: z **h20** do **B+20**. — plus dla modułu OLED.
 - [ ] **4.3** Przewód **żółty** (żeńsko-męski): żeński koniec na pin **SCL** modułu OLED (czytaj nazwę z nadruku modułu), męski koniec w **i23**.
-- [ ] **4.4** Przewód **żółty**: z **h23** do **b12**. — SCL do PB2 (pin 7); na czas programowania wyjmij koniec z b12. *(na czas programowania wyjmij)*
+- [ ] **4.4** Przewód **żółty**: z **h23** do **b12**. — SCL do PB2 (pin 7).
 - [ ] **4.5** Przewód **zielony** (żeńsko-męski): żeński koniec na pin **SDA** modułu OLED (czytaj nazwę z nadruku modułu), męski koniec w **i26**.
-- [ ] **4.6** Przewód **zielony**: z **h26** do **b14**. — SDA do PB0 (pin 5); na czas programowania wyjmij koniec z b14. *(na czas programowania wyjmij)*
+- [ ] **4.6** Przewód **zielony**: z **h26** do **b14**. — SDA do PB0 (pin 5).
 - [ ] **4.7** Przewód **czarny** (żeńsko-męski): żeński koniec na pin **GND** modułu OLED (czytaj nazwę z nadruku modułu), męski koniec w **B−29**.
 - [ ] **4.8** Kondensator ceramiczny **100 nF** (oznaczenie „104”) C2, bez polaryzacji: nóżki w **B+21** i **B−21**.
 - [ ] **4.9** **(opcjonalnie)** Rezystor **4,7 kΩ** (żółty-fioletowy-czerwony) R7: nóżki w **j26** i **j20**. — tylko jeśli moduł OLED nie ma pull-upów.
 - [ ] **4.10** **(opcjonalnie)** Rezystor **4,7 kΩ** (żółty-fioletowy-czerwony) R8: nóżki w **g23** i **g20**. — tylko jeśli moduł OLED nie ma pull-upów.
 
-**Sprawdzenie (bez zasilania):**
+**Sprawdzenie (bateria odłączona):**
 
 - [ ] **T+9** ↔ **T−9**: **NIE piszczy** (plus nie jest zwarty z minusem)
 - [ ] **i20** ↔ **T+9**: **piszczy** (pin VCC modułu jest połączony z plusem)
@@ -258,7 +249,7 @@ Bulwiaste części (tranzystor, dioda LED, elektrolity) zasłaniają sąsiednie 
 
 **Pull-upy:** jeśli w kroku 0.3 stwierdziłeś brak pull-upów na module, zamontuj opcjonalne kroki 4.9 i 4.10 (R7, R8). Po zamontowaniu zmierz: między **i26** (SDA) a **i20** (VCC) oraz między **i23** (SCL) a **i20** ok. 4,7 kΩ.
 
-**Test na urządzeniu:** na czas programowania wyjmij z płytki **żółty przewód z b12 (krok 4.4) i zielony z b14 (krok 4.6)** oraz jedną nóżkę R2. Wgraj `test_display.hex`, wpnij przewody z powrotem (R2 też) i zasilaj dalej z UNO. Wyświetlacz pokazuje kolejno 2:00, 60:00, 8:88, 1:23, 9:59.
+**Test na urządzeniu:** zaprogramuj `test_display.hex` w gnieździe (`make flash PROG=test_display`), włóż ATtiny i wpnij baterię. Wyświetlacz pokazuje kolejno 2:00, 60:00, 8:88, 1:23, 9:59.
 
 - [ ] Obraz jest czytelny, nieodwrócony, bez przesunięcia i bez brakujących linii.
 
@@ -285,7 +276,7 @@ Przed wsadzeniem każdego przycisku wykonaj kontrolę z punktu 0.2.
 - [ ] **5.9** Rezystor **10 kΩ** (brązowy-czarny-pomarańczowy) R6: nóżki w **b3** i **b6**. — „−”: górna para styków do masy przez 10 kΩ (kolumna 6 to masa „+”).
 - [ ] **5.10** Przewód **niebieski**: z **g3** do **g13**. — „−”: dolna para styków do PB4 (pin 3).
 
-**Sprawdzenie (bez zasilania):**
+**Sprawdzenie (bateria odłączona):**
 
 - [ ] **T+9** ↔ **T−9**: **NIE piszczy** (plus nie jest zwarty z minusem)
 - [ ] **h12** ↔ **T−9**: **NIE piszczy** („run” puszczony: PB3 nie jest zwarte z masą)
@@ -295,7 +286,7 @@ Przed wsadzeniem każdego przycisku wykonaj kontrolę z punktu 0.2.
 - [ ] **h13** ↔ **T−9**: przy wciśniętym przycisku rezystancja ≈ 10 kΩ („−” wciśnięty: PB4 do masy przez R6)
 - [ ] **h13** ↔ **i8**: rezystancja ≈ 10 kΩ (PB4 do plusa przez R5; układ scalony może obniżyć odczyt)
 
-**Test na urządzeniu:** wgraj `test_buttons.hex` (OLED wpięty; na czas programowania wyjmij przewody OLED jak w etapie 4). Ekran pokazuje `R:AAA`, gdzie R = 1 przy wciśniętym „run”, a AAA = odczyt ADC pinu PB4 (0–255).
+**Test na urządzeniu:** zaprogramuj `test_buttons.hex` (`make flash PROG=test_buttons`), włóż ATtiny, wpnij baterię. Ekran pokazuje `R:AAA`, gdzie R = 1 przy wciśniętym „run”, a AAA = odczyt ADC pinu PB4 (0–255).
 
 | Stan | Oczekiwany odczyt AAA | Twój odczyt |
 | --- | --- | --- |
@@ -306,40 +297,21 @@ Przed wsadzeniem każdego przycisku wykonaj kontrolę z punktu 0.2.
 
 Zapisane wartości przekaż dalej: progi w firmware (<64 → „+”, 64–191 → „−”, ≥192 → nic) dobiorę do nich.
 
-## Etap 6: pełny firmware i zasilanie z baterii
+## Etap 6: pełny firmware
 
-**Cel:** minutnik działa samodzielnie na 3×AAA.
+**Cel:** minutnik działa samodzielnie na 3×AAA. Na płytce nie ma nic do dołożenia.
 
-1. Wgraj `timer.hex` (patrz programowanie.md, sekcja 5). Na czas programowania OLED i R2 według tabeli trybu programowania.
-2. **Odłącz od płytki wszystkie przewody programatora i Arduino** (kroki oznaczone „tylko na czas programowania”: 1.9–1.17) oraz kabel USB.
-3. Włóż w koszyk świeże baterie. Zmierz napięcie koszyka (multimetr DC): **4,5–4,8 V**.
+1. Baterię odłącz, wyjmij ATtiny, zaprogramuj `timer.hex` w gnieździe (`make flash PROG=timer`).
+2. Włóż ATtiny z powrotem (wcięcie po lewej), wpnij baterię. Ekran pokazuje 2:00 w ciągu 1 s.
+3. Dalej: testy odbiorcze z [testy-odbiorcze.md](testy-odbiorcze.md).
 
-![Tryb pracy (bateria)](img/tryb-praca.svg)
+### Procedura wymiany układu (za każdym razem)
 
-- [ ] **6.1** **Czerwony** przewód koszyka baterii (plus): koniec w **T+30**. — plus koszyka 3×AAA; najpierw upewnij się, że przewody UNO (5V, GND) są wyjęte z płytki.
-- [ ] **6.2** **Czarny** przewód koszyka baterii (minus): koniec w **T−30**. — minus koszyka 3×AAA.
-
-**Sprawdzenie:**
-
-- [ ] **T+30** ↔ **T−30**: **NIE piszczy** (plus baterii nie jest zwarty z minusem)
-- [ ] **T+30** ↔ **d11**: **piszczy** (plus baterii dochodzi do pinu 8 ATtiny)
-- [ ] **T−30** ↔ **i14**: **piszczy** (minus baterii dochodzi do pinu 4 ATtiny)
-
-- [ ] Napięcie między **T+9** a **T−9**: **4,5–4,8 V**.
-- [ ] Napięcie między pinami 8 i 4 (**d11** i **i14**): **4,5–4,8 V**.
-
-**Test na urządzeniu:** po wpięciu baterii ekran pokazuje 2:00 w ciągu 1 s. Dalej: testy odbiorcze z [testy-odbiorcze.md](testy-odbiorcze.md).
-
-### Tryby: co jest wpięte
-
-| | Tryb programowania (UNO) | Tryb pracy (bateria) |
-| --- | --- | --- |
-| Zasilanie | 5 V z UNO (T+27, T−27) | bateria (T+30, T−30) |
-| Przewody UNO (D10–D13, RESET, kondensator 10 µF) | **wpięte** | **wyjęte** |
-| OLED: żółty przewód w b12 i zielony w b14 | **wyjęte** | wpięte |
-| R2 (470 Ω) | **jedna nóżka wyjęta** | włożony |
-
-![Tryb programowania](img/tryb-programowanie.svg)
+- [ ] bateria odłączona (czerwony przewód wyjęty z T+30)
+- [ ] ATtiny wyjęty z płytki stykowej, włożony do gniazda programatora: **wcięcie przy dźwigni / w tę samą stronę co na rysunku gniazda**
+- [ ] programowanie (`make sig`, `make flash ...`), komunikat `verified`
+- [ ] ATtiny z powrotem w płytce: wcięcie po **lewej**, pin 1 w f11
+- [ ] bateria wpięta
 
 ## Etap 7: funkcje opcjonalne (ramka postępu, ikona dzwonka)
 
@@ -354,8 +326,6 @@ Bez zmian na płytce: [kalibracja.md](kalibracja.md).
 Skrypt `tools/breadboard/design.py` odtwarza sieci połączeń z kroków powyżej (wszystkie przewody, nóżki i paski płytki), porównuje je ze schematem z briefu, wykrywa dwa elementy w jednym otworze i sprawdza geometrię (rozstaw rezystorów, obudowy zasłaniające otwory). Wynik:
 
 ```
-isp            ZGODNE ze schematem
-isp+optional   ZGODNE ze schematem
 work           ZGODNE ze schematem
 work+optional  ZGODNE ze schematem
 verdict: OK

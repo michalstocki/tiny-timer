@@ -27,9 +27,8 @@ RAILS = ("T+", "T-", "B+", "B-")
 
 # ----------------------------------------------------------------- data ----
 # Item kinds:  ("wire", a, b, colour)  /  ("part", ref, pins{name: hole})
-# modes: which configurations contain the item:
-#   "isp"  = programming (UNO powers the board, OLED/base resistor removed)
-#   "work" = normal operation on the battery
+# modes: the ATtiny is programmed OUT of the circuit (own DIP-8 socket board),
+# so there is a single configuration, "work" (battery operation).
 BOTH = ("isp", "work")
 ISP = ("isp",)
 WORK = ("work",)
@@ -54,7 +53,6 @@ PARTS = {
     "C1": ("cap", "100n", "kondensator 100 nF (przy ATtiny)"),
     "C2": ("cap", "100n", "kondensator 100 nF (przy zasilaniu OLED)"),
     "C3": ("elco", "100u", "kondensator elektrolityczny 100 µF"),
-    "C4": ("elco", "10u", "kondensator elektrolityczny 10 µF (tylko dla Arduino ISP)"),
     "D1": ("led", "LED", "dioda LED (zabezpieczenie głośnika)"),
     "Q1": ("npn", "BC547A", "tranzystor BC547A"),
     "S1": ("sw", "run", "przycisk „run”"),
@@ -76,7 +74,7 @@ def wire(stage, a, b, colour, modes=BOTH, note="", optional=False):
                       modes=modes, note=note, optional=optional))
 
 
-# ---- stage 1: power, ATtiny, ISP -------------------------------------------
+# ---- stage 1: power and ATtiny ---------------------------------------------
 # U1 straddles the groove in columns 11-14, notch to the left.
 part(1, "U1", {"1": "f11", "2": "f12", "3": "f13", "4": "f14",
                "5": "e14", "6": "e13", "7": "e12", "8": "e11"})
@@ -87,21 +85,15 @@ wire(1, "T-16", "B-16", "black", note="łączy górną i dolną szynę minus (d�
 wire(1, "j8", "B+8", "red", note="plus na dolny pasek w kolumnie 8")
 part(1, "R1", {"1": "h11", "2": "h8"}, note="RESET (pin 1) przez 10 kΩ do plusa")
 part(1, "C1", {"1": "T+9", "2": "T-9"}, note="odsprzęganie zasilania ATtiny")
-# programmer wiring (removed when the battery takes over)
-part(1, "C4", {"+": "c29", "-": "c30"}, modes=ISP, note="tylko po wgraniu ArduinoISP do UNO")
-wire(1, "UNO:RESET", "a29", "gray", modes=ISP, note="RESET płytki UNO do plusa kondensatora 10 µF")
-wire(1, "a30", "T-29", "black", modes=ISP, note="minus kondensatora 10 µF do masy")
-wire(1, "UNO:5V", "T+27", "red", modes=ISP, note="zasilanie 5 V z UNO (NIGDY razem z baterią)")
-wire(1, "UNO:GND", "T-27", "black", modes=ISP)
-wire(1, "UNO:D10", "j11", "violet", modes=ISP, note="D10 UNO to RESET ATtiny (pin 1)")
-wire(1, "UNO:D11", "a14", "green", modes=ISP, note="D11 UNO to MOSI = PB0 (pin 5)")
-wire(1, "UNO:D12", "b13", "gray", modes=ISP, note="D12 UNO to MISO = PB1 (pin 6)")
-wire(1, "UNO:D13", "a12", "yellow", modes=ISP, note="D13 UNO to SCK = PB2 (pin 7)")
+# power: battery from the start (the ATtiny is programmed OUT of the circuit
+# in the user's own DIP-8 programmer socket, so nothing of the programmer
+# is ever wired on this board)
+wire(1, "BAT:+", "T+30", "red", note="plus koszyka 3×AAA; baterię wpinaj dopiero po sprawdzeniu zwarć")
+wire(1, "BAT:-", "T-30", "black", note="minus koszyka 3×AAA")
 
 # ---- stage 3: speaker (driver built in columns 17-27 of the upper half) -----
 wire(3, "a13", "b17", "gray", note="PB1 (pin 6) do kolumny 17")
-part(3, "R2", {"1": "a17", "2": "a20"}, modes=WORK,
-     note="PB1 do bazy; w trybie programowania wyjęty z płytki")
+part(3, "R2", {"1": "a17", "2": "a20"}, note="PB1 do bazy tranzystora")
 part(3, "Q1", {"C": "d19", "B": "d20", "E": "d21"})
 part(3, "R3", {"1": "b20", "2": "b23"}, note="baza do masy")
 wire(3, "a21", "T-21", "black", note="emiter tranzystora do masy")
@@ -118,9 +110,9 @@ part(3, "C3", {"+": "T+24", "-": "T-24"}, note="elektrolit na szynach")
 wire(4, "OLED:VCC", "i20", "red")
 wire(4, "h20", "B+20", "red", note="plus dla modułu OLED")
 wire(4, "OLED:SCL", "i23", "yellow")
-wire(4, "h23", "b12", "yellow", modes=WORK, note="SCL do PB2 (pin 7); na czas programowania wyjmij koniec z b12")
+wire(4, "h23", "b12", "yellow", note="SCL do PB2 (pin 7)")
 wire(4, "OLED:SDA", "i26", "green")
-wire(4, "h26", "b14", "green", modes=WORK, note="SDA do PB0 (pin 5); na czas programowania wyjmij koniec z b14")
+wire(4, "h26", "b14", "green", note="SDA do PB0 (pin 5)")
 wire(4, "OLED:GND", "B-29", "black")
 part(4, "C2", {"1": "B+21", "2": "B-21"})
 part(4, "R7", {"1": "j26", "2": "j20"}, optional=True,
@@ -140,16 +132,11 @@ part(5, "S3", {"A1": "e1", "A2": "e3", "B1": "f1", "B2": "f3"})
 part(5, "R6", {"1": "b3", "2": "b6"}, note="„−”: górna para styków do masy przez 10 kΩ (kolumna 6 to masa „+”)")
 wire(5, "g3", "g13", "blue", note="„−”: dolna para styków do PB4 (pin 3)")
 
-# ---- stage 6: battery ------------------------------------------------------
-wire(6, "BAT:+", "T+30", "red", modes=WORK, note="plus koszyka 3×AAA; najpierw upewnij się, że przewody UNO (5V, GND) są wyjęte z płytki")
-wire(6, "BAT:-", "T-30", "black", modes=WORK, note="minus koszyka 3×AAA")
-
 STAGE_TITLES = {
-    1: "Zasilanie, ATtiny13A i programator ISP",
+    1: "Zasilanie i ATtiny13A",
     3: "Głośnik",
     4: "Wyświetlacz OLED",
     5: "Przyciski",
-    6: "Zasilanie z baterii",
 }
 
 # ------------------------------------------------------ reference netlist ----
@@ -169,25 +156,6 @@ REF_WORK = {
     "COLLECTOR": ["Q1.C", "SPK:2", "D1.A"],
     "SPK-R": ["SPK:1", "D1.K", "R4.1"],
 }
-REF_ISP = {
-    "VCC": ["U1.8", "R1.2", "R4.2", "R5.2", "C1.1", "C2.1", "C3.+", "UNO:5V", "OLED:VCC", "R7.2", "R8.2"],
-    "GND": ["U1.4", "Q1.E", "R3.2", "S1.A1", "S1.A2", "S2.A1", "S2.A2", "R6.2",
-            "C1.2", "C2.2", "C3.-", "UNO:GND", "C4.-", "OLED:GND"],
-    "OLED-SCL": ["OLED:SCL", "R8.1"],      # wire to the ATtiny removed
-    "OLED-SDA": ["OLED:SDA", "R7.1"],
-    "RESET": ["U1.1", "R1.1", "UNO:D10"],
-    "PB3": ["U1.2", "S1.B1", "S1.B2"],
-    "PB4": ["U1.3", "R5.1", "S2.B1", "S2.B2", "S3.B1", "S3.B2"],
-    "S3-UP": ["S3.A1", "S3.A2", "R6.1"],
-    "PB0-MOSI": ["U1.5", "UNO:D11"],
-    "PB1-MISO": ["U1.6", "UNO:D12"],       # R2 is disconnected from the base
-    "PB2-SCK": ["U1.7", "UNO:D13"],
-    "BASE": ["Q1.B", "R3.1"],
-    "COLLECTOR": ["Q1.C", "SPK:2", "D1.A"],
-    "SPK-R": ["SPK:1", "D1.K", "R4.1"],
-    "UNO-RESET": ["UNO:RESET", "C4.+"],
-}
-
 # Items that exist as parts but whose pin is absent in a mode are skipped.
 
 
@@ -282,7 +250,7 @@ def build_nets(mode, with_optional=True, upto=None):
 def verify(mode, with_optional=True, upto=None, quiet=False):
     """Compares the nets built from the steps with the reference netlist.
     Returns a list of differences (empty = identical)."""
-    ref = REF_WORK if mode == "work" else REF_ISP
+    ref = REF_WORK
     dsu, pin_node, problems = build_nets(mode, with_optional, upto)
     diffs = list(problems)
     present = set(pin_node)
@@ -337,7 +305,7 @@ def connected(mode, p, q, upto=None, pressed=None, exclude=()):
 def stage_mode_check():
     """VCC-GND short check after each stage for both modes."""
     out = []
-    for mode in ("isp", "work"):
+    for mode in ("work",):
         for s in sorted({i["stage"] for i in ITEMS}):
             if connected(mode, "T+9", "T-4", upto=s):
                 out.append("stage %d / %s: szyna plus zwarta z minus" % (s, mode))
@@ -453,7 +421,7 @@ def check_geometry(mode="work", with_optional=True):
 
 def main():
     ok = True
-    for mode in ("isp", "work"):
+    for mode in ("work",):
         for opt in (False, True):
             d = verify(mode, opt)
             tag = "%s%s" % (mode, "+optional" if opt else "")
@@ -461,7 +429,7 @@ def main():
             for x in d:
                 print("   -", x)
             ok &= not d
-    for mode in ("isp", "work"):
+    for mode in ("work",):
         for x in check_geometry(mode):
             print("   geometria/%s: %s" % (mode, x))
             ok = False

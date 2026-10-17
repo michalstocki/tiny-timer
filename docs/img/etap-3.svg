@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 910 640" width="910" height="640" font-family="Helvetica, Arial, sans-serif">
 <rect width="910" height="640" fill="#ffffff"/>
-<text x="455.0" y="20.0" font-size="15" fill="#111" text-anchor="middle" font-weight="bold" >Etap 3: głośnik (rezystor 470 Ω włożony)</text>
+<text x="455.0" y="20.0" font-size="15" fill="#111" text-anchor="middle" font-weight="bold" >Etap 3: głośnik</text>
 <rect x="44" y="106" width="822" height="448" rx="8" fill="#ece6d6" stroke="#b9ae93"/>
 <rect x="44" y="325.2" width="822" height="10" fill="#cfc7b1"/>
 <rect x="58" y="118.0" width="794" height="24" rx="6" fill="#f3c9c9"/>
@@ -570,6 +570,14 @@
 <path d="M 468.0 156.0 Q 446.0 343.2 468.0 530.4" fill="none" stroke="#212121" stroke-width="3.6" stroke-linecap="round"/>
 <path d="M 260.0 460.2 Q 254.7 482.3 260.0 504.4" fill="none" stroke="#222" stroke-width="5.4" stroke-linecap="round"/>
 <path d="M 260.0 460.2 Q 254.7 482.3 260.0 504.4" fill="none" stroke="#d32f2f" stroke-width="3.6" stroke-linecap="round"/>
+<line x1="806.0" y1="34.0" x2="832.0" y2="130.0" stroke="#222" stroke-width="5.2" stroke-linecap="round"/>
+<line x1="806.0" y1="34.0" x2="832.0" y2="130.0" stroke="#d32f2f" stroke-width="3.4" stroke-linecap="round"/>
+<rect x="778.7" y="25.0" width="54.6" height="18" rx="4" fill="#fff" stroke="#444"/>
+<text x="806.0" y="38.0" font-size="9" fill="#111" text-anchor="middle" font-weight="normal" >bateria +</text>
+<line x1="870.7" y1="34.0" x2="832.0" y2="156.0" stroke="#222" stroke-width="5.2" stroke-linecap="round"/>
+<line x1="870.7" y1="34.0" x2="832.0" y2="156.0" stroke="#212121" stroke-width="3.4" stroke-linecap="round"/>
+<rect x="843.4" y="25.0" width="54.6" height="18" rx="4" fill="#fff" stroke="#444"/>
+<text x="870.7" y="38.0" font-size="9" fill="#111" text-anchor="middle" font-weight="normal" >bateria −</text>
 <path d="M 390.0 200.2 Q 438.9 225.7 494.0 226.2" fill="none" stroke="#222" stroke-width="5.4" stroke-linecap="round"/>
 <path d="M 390.0 200.2 Q 438.9 225.7 494.0 226.2" fill="none" stroke="#8a8a8a" stroke-width="3.6" stroke-linecap="round"/>
 <path d="M 598.0 200.2 Q 603.3 178.1 598.0 156.0" fill="none" stroke="#222" stroke-width="5.4" stroke-linecap="round"/>
@@ -580,14 +588,14 @@
 <path d="M 624.0 200.2 Q 632.4 165.1 624.0 130.0" fill="none" stroke="#d32f2f" stroke-width="3.6" stroke-linecap="round"/>
 <path d="M 546.0 226.2 Q 631.0 273.4 728.0 278.2" fill="none" stroke="#222" stroke-width="5.4" stroke-linecap="round"/>
 <path d="M 546.0 226.2 Q 631.0 273.4 728.0 278.2" fill="none" stroke="#f4f4f4" stroke-width="3.6" stroke-linecap="round"/>
-<line x1="719.2" y1="34.0" x2="728.0" y2="252.2" stroke="#222" stroke-width="5.2" stroke-linecap="round"/>
-<line x1="719.2" y1="34.0" x2="728.0" y2="252.2" stroke="#f4f4f4" stroke-width="3.4" stroke-linecap="round"/>
-<rect x="654.7" y="25.0" width="129.0" height="18" rx="4" fill="#fff" stroke="#444"/>
-<text x="719.2" y="38.0" font-size="9" fill="#111" text-anchor="middle" font-weight="normal" >głośnik (str. kolektora)</text>
-<line x1="845.9" y1="34.0" x2="754.0" y2="252.2" stroke="#222" stroke-width="5.2" stroke-linecap="round"/>
-<line x1="845.9" y1="34.0" x2="754.0" y2="252.2" stroke="#f4f4f4" stroke-width="3.4" stroke-linecap="round"/>
-<rect x="793.8" y="25.0" width="104.2" height="18" rx="4" fill="#fff" stroke="#444"/>
-<text x="845.9" y="38.0" font-size="9" fill="#111" text-anchor="middle" font-weight="normal" >głośnik (str. 33 Ω)</text>
+<line x1="590.0" y1="34.0" x2="728.0" y2="252.2" stroke="#222" stroke-width="5.2" stroke-linecap="round"/>
+<line x1="590.0" y1="34.0" x2="728.0" y2="252.2" stroke="#f4f4f4" stroke-width="3.4" stroke-linecap="round"/>
+<rect x="525.4" y="25.0" width="129.0" height="18" rx="4" fill="#fff" stroke="#444"/>
+<text x="590.0" y="38.0" font-size="9" fill="#111" text-anchor="middle" font-weight="normal" >głośnik (str. kolektora)</text>
+<line x1="716.6" y1="34.0" x2="754.0" y2="252.2" stroke="#222" stroke-width="5.2" stroke-linecap="round"/>
+<line x1="716.6" y1="34.0" x2="754.0" y2="252.2" stroke="#f4f4f4" stroke-width="3.4" stroke-linecap="round"/>
+<rect x="664.5" y="25.0" width="104.2" height="18" rx="4" fill="#fff" stroke="#444"/>
+<text x="716.6" y="38.0" font-size="9" fill="#111" text-anchor="middle" font-weight="normal" >głośnik (str. 33 Ω)</text>
 <circle cx="338.0" cy="356.2" r="2.6" fill="#f2f2f2" stroke="#111" stroke-width="0.8"/>
 <circle cx="364.0" cy="356.2" r="2.6" fill="#f2f2f2" stroke="#111" stroke-width="0.8"/>
 <circle cx="390.0" cy="356.2" r="2.6" fill="#f2f2f2" stroke="#111" stroke-width="0.8"/>
@@ -610,6 +618,8 @@
 <circle cx="260.0" cy="408.2" r="2.6" fill="#f2f2f2" stroke="#111" stroke-width="0.8"/>
 <circle cx="286.0" cy="130.0" r="2.6" fill="#f2f2f2" stroke="#111" stroke-width="0.8"/>
 <circle cx="286.0" cy="156.0" r="2.6" fill="#f2f2f2" stroke="#111" stroke-width="0.8"/>
+<circle cx="832.0" cy="130.0" r="2.6" fill="#f2f2f2" stroke="#111" stroke-width="0.8"/>
+<circle cx="832.0" cy="156.0" r="2.6" fill="#f2f2f2" stroke="#111" stroke-width="0.8"/>
 <circle cx="390.0" cy="200.2" r="2.6" fill="#f2f2f2" stroke="#111" stroke-width="0.8"/>
 <circle cx="494.0" cy="226.2" r="2.6" fill="#f2f2f2" stroke="#111" stroke-width="0.8"/>
 <circle cx="494.0" cy="200.2" r="2.6" fill="#f2f2f2" stroke="#111" stroke-width="0.8"/>
@@ -671,6 +681,10 @@
 <text x="457.0" y="346.5" font-size="8" fill="#fff" text-anchor="middle" font-weight="bold" >1.5</text>
 <circle cx="257.3" cy="482.3" r="9.5" fill="#7a7a7a" stroke="#fff" stroke-width="1.5"/>
 <text x="257.3" y="485.6" font-size="8" fill="#fff" text-anchor="middle" font-weight="bold" >1.6</text>
+<circle cx="814.7" cy="66.0" r="9.5" fill="#7a7a7a" stroke="#fff" stroke-width="1.5"/>
+<text x="814.7" y="69.3" font-size="8" fill="#fff" text-anchor="middle" font-weight="bold" >1.9</text>
+<circle cx="857.8" cy="74.7" r="9.5" fill="#7a7a7a" stroke="#fff" stroke-width="1.5"/>
+<text x="857.8" y="78.0" font-size="8" fill="#fff" text-anchor="middle" font-weight="bold" >1.10</text>
 <circle cx="440.4" cy="219.4" r="9.5" fill="#0b7285" stroke="#fff" stroke-width="1.5"/>
 <text x="440.4" y="222.7" font-size="8" fill="#fff" text-anchor="middle" font-weight="bold" >3.1</text>
 <circle cx="600.7" cy="178.1" r="9.5" fill="#0b7285" stroke="#fff" stroke-width="1.5"/>
@@ -681,10 +695,10 @@
 <text x="628.2" y="168.4" font-size="8" fill="#fff" text-anchor="middle" font-weight="bold" >3.7</text>
 <circle cx="634.0" cy="262.8" r="9.5" fill="#0b7285" stroke="#fff" stroke-width="1.5"/>
 <text x="634.0" y="266.1" font-size="8" fill="#fff" text-anchor="middle" font-weight="bold" >3.9</text>
-<circle cx="722.2" cy="106.7" r="9.5" fill="#0b7285" stroke="#fff" stroke-width="1.5"/>
-<text x="722.2" y="110.0" font-size="8" fill="#fff" text-anchor="middle" font-weight="bold" >3.11</text>
-<circle cx="815.3" cy="106.7" r="9.5" fill="#0b7285" stroke="#fff" stroke-width="1.5"/>
-<text x="815.3" y="110.0" font-size="8" fill="#fff" text-anchor="middle" font-weight="bold" >3.12</text>
+<circle cx="636.0" cy="106.7" r="9.5" fill="#0b7285" stroke="#fff" stroke-width="1.5"/>
+<text x="636.0" y="110.0" font-size="8" fill="#fff" text-anchor="middle" font-weight="bold" >3.11</text>
+<circle cx="729.1" cy="106.7" r="9.5" fill="#0b7285" stroke="#fff" stroke-width="1.5"/>
+<text x="729.1" y="110.0" font-size="8" fill="#fff" text-anchor="middle" font-weight="bold" >3.12</text>
 <line x1="40" y1="606" x2="62" y2="606" stroke="#222" stroke-width="5.4" stroke-linecap="round"/>
 <line x1="40" y1="606" x2="62" y2="606" stroke="#d32f2f" stroke-width="3.6" stroke-linecap="round"/>
 <text x="67.0" y="610.0" font-size="9" fill="#333" text-anchor="start" font-weight="normal" >VCC</text>

@@ -21,7 +21,7 @@ Firmware w czystym C (`avr-gcc -Os`, bez Arduino core), instrukcja montażu na p
 ```bash
 cd firmware
 make                                    # buduje i drukuje rozmiary (avr-gcc z PATH lub z Arduino IDE)
-make sig   PORT=/dev/cu.usbmodemXXXX    # Etap 1: sygnatura 0x1e9007
+make sig   PORT=/dev/cu.usbmodemXXXX    # Etap 1: sygnatura 0x1e9007 (ATtiny w gnieździe programatora)
 make fuses PORT=/dev/cu.usbmodemXXXX    # Etap 2
 make flash PROG=test_tone PORT=...      # Etapy 3-5: test_tone, test_display, test_buttons
 make flash PROG=timer PORT=...          # Etap 6

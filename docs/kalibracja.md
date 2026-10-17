@@ -8,7 +8,7 @@ Wartości liczbowe poniżej (krok OSCCAL, wpływ napięcia) **zmierzysz sam** �
 ## Procedura
 
 1. Zasilanie: **bateria** (tej samej klasy, w jakiej będzie pracował minutnik, czyli ok. 4,5 V). Napięcie wpływa na częstotliwość, dlatego nie kalibruj na 5 V z UNO.
-2. Wgraj program kalibracyjny: `make flash PROG=calib PORT=...` (potem przejdź na baterię).
+2. Zaprogramuj program kalibracyjny w gnieździe programatora (`make flash PROG=calib PORT=...`), włóż ATtiny do płytki stykowej i wpnij baterię (wymiana układu wg [programowanie.md](programowanie.md), sekcja 2).
 3. Ekran pokazuje `:NNN` — aktualną wartość OSCCAL (po resecie jest to wartość fabryczna ATtiny; **zapisz ją**: ______).
 4. Przygotuj stoper w telefonie. Naciśnij **„run”** i w chwili puszczenia przycisku uruchom stoper. Ekran liczy w górę od 0:00; po **10:00** program piszczy 1 s i wraca do ekranu OSCCAL.
    Do szybkich prób możesz zbudować krótszy test: `make clean && make calib CAL_MIN=2` (2 minuty).

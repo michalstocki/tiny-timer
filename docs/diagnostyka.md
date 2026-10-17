@@ -4,15 +4,15 @@ Tabela: objaw → prawdopodobna przyczyna → co zmierzyć lub zmienić. Adresy 
 
 | Objaw | Prawdopodobna przyczyna | Co zmierzyć / zmienić |
 | --- | --- | --- |
-| `avrdude`: sygnatura **0x000000** | brak masy, zasilania albo SCK/MISO/MOSI nie dochodzą; nie ten układ (SOIC-8, zła orientacja) | Zmierz 5,0 V między pinem 8 (d11) a 4 (i14). Sprawdź piszczeniem: D11→a14, D12→b13, D13→a12, D10→j11. ATtiny: wcięcie po lewej, pin 1 w f11. |
-| Sygnatura **0xFFFFFF** | brak połączenia MISO (D12→b13) albo RESET (D10→j11) nie dochodzi | Piszczenie D12→pin 6 i D10→pin 1. Zmierz napięcie na pinie 1 podczas odczytu (RESET jest przez 10 kΩ na plusie). |
-| `not in sync` / `programmer is not responding` | w UNO nie ma szkicu ArduinoISP, zły port, albo kondensator 10 µF przeszkadza przy wgrywaniu ArduinoISP | Wgraj ArduinoISP bez kondensatora, potem go wpnij. Sprawdź `-P`. |
+| `avrdude`: sygnatura **0x000000** | układ krzywo lub odwrotnie w gnieździe programatora, zagięta nóżka, zła obudowa (SOIC-8) | Wyjmij i włóż ATtiny ponownie (wcięcie zgodnie z gniazdem), sprawdź nóżki. Zmierz 5,0 V między pinami 8 i 4 w gnieździe. Sprawdź okablowanie gniazda względem tabeli w programowanie.md. |
+| Sygnatura **0xFFFFFF** | brak połączenia MISO (D12→pin 6) albo RESET (D10→pin 1) w gnieździe | Piszczenie D12→pin 6 i D10→pin 1 gniazda. Zmierz napięcie na pinie 1 w trakcie odczytu. |
+| `not in sync` / `programmer is not responding` | w UNO nie ma szkicu ArduinoISP, zły port, brak kondensatora 10 µF RESET–GND | Sprawdź `-P` (`ls /dev/cu.usbmodem*`). Kondensator ma być wpięty przy programowaniu, a odpięty tylko przy wgrywaniu ArduinoISP do UNO. |
 | Sygnatura OK, a po zapisie fuse'ów nie odpowiada | błędny `lfuse` (np. zewnętrzny zegar) | Nie zapisuj innych wartości niż 0x7A. Układ można odzyskać tylko zegarem zewnętrznym na pinie 2. Nigdy nie programuj RSTDISBL. |
-| **Pusty OLED** | zły adres (0x3D), VCC/GND zamienione, SDA/SCL zamienione, brak zasilania, wyjęte przewody b12/b14 po programowaniu | Zmierz 4,5–5 V na VCC modułu. Sprawdź piszczeniem i23→b12 i i26→b14. Zbuduj z `OLED_ADDR=0x3D`. Przejrzyj kolejność pinów modułu z nadruku. |
+| **Pusty OLED** | zły adres (0x3D), VCC/GND zamienione, SDA/SCL zamienione, brak zasilania, niewłożone przewody b12/b14 | Zmierz 4,5–5 V na VCC modułu. Sprawdź piszczeniem i23→b12 i i26→b14. Zbuduj z `OLED_ADDR=0x3D`. Przejrzyj kolejność pinów modułu z nadruku. |
 | Obraz **lustrzany / do góry nogami** | inny kierunek skanowania modułu | `make OLED_FLIP=0` |
 | Co druga linia / obraz „rozciągnięty” | konfiguracja COM pins | `make OLED_COM_CFG=0x12` |
 | Obraz przesunięty | moduł z kontrolerem SH1106 lub 128×64 w obudowie 128×32 | Napisz, co widzisz (zdjęcie); dobiorę inicjalizację. |
-| **Brak dźwięku** | tranzystor odwrotnie (C-B-E), R2 wyjęty po programowaniu, głośnik nie w c26/c27, nie wgrany `test_tone` | Piszczenie d13↔d20 ≈ 470 Ω, d20↔T− ≈ 47 kΩ, e22↔e27 ≈ 33 Ω. Napięcie DC na kolektorze w trakcie tonu: wartość pośrednia. |
+| **Brak dźwięku** | tranzystor odwrotnie (C-B-E), R2 nie włożony, głośnik nie w c26/c27, nie wgrany `test_tone` | Piszczenie d13↔d20 ≈ 470 Ω, d20↔T− ≈ 47 kΩ, e22↔e27 ≈ 33 Ω. Napięcie DC na kolektorze w trakcie tonu: wartość pośrednia. |
 | Dźwięk bardzo cichy | częstotliwość poza rezonansem głośnika; mały głośnik | Wybierz najgłośniejszy ton z testu; można zmniejszyć R4 nie niżej niż 27 Ω (prąd szczytowy ok. 126 mA przy 4,5 V). |
 | Tranzystor / rezystor gorący | zbyt długi sygnał, zły R4, zwarcie | Skróć `BEEP_MS`, sprawdź R4 = 33 Ω. |
 | **Przyciski reagują losowo** | para styków przycisku w poprzek rowka, brak R5, kontakt w płytce | Piszczenie wg Etapu 5; zmierz napięcie na pinie 3 (kolumna 13, np. h13): ok. 4,5 V bez nacisku, ok. połowy przy „−”, 0 przy „+”. `test_buttons` pokaże odczyt ADC. |

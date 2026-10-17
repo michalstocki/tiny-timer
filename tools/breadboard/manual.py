@@ -156,7 +156,7 @@ def render_checks(checks, mode, upto):
 
 
 STAGE_CHECKS = {
-    1: ("isp", [
+    1: ("work", [
         cont("T+9", "T-9", "między szynami plus i minus nie może być zwarcia", False),
         cont("d11", "T+9", "pin 8 ATtiny jest połączony z plusem"),
         cont("i14", "T-9", "pin 4 ATtiny ma połączenie z minusem górnej szyny"),
@@ -165,6 +165,8 @@ STAGE_CHECKS = {
         cont("i8", "T+9", "dolny pasek plusa w kolumnie 8 jest połączony z plusem"),
         res("g11", "T+9", "R1", "≈ 10 kΩ|pin 1 (RESET) przez R1 do plusa; układ scalony może obniżyć odczyt"),
         cont("g11", "T-9", "RESET nie jest zwarty z masą", False),
+        cont("T+30", "d11", "plus baterii dochodzi do pinu 8 ATtiny"),
+        cont("T-30", "i14", "minus baterii dochodzi do pinu 4 ATtiny"),
     ]),
     3: ("work", [
         cont("T+9", "T-9", "plus nie jest zwarty z minusem", False),
@@ -196,11 +198,6 @@ STAGE_CHECKS = {
         res("h13", "T-9", "R6", "≈ 10 kΩ|„−” wciśnięty: PB4 do masy przez R6", pressed="S3"),
         res("h13", "i8", "R5", "≈ 10 kΩ|PB4 do plusa przez R5; układ scalony może obniżyć odczyt"),
     ]),
-    6: ("work", [
-        cont("T+30", "T-30", "plus baterii nie jest zwarty z minusem", False),
-        cont("T+30", "d11", "plus baterii dochodzi do pinu 8 ATtiny"),
-        cont("T-30", "i14", "minus baterii dochodzi do pinu 4 ATtiny"),
-    ]),
 }
 
 
@@ -227,12 +224,6 @@ def stage_items(stage):
 
 
 def isp_note(it):
-    if d.ISP == it["modes"]:
-        return " *(tylko na czas programowania; zdejmij przy zasilaniu z baterii)*"
-    if d.WORK == it["modes"] and it["stage"] <= 5 and it["kind"] == "part" and it["ref"] == "R2":
-        return " *(na czas programowania wyjmij jedną nóżkę z płytki)*"
-    if d.WORK == it["modes"] and it["stage"] == 4:
-        return " *(na czas programowania wyjmij)*"
     return ""
 
 
@@ -272,28 +263,27 @@ def bom_md():
     rows.append("| Rezystor 4,7 kΩ | 2 (opcjonalnie) | %s; tylko jeśli moduł OLED nie ma pull-upów | R7, R8 |" % bands("4.7k"))
     rows.append("| Kondensator ceramiczny 100 nF („104”) | 2 | bez polaryzacji | C1, C2 |")
     rows.append("| Kondensator elektrolityczny 100 µF, min. 10 V | 1 | **polaryzacja**: długa nóżka = plus | C3 |")
-    rows.append("| Kondensator elektrolityczny 10 µF, min. 6,3 V | 1 | tylko dla Arduino ISP; **polaryzacja** | C4 |")
     rows.append("| Tranzystor BC547A | 1 | wyprowadzenia C-B-E | Q1 |")
     rows.append("| Dioda LED, dowolna | 1 | **polaryzacja**: długa nóżka = anoda | D1 |")
     rows.append("| Przycisk tact (4 nóżki) | 3 | „run”, „+”, „−” | S1, S2, S3 |")
     rows.append("| Głośnik 6,4 Ω z zabawki | 1 | dwa przewody do przedłużenia | SPK |")
     rows.append("| Moduł OLED 128×32, SSD1306, I2C, 4 piny | 1 | adres 0x3C | OLED |")
     rows.append("| Koszyk 3×AAA z przewodami | 1 | 4,5 V | BAT |")
-    rows.append("| Arduino UNO + kabel USB | 1 | programator ISP | UNO |")
+    rows.append("| Płytka programatora ISP (UNO z ArduinoISP, gniazdo DIP-8, kondensator 10 µF) | 1 | Twoja, gotowa; ATtiny wkładasz do gniazda i programujesz poza układem | |")
     rows.append("| Płytka stykowa 400 otworów (30 kolumn) | 1 | szyny po obu stronach | |")
     rows.append("")
     rows.append("**Przewody połączeniowe** (liczby z tej instrukcji):")
     rows.append("")
     rows.append("| Kolor | Ilość | Znaczenie |")
     rows.append("| --- | --- | --- |")
-    meaning = {"red": "VCC (plus)", "black": "GND (minus)", "green": "SDA / MOSI (PB0)",
-               "yellow": "SCL / SCK (PB2)", "orange": "PB3 („run”)", "blue": "PB4 (przyciski „+” i „−”)",
-               "violet": "RESET", "gray": "PB1 / MISO / RESET Arduino", "white": "głośnik i kolektor"}
+    meaning = {"red": "VCC (plus)", "black": "GND (minus)", "green": "SDA (PB0)",
+               "yellow": "SCL (PB2)", "orange": "PB3 („run”)", "blue": "PB4 (przyciski „+” i „−”)",
+               "violet": "RESET (nieużywany)", "gray": "PB1", "white": "głośnik i kolektor"}
     for c in ("red", "black", "green", "yellow", "orange", "blue", "violet", "gray", "white"):
         rows.append("| %s | %d | %s |" % (PL_COLOUR[c], wires[c], meaning[c]))
     rows.append("")
     rows.append("Dwa długie przewody (czerwony i czarny, ok. 10 cm) łączą górne i dolne szyny; "
-                "do wtyków OLED potrzebne są 4 przewody żeńsko-męskie, do Arduino męsko-męskie.")
+                "do wtyków OLED potrzebne są 4 przewody żeńsko-męskie.")
     return "\n".join(rows)
 
 
@@ -318,8 +308,9 @@ def build():
     w("2. Każdy krok to jedna czynność z adresem otworu. Odhaczaj pola `[ ]`.")
     w("3. Rysunki (katalog `img/`) pokazują płytkę z góry **po** danym etapie. Numer w kółku to numer kroku, "
       "turkusowy = nowy w tym etapie.")
-    w("4. Programowanie (Arduino UNO jako ISP, fuse'y, wgrywanie) opisuje osobny dokument: "
-      "[programowanie.md](programowanie.md). Etap 2 (fuse'y) jest tam.")
+    w("4. **Programowanie ATtiny odbywa się poza układem**: wyjmujesz go z płytki stykowej, wkładasz do swojej płytki "
+      "programatora (gniazdo DIP-8), programujesz i wkładasz z powrotem. Na płytce stykowej nie ma więc żadnych "
+      "przewodów programatora. Opisuje to [programowanie.md](programowanie.md); etap 2 (fuse'y) jest tam.")
     w("")
     w("## Układ współrzędnych")
     w("")
@@ -348,12 +339,11 @@ def build():
     w("| --- | --- |")
     w("| czerwony | VCC (plus zasilania) |")
     w("| czarny | GND (masa) |")
-    w("| zielony | SDA / MOSI (PB0, pin 5) |")
-    w("| żółty | SCL / SCK (PB2, pin 7) |")
+    w("| zielony | SDA (PB0, pin 5) |")
+    w("| żółty | SCL (PB2, pin 7) |")
     w("| pomarańczowy | przycisk „run” (PB3, pin 2) |")
     w("| niebieski | przyciski „+” i „−” (PB4, pin 3) |")
-    w("| fioletowy | RESET (pin 1) |")
-    w("| szary | PB1 / MISO (pin 6); RESET płytki Arduino |")
+    w("| szary | PB1 (pin 6) |")
     w("| biały | głośnik i kolektor tranzystora |")
     w("")
     w("## Lista zakupów i elementów")
@@ -414,42 +404,45 @@ def build():
     w("")
     w("### Ostrzeżenia (obowiązują cały czas)")
     w("")
-    w("- **Nigdy jednocześnie bateria i 5 V z Arduino.** Zasilanie z UNO tylko w trybie programowania, "
-      "bateria wpięta tylko w trybie pracy. Przed wpięciem jednego odłącz drugie.")
-    w("- Układ scalony wkładaj i wyjmuj bez zasilania.")
+    w("- **Przed wyjęciem lub włożeniem ATtiny odłącz baterię** (wyjmij czerwony przewód z T+30). "
+      "Nigdy nie wkładaj jej do płytki stykowej i do gniazda programatora jednocześnie (to dwa źródła zasilania).")
+    w("- ATtiny wyjmuj równo, najlepiej wyciągaczem do układów DIP lub małym śrubokrętem z obu stron po kolei; "
+      "krzywo wyjęty układ gnie nóżki. Wkładając sprawdź **wcięcie po lewej**.")
     w("- Elektrolity i LED mają polaryzację: odwrotne włożenie może je uszkodzić.")
     w("- Zero zwarć: po każdym etapie sprawdź piszczeniem, że plus nie jest połączony z minusem.")
     w("")
 
     # --- stage 1
-    w("## Etap 1: zasilanie, ATtiny13A i programator ISP")
+    w("## Etap 1: zasilanie i ATtiny13A")
     w("")
-    w("**Cel:** ATtiny13A zasilany z Arduino UNO, połączony tak, żeby `avrdude` odczytał jego sygnaturę.")
+    w("**Cel:** ATtiny13A zasilany z baterii, szyny i podciągnięcie RESET gotowe.")
     w("")
-    w("**Zanim zaczniesz:** wgraj do Arduino UNO szkic **ArduinoISP** (opis w [programowanie.md](programowanie.md), "
-      "sekcja 2) **zanim** wpniesz kondensator 10 µF z kroku %s." % label_of(ref="C4"))
+    w("**Zanim zaczniesz:** zaprogramuj ATtiny **poza płytką stykową** (patrz [programowanie.md](programowanie.md), "
+      "sekcje 3 i 4: odczyt sygnatury 0x1E 0x90 0x07 i fuse'y = Etap 2). Układ włóż do płytki stykowej dopiero potem. "
+      "Baterii na razie nie wkładaj do koszyka.")
     w("")
     w("![Etap 1](img/etap-1.svg)")
     w("")
     w(steps_md(1))
     w("")
-    w("**Sprawdzenie (Arduino i bateria odłączone, multimetr na piszczenie):**")
+    w("**Sprawdzenie (bateria odłączona, multimetr na piszczenie):**")
     w("")
     w(checks_md(1))
     w("")
-    w("**Sprawdzenie napięcia (UNO podłączone do USB, kable programatora wpięte):**")
+    w("**Sprawdzenie napięcia (włóż baterie do koszyka):**")
     w("")
-    w("- [ ] Między %s a %s: **ok. 5,0 V**." % (H("T+9"), H("T-9")))
-    w("- [ ] Między %s (pin 8) a %s (pin 4): **ok. 5,0 V**." % (H("d11"), H("i14")))
+    w("- [ ] Napięcie koszyka (wolne wyprowadzenia): **4,5–4,8 V**.")
+    w("- [ ] Między %s a %s: **4,5–4,8 V**." % (H("T+9"), H("T-9")))
+    w("- [ ] Między %s (pin 8) a %s (pin 4): **4,5–4,8 V**." % (H("d11"), H("i14")))
+    w("- [ ] Między %s (pin 1, RESET) a %s: **ok. 4,5 V** (pull-up R1)." % (H("g11"), H("T-9")))
     w("")
-    w("**Gdy wynik jest inny:** brak napięcia → sprawdź przewody 5V i GND z UNO (kroki %s i %s) oraz długie przewody "
-      "łączące górne i dolne szyny (%s i %s); napięcie poniżej 4 V → port USB o małej wydajności albo zwarcie; "
-      "plus zwarty z minusem → rozłącz UNO i szukaj zwarcia: dotykające się końcówki przewodów lub nóżki kondensatorów." % (
-          label_of(a="UNO:5V", b="T+27"), label_of(a="UNO:GND", b="T-27"),
+    w("**Gdy wynik jest inny:** brak napięcia → sprawdź przewody baterii (%s i %s) oraz długie przewody łączące górne i dolne szyny (%s i %s); "
+      "plus zwarty z minusem → wyjmij baterię i szukaj zwarcia (dotykające się końcówki przewodów, nóżki kondensatora); "
+      "napięcie na RESET znacznie niższe niż 4,5 V → R1 w złych otworach lub zwarcie RESET z masą." % (
+          label_of(a="BAT:+", b="T+30"), label_of(a="BAT:-", b="T-30"),
           label_of(a="T+15", b="B+15"), label_of(a="T-16", b="B-16")))
     w("")
-    w("**Test przejścia:** komenda `make sig` (lub `avrdude -v`) odczytuje sygnaturę **0x1E 0x90 0x07** "
-      "(patrz [programowanie.md](programowanie.md), sekcja 3).")
+    w("**Test przejścia:** brak zwarć, napięcia jak wyżej. Odczyt sygnatury ATtiny robisz w gnieździe programatora (przed włożeniem do płytki).")
     w("")
     w("**Zdjęcie kontrolne #1:** po etapie 1 zrób zdjęcie płytki z góry (cała płytka w kadrze, rzędy i kolumny czytelne) "
       "i porównaj z rysunkiem Etapu 1. Zwróć uwagę: wcięcie ATtiny po lewej, pin 1 w f11, czerwony przewód w a11.")
@@ -458,7 +451,7 @@ def build():
     # --- stage 2
     w("## Etap 2: fuse'y")
     w("")
-    w("Bez zmian na płytce. Komendy i wyjaśnienie bitów: [programowanie.md](programowanie.md), sekcja 4.")
+    w("Bez zmian na płytce stykowej. Wykonujesz w gnieździe programatora: [programowanie.md](programowanie.md), sekcja 4.")
     w("")
 
     # --- stage 3
@@ -466,32 +459,27 @@ def build():
     w("")
     w("**Cel:** podłączyć głośnik przez tranzystor i wybrać najgłośniejszy ton.")
     w("")
-    w("![Etap 3: tryb pracy](img/etap-3.svg)")
-    w("")
-    w("Rysunek pokazuje stan z włożonym R2 (470 Ω). **Na czas wgrywania programu nóżkę R2 (a17 lub a20) wyjmij z płytki**; "
-      "tak wygląda tryb programowania:")
-    w("")
-    w("![Etap 3: tryb programowania](img/etap-3-isp.svg)")
+    w("![Etap 3](img/etap-3.svg)")
     w("")
     w("Bulwiaste części (tranzystor, dioda LED, elektrolity) zasłaniają sąsiednie otwory: **nie wkładaj w otwory pod "
       "ich obudową niczego innego** (instrukcja tego nie wymaga; to samo sprawdza skrypt weryfikacji).")
     w("")
     w(steps_md(3))
     w("")
-    w("**Sprawdzenie (bez zasilania, multimetr na piszczenie lub Ω):**")
+    w("**Sprawdzenie (bateria odłączona, multimetr na piszczenie lub Ω):**")
     w("")
     w(checks_md(3))
     w("")
     w("**Test na urządzeniu:**")
     w("")
-    w("1. R2 wyjęty. Wgraj `test_tone.hex` (`make flash PROG=test_tone`). Włóż R2 z powrotem (a17 i a20). Zasilanie nadal z UNO (5 V).")
+    w("1. Baterię odłącz, wyjmij ATtiny, zaprogramuj `test_tone.hex` w gnieździe (`make flash PROG=test_tone`), włóż układ z powrotem (wcięcie po lewej) i wpnij baterię.")
     w("2. Program gra 7 tonów w kolejności: 500, 1000, 1500, 2000, 2500, 3000, 4000 Hz, po 0,5 s, z przerwami 0,5 s, "
       "potem 3 s ciszy i od nowa. **Powiedz, który (numer 1–7) brzmi najgłośniej** — wpiszę jego częstotliwość do stałej `TONE_HZ`.")
-    w("3. Test cieplny: wgraj `test_heat_2000Hz.hex` (`make heat FREQ=<najgłośniejszy ton>` zbuduje wersję na Twoją częstotliwość). "
+    w("3. Test cieplny: `make heat FREQ=<najgłośniejszy ton>` i `make flash PROG=test_heat` (albo gotowy `dist/attiny13a/test_heat_2000Hz.hex`). "
       "Po 20 s ciągłego tonu dotknij palcem tranzystora, rezystora 33 Ω i diody: **nie mogą być gorące** (ledwo ciepłe jest OK).")
     w("")
     w("**Gdy brak dźwięku:** sprawdź kolejność nóżek tranzystora (C-B-E), biały przewód b19–d26, "
-      "czy R2 jest włożony, czy głośnik jest w c26 i c27 oraz czy program na pewno się wgrał (`make sig`). "
+      "czy głośnik jest w c26 i c27 oraz czy program na pewno się wgrał (odczyt w gnieździe: `make sig`). "
       "Zmierz napięcie DC na kolektorze (d19) względem T− w trakcie tonu: ma pokazywać wartość pośrednią, "
       "a nie stałe 0 V ani stałe 4,5 V. Odwrócona dioda LED nie wycisza dźwięku, ale przestaje chronić tranzystor.")
     w("")
@@ -508,7 +496,7 @@ def build():
     w("")
     w(steps_md(4))
     w("")
-    w("**Sprawdzenie (bez zasilania):**")
+    w("**Sprawdzenie (bateria odłączona):**")
     w("")
     w(checks_md(4))
     w("")
@@ -516,9 +504,8 @@ def build():
       "Po zamontowaniu zmierz: między **i26** (SDA) a **i20** (VCC) oraz między **i23** (SCL) a **i20** ok. 4,7 kΩ." % (
           label_of(ref="R7"), label_of(ref="R8")))
     w("")
-    w("**Test na urządzeniu:** na czas programowania wyjmij z płytki **żółty przewód z b12 (krok %s) i zielony z b14 (krok %s)** "
-      "oraz jedną nóżkę R2. Wgraj `test_display.hex`, wpnij przewody z powrotem (R2 też) i zasilaj dalej z UNO. "
-      "Wyświetlacz pokazuje kolejno 2:00, 60:00, 8:88, 1:23, 9:59." % (label_of(a="h23", b="b12"), label_of(a="h26", b="b14")))
+    w("**Test na urządzeniu:** zaprogramuj `test_display.hex` w gnieździe (`make flash PROG=test_display`), włóż ATtiny i wpnij baterię. "
+      "Wyświetlacz pokazuje kolejno 2:00, 60:00, 8:88, 1:23, 9:59.")
     w("")
     w("- [ ] Obraz jest czytelny, nieodwrócony, bez przesunięcia i bez brakujących linii.")
     w("")
@@ -541,11 +528,11 @@ def build():
     w("")
     w(steps_md(5))
     w("")
-    w("**Sprawdzenie (bez zasilania):**")
+    w("**Sprawdzenie (bateria odłączona):**")
     w("")
     w(checks_md(5))
     w("")
-    w("**Test na urządzeniu:** wgraj `test_buttons.hex` (OLED wpięty; na czas programowania wyjmij przewody OLED jak w etapie 4). "
+    w("**Test na urządzeniu:** zaprogramuj `test_buttons.hex` (`make flash PROG=test_buttons`), włóż ATtiny, wpnij baterię. "
       "Ekran pokazuje `R:AAA`, gdzie R = 1 przy wciśniętym „run”, a AAA = odczyt ADC pinu PB4 (0–255).")
     w("")
     w("| Stan | Oczekiwany odczyt AAA | Twój odczyt |")
@@ -559,39 +546,21 @@ def build():
     w("")
 
     # --- stage 6
-    w("## Etap 6: pełny firmware i zasilanie z baterii")
+    w("## Etap 6: pełny firmware")
     w("")
-    w("**Cel:** minutnik działa samodzielnie na 3×AAA.")
+    w("**Cel:** minutnik działa samodzielnie na 3×AAA. Na płytce nie ma nic do dołożenia.")
     w("")
-    w("1. Wgraj `timer.hex` (patrz programowanie.md, sekcja 5). Na czas programowania OLED i R2 według tabeli trybu programowania.")
-    isp = isp_only_labels()
-    w("2. **Odłącz od płytki wszystkie przewody programatora i Arduino** (kroki oznaczone „tylko na czas programowania”: "
-      "%s–%s) oraz kabel USB." % (isp[0], isp[-1]))
-    w("3. Włóż w koszyk świeże baterie. Zmierz napięcie koszyka (multimetr DC): **4,5–4,8 V**.")
+    w("1. Baterię odłącz, wyjmij ATtiny, zaprogramuj `timer.hex` w gnieździe (`make flash PROG=timer`).")
+    w("2. Włóż ATtiny z powrotem (wcięcie po lewej), wpnij baterię. Ekran pokazuje 2:00 w ciągu 1 s.")
+    w("3. Dalej: testy odbiorcze z [testy-odbiorcze.md](testy-odbiorcze.md).")
     w("")
-    w("![Tryb pracy (bateria)](img/tryb-praca.svg)")
+    w("### Procedura wymiany układu (za każdym razem)")
     w("")
-    w(steps_md(6))
-    w("")
-    w("**Sprawdzenie:**")
-    w("")
-    w(checks_md(6))
-    w("")
-    w("- [ ] Napięcie między %s a %s: **4,5–4,8 V**." % (H("T+9"), H("T-9")))
-    w("- [ ] Napięcie między pinami 8 i 4 (%s i %s): **4,5–4,8 V**." % (H("d11"), H("i14")))
-    w("")
-    w("**Test na urządzeniu:** po wpięciu baterii ekran pokazuje 2:00 w ciągu 1 s. Dalej: testy odbiorcze z [testy-odbiorcze.md](testy-odbiorcze.md).")
-    w("")
-    w("### Tryby: co jest wpięte")
-    w("")
-    w("| | Tryb programowania (UNO) | Tryb pracy (bateria) |")
-    w("| --- | --- | --- |")
-    w("| Zasilanie | 5 V z UNO (T+27, T−27) | bateria (T+30, T−30) |")
-    w("| Przewody UNO (D10–D13, RESET, kondensator 10 µF) | **wpięte** | **wyjęte** |")
-    w("| OLED: żółty przewód w b12 i zielony w b14 | **wyjęte** | wpięte |")
-    w("| R2 (470 Ω) | **jedna nóżka wyjęta** | włożony |")
-    w("")
-    w("![Tryb programowania](img/tryb-programowanie.svg)")
+    w("- [ ] bateria odłączona (czerwony przewód wyjęty z T+30)")
+    w("- [ ] ATtiny wyjęty z płytki stykowej, włożony do gniazda programatora: **wcięcie przy dźwigni / w tę samą stronę co na rysunku gniazda**")
+    w("- [ ] programowanie (`make sig`, `make flash ...`), komunikat `verified`")
+    w("- [ ] ATtiny z powrotem w płytce: wcięcie po **lewej**, pin 1 w f11")
+    w("- [ ] bateria wpięta")
     w("")
     w("## Etap 7: funkcje opcjonalne (ramka postępu, ikona dzwonka)")
     w("")
