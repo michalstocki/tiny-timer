@@ -42,12 +42,12 @@ COLOURS = {
 PARTS = {
     # ref: (kind, value, polish name)
     "U1": ("ic", "ATtiny13A", "ATtiny13A (DIP-8)"),
-    "R1": ("res", "10k", "rezystor 10 kΩ (RESET do plusa)"),
+    "R1": ("res", "15k", "rezystor 15 kΩ (RESET do plusa)"),
     "R2": ("res", "470", "rezystor 470 Ω (baza tranzystora)"),
     "R3": ("res", "47k", "rezystor 47 kΩ (baza do masy)"),
     "R4": ("res", "33", "rezystor 33 Ω, ½ W (szeregowy z głośnikiem)"),
-    "R5": ("res", "10k", "rezystor 10 kΩ (PB4 do plusa)"),
-    "R6": ("res", "10k", "rezystor 10 kΩ (przycisk „−”)"),
+    "R5": ("res", "8.2k", "rezystor 8,2 kΩ (PB4 do plusa)"),
+    "R6": ("res", "8.2k", "rezystor 8,2 kΩ (przycisk „−”, taki sam jak R5)"),
     "R7": ("res", "4.7k", "rezystor 4,7 kΩ (SDA do plusa, tylko jeśli moduł nie ma)"),
     "R8": ("res", "4.7k", "rezystor 4,7 kΩ (SCL do plusa, tylko jeśli moduł nie ma)"),
     "C1": ("cap", "100n", "kondensator 100 nF (przy ATtiny)"),
@@ -83,7 +83,7 @@ wire(1, "j14", "B-14", "black", note="GND układu (pin 4) na szynę minus")
 wire(1, "T+15", "B+15", "red", note="łączy górną i dolną szynę plus (długi przewód)")
 wire(1, "T-16", "B-16", "black", note="łączy górną i dolną szynę minus (długi przewód)")
 wire(1, "j8", "B+8", "red", note="plus na dolny pasek w kolumnie 8")
-part(1, "R1", {"1": "h11", "2": "h8"}, note="RESET (pin 1) przez 10 kΩ do plusa")
+part(1, "R1", {"1": "h11", "2": "h8"}, note="RESET (pin 1) przez 15 kΩ do plusa")
 part(1, "C1", {"1": "T+9", "2": "T-9"}, note="odsprzęganie zasilania ATtiny")
 # power: battery from the start (the ATtiny is programmed OUT of the circuit
 # in the user's own DIP-8 programmer socket, so nothing of the programmer
@@ -121,7 +121,7 @@ part(4, "R8", {"1": "g23", "2": "g20"}, optional=True,
      note="tylko jeśli moduł OLED nie ma pull-upów")
 
 # ---- stage 5: buttons (left side) ------------------------------------------
-part(5, "R5", {"1": "i13", "2": "i8"}, note="PB4 (pin 3) przez 10 kΩ do plusa")
+part(5, "R5", {"1": "i13", "2": "i8"}, note="PB4 (pin 3) przez 8,2 kΩ do plusa")
 part(5, "S1", {"A1": "e7", "A2": "e9", "B1": "f7", "B2": "f9"})
 wire(5, "a7", "T-7", "black", note="„run”: górna para styków do masy")
 wire(5, "g9", "h12", "orange", note="„run”: dolna para styków do PB3 (pin 2)")
@@ -129,7 +129,7 @@ part(5, "S2", {"A1": "e4", "A2": "e6", "B1": "f4", "B2": "f6"})
 wire(5, "a4", "T-4", "black", note="„+”: górna para styków do masy")
 wire(5, "g6", "h13", "blue", note="„+”: dolna para styków do PB4 (pin 3)")
 part(5, "S3", {"A1": "e1", "A2": "e3", "B1": "f1", "B2": "f3"})
-part(5, "R6", {"1": "b3", "2": "b6"}, note="„−”: górna para styków do masy przez 10 kΩ (kolumna 6 to masa „+”)")
+part(5, "R6", {"1": "b3", "2": "b6"}, note="„−”: górna para styków do masy przez 8,2 kΩ (kolumna 6 to masa „+”); R6 ma być taki sam jak R5")
 wire(5, "g3", "g13", "blue", note="„−”: dolna para styków do PB4 (pin 3)")
 
 STAGE_TITLES = {
