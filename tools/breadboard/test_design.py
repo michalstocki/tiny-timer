@@ -33,13 +33,13 @@ run("OLED SDA wire moved to the SCL column", lambda it: find_wire(it, "h26", "b1
 run("OLED SDA wire one column off (b15)", lambda it: find_wire(it, "h26", "b14").update(b="b15"), "work", ["rozerwana"])
 run("transistor C and E swapped", lambda it: find_part(it, "Q1")["pins"].update(C="d21", E="d19"), "work", ["rozerwana", "ZWARCIE", "w jednym otworze"])
 run("emitter wire missing", lambda it: it.remove(find_wire(it, "a21", "T-21")), "work", ["rozerwana"])
-run("run button upper pair on the plus rail (short)", lambda it: find_wire(it, "a7", "T-7").update(b="T+7"), "work", ["ZWARCIE"])
+run("run button upper pair on the plus rail (short)", lambda it: find_wire(it, "a32", "T-32").update(b="T+32"), "work", ["ZWARCIE"])
 run("two parts in one hole", lambda it: find_part(it, "R3")["pins"].update({"1": "a20"}), "work", ["w jednym otworze"])
 run("LED reversed", lambda it: find_part(it, "D1")["pins"].update(A="a27", K="a26"), "work", ["rozerwana"])
 run("battery + to the minus rail", lambda it: find_wire(it, "BAT:+", "T+30").update(b="T-30"), "work", ["ZWARCIE"])
 run("electrolytic C3 reversed", lambda it: find_part(it, "C3")["pins"].update({"+": "T-24", "-": "T+24"}), "work", ["ZWARCIE", "rozerwana"])
 run("R1 second leg in the ground strip", lambda it: find_part(it, "R1")["pins"].update({"2": "j14"}), "work", ["ZWARCIE", "rozerwana"])
-run("R6 second leg in an unused column (b8)", lambda it: find_part(it, "R6")["pins"].update({"2": "b8"}), "work", ["ZWARCIE", "rozerwana"])
+run("R6 second leg in an unused column (b41)", lambda it: find_part(it, "R6")["pins"].update({"2": "b41"}), "work", ["ZWARCIE", "rozerwana"])
 
 
 def geometry(mutate, words, name, mode="work"):

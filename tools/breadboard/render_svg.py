@@ -203,15 +203,15 @@ def draw_switch(svg, it, hi):
     cx = sum(p[0] for p in pts) / 4
     cy = sum(p[1] for p in pts) / 4
     ref = it["ref"]
-    svg.add('<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="4" fill="#4a4a50" stroke="#111"/>' % (cx - 34, cy - 34, 68, 68))
-    svg.add('<circle cx="%.1f" cy="%.1f" r="14" fill="#1c1c20" stroke="#000"/>' % (cx, cy))
+    svg.add('<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="6" fill="#4a4a50" stroke="#111"/>' % (cx - 62, cy - 62, 124, 124))
+    svg.add('<circle cx="%.1f" cy="%.1f" r="30" fill="#1c1c20" stroke="#000"/>' % (cx, cy))
     for (x, y) in pts:
         svg.add('<circle cx="%.1f" cy="%.1f" r="4" fill="#cfcfcf"/>' % (x, y))
     # contacts of one pair are linked inside the switch
     for a, b in ((0, 1), (2, 3)):
         svg.add('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#e0e0e0" stroke-width="2" stroke-dasharray="3 2"/>' % (pts[a][0], pts[a][1], pts[b][0], pts[b][1]))
-    svg.text(cx, cy + 4, d.PARTS[ref][1].replace("-", "−"), 12, "#fff", "middle", "bold")
-    return cx, cy - 38
+    svg.text(cx, cy + 6, d.PARTS[ref][1].replace("-", "−"), 20, "#fff", "middle", "bold")
+    return cx, cy - 70
 
 
 def wire_path(a, b, bulge):
@@ -378,7 +378,7 @@ def main():
     out = sys.argv[1] if len(sys.argv) > 1 else "."
     os.makedirs(out, exist_ok=True)
     jobs = [
-        (0, "work", 0, "Płytka stykowa 400 otworów: układ współrzędnych", "plansza.svg"),
+        (0, "work", 0, "Płytka stykowa, 60 kolumn: układ współrzędnych", "plansza.svg"),
         (1, "work", 1, "Etap 1: zasilanie z baterii i ATtiny13A", "etap-1.svg"),
         (3, "work", 3, "Etap 3: głośnik", "etap-3.svg"),
         (4, "work", 4, "Etap 4: wyświetlacz OLED", "etap-4.svg"),

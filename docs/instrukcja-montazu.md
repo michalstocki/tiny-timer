@@ -21,8 +21,8 @@
   - **B+** = dolna szyna wewnętrzna (bliżej rzędu j), plus;
   - **B−** = dolna szyna zewnętrzna (przy krawędzi), minus.
   - Adres szyny zawiera numer kolumny, przy której leży otwór, np. **T+11** = otwór szyny T+ na wysokości kolumny 11.
-- Układ mieści się w 30 kolumnach. Wszystkie kolumny podane w krokach są liczone od lewej strony płytki.
-- **Przed zaczęciem sprawdź ciągłość szyn**: multimetr na piszczenie, jedna sonda przy kolumnie 1, druga przy kolumnie 30 tej samej szyny. Jeśli szyna jest przerwana w środku (zdarza się w dłuższych płytkach), połącz obie połówki przewodem.
+- Płytka ma **60 kolumn**. Obwód zajmuje kolumny 1–30, a trzy duże przyciski kolumny 32–46 (brief zakładał płytkę 400 otworów, ale duże przyciski się na niej nie mieszczą). Wszystkie kolumny w krokach są liczone od lewej strony płytki.
+- **Przed zaczęciem sprawdź ciągłość szyn**: multimetr na piszczenie, jedna sonda przy kolumnie 1, druga przy kolumnie 46 tej samej szyny. Jeśli szyna jest przerwana w środku (zdarza się w dłuższych płytkach), połącz obie połówki przewodem.
 - Orientacja: płytka leży przed Tobą, rząd a jest **dalej** od Ciebie (u góry rysunku), rząd j **bliżej**.
 
 ### Kolory przewodów (stałe w całej instrukcji)
@@ -53,12 +53,12 @@
 | Kondensator elektrolityczny 100 µF, min. 10 V | 1 | **polaryzacja**: długa nóżka = plus | C3 |
 | Tranzystor BC547A | 1 | wyprowadzenia C-B-E | Q1 |
 | Dioda LED, dowolna | 1 | **polaryzacja**: długa nóżka = anoda | D1 |
-| Przycisk tact (4 nóżki) | 3 | „run”, „+”, „−” | S1, S2, S3 |
+| Przycisk tact **duży (ok. 12 mm, obudowa szeroka na ok. 5 kolumn)**, 4 nóżki | 3 | „run”, „+”, „−”; rozstaw nóżek jak w małych (kolumny co 2) | S1, S2, S3 |
 | Głośnik 6,4 Ω z zabawki | 1 | dwa przewody do przedłużenia | SPK |
 | Moduł OLED 128×32, SSD1306, I2C, 4 piny | 1 | adres 0x3C | OLED |
 | Koszyk 3×AAA z przewodami | 1 | 4,5 V | BAT |
 | Płytka programatora ISP (UNO z ArduinoISP, gniazdo DIP-8, kondensator 10 µF) | 1 | Twoja, gotowa; ATtiny wkładasz do gniazda i programujesz poza układem | |
-| Płytka stykowa 400 otworów (30 kolumn) | 1 | szyny po obu stronach | |
+| Płytka stykowa, **60 kolumn** (układ zajmuje kolumny 1–46) | 1 | szyny po obu stronach; w briefie była płytka 400 otworów (30 kolumn), ale duże przyciski się na niej nie mieszczą | |
 
 **Przewody połączeniowe** (liczby z tej instrukcji):
 
@@ -100,7 +100,7 @@ Przycisk tact ma 4 nóżki. W typowym przycisku nóżki po tej samej stronie są
 1. Sprawdzaj piszczeniem kolejne pary nóżek **bez** wciskania przycisku, aż znajdziesz dwie pary, które piszczą (to połączenia stałe w środku przycisku).
 2. Sprawdź, że nóżki z **różnych** par nie piszczą, dopóki nie wciśniesz przycisku; po wciśnięciu piszczą wszystkie.
 3. Włóż przycisk tak, aby **każda para leżała po jednej stronie rowka** (a nie w poprzek rowka). Gdyby para leżała w poprzek, przycisk zwierałby rowek na stałe.
-4. Przycisk „łapie” rowek środkowy: dwie nóżki w rzędzie e, dwie w rzędzie f, w kolumnach odległych o 2.
+4. Przycisk „łapie” rowek środkowy: dwie nóżki w rzędzie e, dwie w rzędzie f, w kolumnach odległych o 2. Duża obudowa (ok. 12 mm) zasłania ok. 5 kolumn i rzędy e–f: dlatego każdy przycisk ma w instrukcji własne 6 kolumn.
 
 ### 0.3 Moduł OLED
 
@@ -244,7 +244,7 @@ Nóżka, która przewodzi do obu pozostałych, gdy jest pod czerwoną sondą, to
 - [ ] **4.3** Przewód **żółty** (żeńsko-męski): żeński koniec na pin **SCL** modułu OLED (czytaj nazwę z nadruku modułu), męski koniec w **i23**.
 - [ ] **4.4** Przewód **żółty**: z **h23** do **b12**. — SCL do PB2 (pin 7).
 - [ ] **4.5** Przewód **zielony** (żeńsko-męski): żeński koniec na pin **SDA** modułu OLED (czytaj nazwę z nadruku modułu), męski koniec w **i26**.
-- [ ] **4.6** Przewód **zielony**: z **h26** do **b14**. — SDA do PB0 (pin 5).
+- [ ] **4.6** Przewód **zielony**: z **h26** do **b14**. **Długi przewód**: ok. 6 cm. — SDA do PB0 (pin 5).
 - [ ] **4.7** Przewód **czarny** (żeńsko-męski): żeński koniec na pin **GND** modułu OLED (czytaj nazwę z nadruku modułu), męski koniec w **B−29**.
 - [ ] **4.8** Kondensator ceramiczny **100 nF** (oznaczenie „104”) C2, bez polaryzacji: nóżki w **B+21** i **B−21**.
 - [ ] **4.9** **(opcjonalnie)** Rezystor **4,7 kΩ** (żółty-fioletowy-czerwony) R7: nóżki w **j26** i **j20**. — tylko jeśli moduł OLED nie ma pull-upów.
@@ -272,22 +272,24 @@ Jeśli nie: `make OLED_FLIP=0` (obraz do góry nogami lub lustrzany), `make OLED
 
 ## Etap 5: przyciski
 
-**Cel:** trzy przyciski i drabinka rezystorowa na PB4.
+**Cel:** trzy duże przyciski (kolumny 32–46) i drabinka rezystorowa na PB4.
+
+Przyciski stoją w wolnej części dużej płytki, po prawej stronie obwodu: „run” w kolumnach 32 i 34, „+” w 38 i 40, „−” w 44 i 46. Dwa przewody (pomarańczowy i niebieski „−”) są dłuższe, bo wracają do ATtiny w kolumnach 12–13.
 
 ![Etap 5](img/etap-5.svg)
 
 Przed wsadzeniem każdego przycisku wykonaj kontrolę z punktu 0.2.
 
 - [ ] **5.1** Rezystor **8,2 kΩ** (szary-czerwony-czerwony) R5: nóżki w **i13** i **i8**. — PB4 (pin 3) przez 8,2 kΩ do plusa.
-- [ ] **5.2** Przycisk **„run”** S1: wciśnij w rowek środkowy; styki górne w **e7** i **e9**, dolne w **f7** i **f9** (najpierw kontrola z punktu 0.2).
-- [ ] **5.3** Przewód **czarny**: z **a7** do **T−7**. — „run”: górna para styków do masy.
-- [ ] **5.4** Przewód **pomarańczowy**: z **g9** do **h12**. — „run”: dolna para styków do PB3 (pin 2).
-- [ ] **5.5** Przycisk **„+”** S2: wciśnij w rowek środkowy; styki górne w **e4** i **e6**, dolne w **f4** i **f6** (najpierw kontrola z punktu 0.2).
-- [ ] **5.6** Przewód **czarny**: z **a4** do **T−4**. — „+”: górna para styków do masy.
-- [ ] **5.7** Przewód **niebieski**: z **g6** do **h13**. — „+”: dolna para styków do PB4 (pin 3).
-- [ ] **5.8** Przycisk **„−”** S3: wciśnij w rowek środkowy; styki górne w **e1** i **e3**, dolne w **f1** i **f3** (najpierw kontrola z punktu 0.2).
-- [ ] **5.9** Rezystor **8,2 kΩ** (szary-czerwony-czerwony) R6: nóżki w **b3** i **b6**. — „−”: górna para styków do masy przez 8,2 kΩ (kolumna 6 to masa „+”); R6 ma być taki sam jak R5.
-- [ ] **5.10** Przewód **niebieski**: z **g3** do **g13**. — „−”: dolna para styków do PB4 (pin 3).
+- [ ] **5.2** Przycisk **„run”** S1: wciśnij w rowek środkowy; styki górne w **e32** i **e34**, dolne w **f32** i **f34** (najpierw kontrola z punktu 0.2).
+- [ ] **5.3** Przewód **czarny**: z **a32** do **T−32**. — „run”: górna para styków do masy.
+- [ ] **5.4** Przewód **pomarańczowy**: z **g34** do **h12**. **Długi przewód**: ok. 9 cm. — „run”: dolna para styków do PB3 (pin 2).
+- [ ] **5.5** Przycisk **„+”** S2: wciśnij w rowek środkowy; styki górne w **e38** i **e40**, dolne w **f38** i **f40** (najpierw kontrola z punktu 0.2).
+- [ ] **5.6** Przewód **czarny**: z **a38** do **T−38**. — „+”: górna para styków do masy.
+- [ ] **5.7** Przewód **niebieski**: z **g40** do **h13**. **Długi przewód**: ok. 10 cm. — „+”: dolna para styków do PB4 (pin 3).
+- [ ] **5.8** Przycisk **„−”** S3: wciśnij w rowek środkowy; styki górne w **e44** i **e46**, dolne w **f44** i **f46** (najpierw kontrola z punktu 0.2).
+- [ ] **5.9** Rezystor **8,2 kΩ** (szary-czerwony-czerwony) R6: nóżki w **b44** i **b40**. — „−”: górna para styków do masy przez 8,2 kΩ (kolumna 40 to masa „+”); R6 ma być taki sam jak R5.
+- [ ] **5.10** Przewód **niebieski**: z **g44** do **g13**. **Długi przewód**: ok. 11 cm. — „−”: dolna para styków do PB4 (pin 3).
 
 **Sprawdzenie (bateria odłączona):**
 

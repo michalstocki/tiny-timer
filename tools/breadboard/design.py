@@ -6,7 +6,7 @@ drawings, continuity checks) is generated from the data in this file, and
 `verify()` rebuilds the electrical nets from the steps and compares them with
 the schematic from the project brief (section "Schemat i mapa pinow").
 
-Board model (400 tie points, 30 columns):
+Board model (60 columns; the first 30 hold the circuit, the large buttons sit in columns 32-46):
   * columns 1..30 from the left, rows a-e above the centre groove and f-j
     below it; holes a..e of one column are one strip, f..j another;
   * four power rails, each one electrically continuous:
@@ -20,7 +20,7 @@ from collections import defaultdict
 import json
 import sys
 
-COLS = 30
+COLS = 60
 ROWS_UP = "abcde"
 ROWS_DN = "fghij"
 RAILS = ("T+", "T-", "B+", "B-")
@@ -122,15 +122,16 @@ part(4, "R8", {"1": "g23", "2": "g20"}, optional=True,
 
 # ---- stage 5: buttons (left side) ------------------------------------------
 part(5, "R5", {"1": "i13", "2": "i8"}, note="PB4 (pin 3) przez 8,2 kΩ do plusa")
-part(5, "S1", {"A1": "e7", "A2": "e9", "B1": "f7", "B2": "f9"})
-wire(5, "a7", "T-7", "black", note="„run”: górna para styków do masy")
-wire(5, "g9", "h12", "orange", note="„run”: dolna para styków do PB3 (pin 2)")
-part(5, "S2", {"A1": "e4", "A2": "e6", "B1": "f4", "B2": "f6"})
-wire(5, "a4", "T-4", "black", note="„+”: górna para styków do masy")
-wire(5, "g6", "h13", "blue", note="„+”: dolna para styków do PB4 (pin 3)")
-part(5, "S3", {"A1": "e1", "A2": "e3", "B1": "f1", "B2": "f3"})
-part(5, "R6", {"1": "b3", "2": "b6"}, note="„−”: górna para styków do masy przez 8,2 kΩ (kolumna 6 to masa „+”); R6 ma być taki sam jak R5")
-wire(5, "g3", "g13", "blue", note="„−”: dolna para styków do PB4 (pin 3)")
+# large (12 mm) tact switches: body about 5 columns wide, one per 6 columns
+part(5, "S1", {"A1": "e32", "A2": "e34", "B1": "f32", "B2": "f34"})
+wire(5, "a32", "T-32", "black", note="„run”: górna para styków do masy")
+wire(5, "g34", "h12", "orange", note="„run”: dolna para styków do PB3 (pin 2)")
+part(5, "S2", {"A1": "e38", "A2": "e40", "B1": "f38", "B2": "f40"})
+wire(5, "a38", "T-38", "black", note="„+”: górna para styków do masy")
+wire(5, "g40", "h13", "blue", note="„+”: dolna para styków do PB4 (pin 3)")
+part(5, "S3", {"A1": "e44", "A2": "e46", "B1": "f44", "B2": "f46"})
+part(5, "R6", {"1": "b44", "2": "b40"}, note="„−”: górna para styków do masy przez 8,2 kΩ (kolumna 40 to masa „+”); R6 ma być taki sam jak R5")
+wire(5, "g44", "g13", "blue", note="„−”: dolna para styków do PB4 (pin 3)")
 
 STAGE_TITLES = {
     1: "Zasilanie i ATtiny13A",
@@ -359,9 +360,9 @@ def footprint(it):
         for r in clamp_rows(min(rows) - 1, max(rows) + 1):
             for c in range(min(cols), max(cols) + 1):
                 cov.add((r, c))
-    elif kind == "sw":
+    elif kind == "sw":   # 12 mm body: about 5 columns, covers rows e and f
         cmin, cmax = min(cols), max(cols)
-        for c in range(cmin + 1, cmax):
+        for c in range(cmin - 1, cmax + 2):
             cov.add((4, c))
             cov.add((5, c))
     own = set(v for v in pins.values() if v)
