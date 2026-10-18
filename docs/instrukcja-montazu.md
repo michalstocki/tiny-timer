@@ -203,7 +203,7 @@ Bulwiaste części (tranzystor, dioda LED, elektrolity) zasłaniają sąsiednie 
 
 - [ ] **T+9** ↔ **T−9**: **NIE piszczy** (plus nie jest zwarty z minusem)
 - [ ] **d20** ↔ **T−9**: **NIE piszczy** (baza nie jest zwarta z masą)
-- [ ] **d20** ↔ **T−9**: rezystancja ≈ 47 kΩ (baza do masy przez R3)
+- [ ] **d20** ↔ **T−9**: rezystancja ≈ 47 kΩ (baza do masy przez R3; **mierz przy wyjętym tranzystorze albo czerwoną sondą na T−9** (przy odwrotnej polaryzacji złącze baza–emiter tranzystora przewodzi i odczyt spada prawie do 0))
 - [ ] **d13** ↔ **d20**: **NIE piszczy** (PB1 nie jest zwarte z bazą (jest 470 Ω))
 - [ ] **d13** ↔ **d20**: rezystancja ≈ 470 Ω (pin 6 (PB1) do bazy przez szary przewód i R2; układ scalony może obniżyć odczyt)
 - [ ] **a21** ↔ **T−9**: **piszczy** (emiter (kolumna 21) jest połączony z masą)
@@ -211,6 +211,17 @@ Bulwiaste części (tranzystor, dioda LED, elektrolity) zasłaniają sąsiednie 
 - [ ] **e22** ↔ **e27**: rezystancja ≈ 33 Ω (plus do strony głośnika przez R4)
 - [ ] **d19** ↔ **d26**: **piszczy** (kolektor (kolumna 19) jest połączony z kolumną 26 białym przewodem)
 - [ ] **d19** ↔ **d27**: **NIE piszczy** (kolektor nie jest zwarty ze stroną rezystora 33 Ω)
+
+**Test tranzystora (wyjęty z płytki, miernik w trybie diody ▷|):**
+
+| Czerwona sonda (+) | Czarna sonda (−) | Oczekiwane |
+| --- | --- | --- |
+| baza (środkowa nóżka) | emiter (prawa) | ok. 0,55–0,75 V |
+| baza | kolektor (lewa) | ok. 0,55–0,75 V |
+| emiter lub kolektor | baza | brak przewodzenia („OL” / „1”) |
+| kolektor ↔ emiter, w obie strony | | brak przewodzenia |
+
+Nóżka, która przewodzi do obu pozostałych, gdy jest pod czerwoną sondą, to baza. Ma być w środku. Jeśli baza jest gdzie indziej (np. kolejność E-B-C jak w 2N3904), obróć tranzystor w d19/d20/d21 albo napisz, co jest na obudowie.
 
 **Test na urządzeniu:**
 

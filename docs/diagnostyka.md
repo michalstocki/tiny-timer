@@ -12,6 +12,7 @@ Tabela: objaw → prawdopodobna przyczyna → co zmierzyć lub zmienić. Adresy 
 | Obraz **lustrzany / do góry nogami** | inny kierunek skanowania modułu | `make OLED_FLIP=0` |
 | Co druga linia / obraz „rozciągnięty” | konfiguracja COM pins | `make OLED_COM_CFG=0x12` |
 | Obraz przesunięty | moduł z kontrolerem SH1106 lub 128×64 w obudowie 128×32 | Napisz, co widzisz (zdjęcie); dobiorę inicjalizację. |
+| Pomiar baza–masa pokazuje ok. 0 Ω przy włożonym tranzystorze | złącze baza–emiter przewodzi przy czerwonej sondzie na bazie (to nie zwarcie) | Zmierz z czerwoną sondą na T−, albo przy wyjętym Q1: ma być ok. 47 kΩ. Tranzystor sprawdź w trybie diody (instrukcja, etap 3). |
 | **Brak dźwięku** | tranzystor odwrotnie (C-B-E), R2 nie włożony, głośnik nie w c26/c27, nie wgrany `test_tone` | Piszczenie d13↔d20 ≈ 470 Ω, d20↔T− ≈ 47 kΩ, e22↔e27 ≈ 33 Ω. Napięcie DC na kolektorze w trakcie tonu: wartość pośrednia. |
 | Dźwięk bardzo cichy | częstotliwość poza rezonansem głośnika; mały głośnik | Wybierz najgłośniejszy ton z testu; można zmniejszyć R4 nie niżej niż 27 Ω (prąd szczytowy ok. 126 mA przy 4,5 V). |
 | Tranzystor / rezystor gorący | zbyt długi sygnał, zły R4, zwarcie | Skróć `BEEP_MS`, sprawdź R4 = 33 Ω. |

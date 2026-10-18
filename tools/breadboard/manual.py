@@ -171,7 +171,7 @@ STAGE_CHECKS = {
     3: ("work", [
         cont("T+9", "T-9", "plus nie jest zwarty z minusem", False),
         cont("d20", "T-9", "baza nie jest zwarta z masą", False),
-        res("d20", "T-9", "R3", "≈ 47 kΩ|baza do masy przez R3"),
+        res("d20", "T-9", "R3", "≈ 47 kΩ|baza do masy przez R3; **mierz przy wyjętym tranzystorze albo czerwoną sondą na T−9** (przy odwrotnej polaryzacji złącze baza–emiter tranzystora przewodzi i odczyt spada prawie do 0)"),
         cont("d13", "d20", "PB1 nie jest zwarte z bazą (jest 470 Ω)", False),
         res("d13", "d20", "R2", "≈ 470 Ω|pin 6 (PB1) do bazy przez szary przewód i R2; układ scalony może obniżyć odczyt"),
         cont("a21", "T-9", "emiter (kolumna 21) jest połączony z masą"),
@@ -472,6 +472,18 @@ def build():
     w("**Sprawdzenie (bateria odłączona, multimetr na piszczenie lub Ω):**")
     w("")
     w(checks_md(3))
+    w("")
+    w("**Test tranzystora (wyjęty z płytki, miernik w trybie diody ▷|):**")
+    w("")
+    w("| Czerwona sonda (+) | Czarna sonda (−) | Oczekiwane |")
+    w("| --- | --- | --- |")
+    w("| baza (środkowa nóżka) | emiter (prawa) | ok. 0,55–0,75 V |")
+    w("| baza | kolektor (lewa) | ok. 0,55–0,75 V |")
+    w("| emiter lub kolektor | baza | brak przewodzenia („OL” / „1”) |")
+    w("| kolektor ↔ emiter, w obie strony | | brak przewodzenia |")
+    w("")
+    w("Nóżka, która przewodzi do obu pozostałych, gdy jest pod czerwoną sondą, to baza. Ma być w środku. Jeśli baza jest "
+      "gdzie indziej (np. kolejność E-B-C jak w 2N3904), obróć tranzystor w d19/d20/d21 albo napisz, co jest na obudowie.")
     w("")
     w("**Test na urządzeniu:**")
     w("")
