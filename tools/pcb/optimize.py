@@ -5,6 +5,8 @@ import math
 import random
 import sys
 
+import os
+
 import board as B
 import layout  # noqa: F401
 
@@ -13,7 +15,26 @@ import layout  # noqa: F401
 PAIRS = [("C1", "U1", 1.5), ("C2", "OLED", 1.0), ("R1", "U1", 1.5), ("R5", "U1", 1.5),
          ("Q1", "R2", 1.5), ("Q1", "R3", 1.5), ("Q1", "D1", 1.0), ("Q1", "R4", 1.0), ("Q1", "SPK", 1.0),
          ("D1", "SPK", 1.0), ("R4", "SPK", 1.0), ("C3", "Q1", 0.7), ("R6", "S3", 1.5), ("BAT", "C3", 0.7),
-         ("R2", "U1", 0.7), ("R6", "KEY", 1.5), ("KEY", "U1", 0.8)]
+         ("R2", "U1", 0.7), ("R6", "KEY", 1.5), ("KEY", "U1", 0.8), ("C2", "U1", 1.0), ("DISP", "U1", 0.8)]
+# klin3: wires leave the board at known edges. In the board's frame y grows towards the apex of the enclosure
+# (display and button wires go there), the speaker is on the high-x side. TALL > 0 pulls tall parts to low y
+# (the wider part of the wedge), TALL < 0 to high y.
+TALL = float(os.environ.get("PCB_TALL", "0"))
+
+
+def edge_cost():
+    if not B.K3:
+        return 0.0
+    W, H = B.P["W"], B.P["H"]
+    c = 0.0
+    for ref in ("KEY", "DISP"):
+        c += 0.6 * (H - _c(ref)[1])
+    c += 0.4 * (W - _c("SPK")[0]) + 0.3 * _c("SPK")[1] + 0.3 * _c("BAT")[1]
+    if TALL:
+        for ref in B.REFS_BOTTOM:
+            h = B.FP[B.PARTS[ref]["fp"]]["height"] if ref != "U1" else 8.5
+            c += TALL * 0.04 * h * (_c(ref)[1] - H / 2)
+    return c
 
 
 def _c(ref):
@@ -31,7 +52,7 @@ def cost():
             continue            # pair of another variant (S3 only in base, KEY only in klin)
         (ax, ay), (bx, by) = _c(a), _c(b)
         pair += wgt * math.hypot(ax - bx, ay - by)
-    return B.hpwl() + pair + 40.0 * len(v), v
+    return B.hpwl() + pair + edge_cost() + 150.0 * len(v), v
 
 
 def optimise(seed=1, iters=15000, movable=None):

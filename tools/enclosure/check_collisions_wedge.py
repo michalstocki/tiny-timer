@@ -1,6 +1,7 @@
-"""Kontrola kolizji dla wariantu "klin": objętość wspólna korpusu, pokrywy i klapki z resztą brył.
+"""Kontrola kolizji dla wariantów "klin": objętość wspólna korpusu, pokrywy i klapki z resztą brył.
 
     Blender --background docs/obudowa-klin/obudowa-klin.blend --python tools/enclosure/check_collisions_wedge.py
+    (klin 3: docs/obudowa-klin-3/obudowa-klin-3.blend)
 Pokazuje tylko pary z objętością wspólną > 0.5 mm3. Płytki, elementy, baterie, styki, głośnik i kapsle
 nie powinny wchodzić w korpus, pokrywę ani klapkę, a korpus, pokrywa i klapka nie mogą na siebie zachodzić.
 """
@@ -31,7 +32,7 @@ def overlap(a, b):
 
 
 SOLID = ("Korpus", "Pokrywa", "Klapka")
-OTHERS = SOLID + ("Kapsle", "Styki", "Baterie", "Plytka", "Plytka_przyciskow", "Glosnik")
+OTHERS = SOLID + ("Kapsle", "Styki", "Baterie", "Plytka", "Plytka_przyciskow", "Glosnik", "Wyswietlacz")
 solid = [o for o in bpy.data.objects if o.type == "MESH" and o.get("grupa") in SOLID]
 others = [o for o in bpy.data.objects if o.type == "MESH" and o.get("grupa") in OTHERS]
 
@@ -39,7 +40,7 @@ others = [o for o in bpy.data.objects if o.type == "MESH" and o.get("grupa") in 
 me = bpy.data.meshes.new("ctl")
 bm = bmesh.new()
 bmesh.ops.create_cube(bm, size=1.0)
-bmesh.ops.translate(bm, vec=(1.0, 45.0, 45.0), verts=bm.verts)
+bmesh.ops.translate(bm, vec=(1.0, bpy.context.scene.get("ctl_y", 45.0), bpy.context.scene.get("ctl_z", 45.0)), verts=bm.verts)
 bm.to_mesh(me)
 bm.free()
 ctl = bpy.data.objects.new("ctl", me)

@@ -19,6 +19,7 @@ import sys
 # Variant of the design (parallel concepts, the base one must stay untouched):
 #   base = iteration 1, buttons on the main board (48 x 50 mm)
 #   klin = wedge enclosure: buttons on a separate small board, a shorter main board
+#   klin3 = wedge 3: also the display is a separate module (4 wires), the main board only carries the electronics
 VARIANT = os.environ.get("PCB_VARIANT", "base")
 KLIN_H = 36.0
 
@@ -48,6 +49,11 @@ P = dict(
 )
 if VARIANT == "klin":
     P["H"] = float(os.environ.get("PCB_H", KLIN_H))
+if VARIANT == "klin3":
+    # wedge 3: no display and no buttons on the main board; the board is glued/screwed on the rear wall of the cover
+    P["W"] = float(os.environ.get("PCB_W", 40.0))
+    P["H"] = float(os.environ.get("PCB_H", 24.0))
+K3 = VARIANT == "klin3"
 
 # ------------------------------------------------------------ footprints ----
 # Pads are given in the part's local COMPONENT VIEW (looking at the part
@@ -121,7 +127,8 @@ def place_all():
     # --- front side ---------------------------------------------------------
     # OLED: pin SDA is the upper pin; header pitch 2.54; centre of the 4 pins = module centre
     oy_top = D["oled_cy"] + 3.81
-    add("OLED", "oled", "top", D["oled_pin_x"], oy_top, 0, "SSD1306 128x32 module")
+    if not K3:
+        add("OLED", "oled", "top", D["oled_pin_x"], oy_top, 0, "SSD1306 128x32 module")
     # buttons left to right: "-", "run", "+" (klin: on a separate board, wired to the KEY pads)
     if VARIANT == "base":
         add("S3", "b3f", "top", D["btn_cx"][0], D["btn_cy"], 0, "B3F-4055 (-)")
@@ -195,7 +202,7 @@ NETS = {
 # These part numbers are used in the schematic of the project (see docs/schemat.md).
 REFS_BOTTOM = ["U1", "R1", "R2", "R3", "R4", "R5", "R6", "C1", "C2", "C3", "D1", "Q1", "SPK", "BAT"]
 
-if VARIANT == "klin":
+if VARIANT in ("klin", "klin3"):
     # S1..S3 live on the button board: S1 joins PB3 and GND, S2 joins PB4 and GND, S3 joins PB4 and R6 (to GND).
     # KEY pads: 1 = GND, 2 = PB3, 3 = PB4, 4 = S3 low side (R6 stays on the main board).
     NETS["GND"] = [p for p in NETS["GND"] if p[0] not in ("S1", "S2")] + [("KEY", "1")]
@@ -205,8 +212,17 @@ if VARIANT == "klin":
     REFS_BOTTOM = REFS_BOTTOM + ["KEY"]
 
 
+if K3:
+    # display module: 4 wires to the pads DISP 1..4 = SDA, SCL, VCC, GND (order of the module's header)
+    for net, pin, new in (("VCC", "OLED", "3"), ("GND", "OLED", "4"), ("SDA", "OLED", "1"), ("SCL", "OLED", "2")):
+        NETS[net] = [("DISP", new) if p[0] == pin else p for p in NETS[net]]
+    REFS_BOTTOM = REFS_BOTTOM + ["DISP"]
+
+
 def mount_holes():
     m, W, H = P["hole_margin"], P["W"], P["H"]
+    if K3:                                  # two screws on a diagonal (M2.5 into bosses of the cover)
+        return [(m, m), (W - m, H - m)]
     return [(m, m), (W - m, m), (m, H - m), (W - m, H - m)]
 
 
@@ -246,7 +262,8 @@ def top_bodies():
     """Rectangles on the front side under which no hole/joint of a back part may lie."""
     out = []
     ref = "OLED"
-    out.append((ref, body_rect(ref)))
+    if ref in PARTS:
+        out.append((ref, body_rect(ref)))
     for ref in ("S1", "S2", "S3"):
         if ref in PARTS:
             out.append((ref, body_rect(ref)))

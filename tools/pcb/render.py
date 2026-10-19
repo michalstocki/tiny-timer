@@ -113,6 +113,12 @@ def top_view(res):
     c.title, c.side_txt = ("Przód (strona TOP): wyświetlacz i przyciski" if B.VARIANT == "base" else "Przód (strona TOP): wyświetlacz (przyciski na osobnej płytce)"), "przodu (osie: x w prawo, y w górę, początek w lewym dolnym rogu)"
     outline(c)
     traces(c, res, 0, "#c9423b")
+    if B.K3:                        # no display and no buttons on this board: only pads/joints and the traces
+        c.title = "Przód (strona TOP, od strony ścianki): same pola i lut, elementy są z tyłu"
+        pads(c, B.PARTS.keys())
+        c.text(B.P["W"] / 2, B.P["H"] + 1.7, "GÓRA (ku wierzchołkowi obudowy)", 8, "#555")
+        dims(c)
+        return c.svg()
     # bodies on top
     ox0, oy0, ox1, oy1 = B.body_rect("OLED")
     c.rect(ox0, oy0, ox1, oy1, fill="#16335f", stroke="#0a1a33", sw=1.5, rx=2)

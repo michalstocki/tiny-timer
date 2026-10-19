@@ -1,6 +1,6 @@
 # Płytka drukowana: wariant „klin” (bez przycisków, 48 × 36 mm)
 
-Wariant **równoległy** do podstawowej płytki z [`docs/pcb/`](../pcb/README.md). Podstawowa płytka (48 × 50 mm, przyciski na płytce głównej, płaska obudowa z [`docs/obudowa/`](../obudowa/README.md)) zostaje bez zmian i rozwija się osobno. Ten wariant jest dla obudowy-klina ([`docs/obudowa-klin/`](../obudowa-klin/README.md)), w której przyciski są na **osobnej małej płytce** pod grzbietem. Tak samo jak wersja podstawowa: wersja robocza, **brak plików produkcyjnych**.
+Wariant **równoległy** do podstawowej płytki z [`docs/pcb/`](../pcb/README.md). Podstawowa płytka (48 × 50 mm, przyciski na płytce głównej, płaska obudowa z [`docs/obudowa/`](../obudowa/README.md)) zostaje bez zmian i rozwija się osobno. Ten wariant jest dla obudowy-klina ([`docs/obudowa-klin/`](../obudowa-klin/README.md)), w której przyciski są na **osobnej małej płytce** pod grzbietem. Tak samo jak wersja podstawowa: wersja robocza, **brak plików produkcyjnych**. Dalszy wariant bez OLED na płytce (40 × 24 mm): [`docs/pcb-klin3/`](../pcb-klin3/README.md).
 
 Generowanie (z jednego źródła `tools/pcb/`, wariant wybiera flaga):
 

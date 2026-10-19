@@ -225,6 +225,27 @@ def build():
     return "\n".join(L) + "\n"
 
 
+def build_k3():
+    """Short spec of the klin3 board (parts table); the full machine-readable data is in pcb-layout.json."""
+    L = ["# Płytka główna wariantu „klin 3” (bez wyświetlacza i przycisków): %s × %s mm" % (f(B.P["W"]), f(B.P["H"])), "",
+         "Wersja robocza, jeszcze nie do zamówienia. Dane maszynowe: `pcb-layout.json` (generowany `python3 tools/pcb/build.py --variant klin3`).",
+         "Układ współrzędnych: widok od strony TOP (od strony ścianki obudowy), początek w lewym dolnym rogu, +x w prawo, +y w górę, "
+         "+y wskazuje wierzchołek obudowy. Laminat %s mm; elementy stoją po stronie BOTTOM (do wnętrza obudowy), "
+         "po stronie TOP są tylko lut i końcówki nóżek (do 2,0 mm)." % f(B.P["thickness"]), "",
+         "Otwory montażowe M2,5 (Ø%s): %s." % (f(B.P["mount_d"]), ", ".join("(%s; %s)" % (f(x), f(y)) for x, y in B.mount_holes())), "",
+         "| Ozn. | Element | Prostokąt (x0, y0, x1, y1) | Wysokość [mm] |", "| --- | --- | --- | --- |"]
+    for ref in B.REFS_BOTTOM:
+        b = B.body_rect(ref)
+        h = 8.5 if ref == "U1" else B.FP[B.PARTS[ref]["fp"]]["height"]
+        L.append("| %s | %s | (%s) | %s |" % (ref, B.PARTS[ref]["value"], ", ".join(f(v) for v in b), f(h)))
+    L += ["", "Pola przewodów (wlutowane od strony elementów): DISP 1..4 = SDA, SCL, VCC, GND modułu wyświetlacza (żeńskie przewody "
+          "Dupont na listwie pinów modułu); KEY 1..4 = GND, PB3, PB4, dolna strona S3 (płytka przycisków); SPK głośnik; BAT bateria."]
+    return "\n".join(L) + "\n"
+
+
 def write(out):
     os.makedirs(out, exist_ok=True)
+    if B.K3:
+        open(os.path.join(out, "specyfikacja-plytki.md"), "w").write(build_k3())
+        return
     open(os.path.join(out, "specyfikacja-obudowy-dla-agenta.md"), "w").write(build())

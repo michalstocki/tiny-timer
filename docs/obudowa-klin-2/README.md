@@ -1,6 +1,6 @@
 # Obudowa minutnika: wariant „klin 2” (ogniwa w układzie trójkąta)
 
-Ta sama bryła i te same przyciski co w [`docs/obudowa-klin/`](../obudowa-klin/README.md) (leżący graniastosłup o podstawie trójkąta równobocznego, przyciski na zaokrąglonym wierzchołku, osobna płytka przycisków, zdejmowana pokrywa z elektroniką), ale **trzy ogniwa AAA leżą w układzie 2 + 1** zamiast w rzędzie, a baterie wkłada się **od prawego boku**, nie od spodu. Budowane tym samym skryptem [`tools/enclosure/build_wedge.py`](../../tools/enclosure/build_wedge.py) z przełącznikiem `TT_BATTERY`, z danych płytki wariantu „klin” ([`docs/pcb-klin/`](../pcb-klin/README.md)). Wariant 1 (rząd) zostaje bez zmian.
+Ta sama bryła i te same przyciski co w [`docs/obudowa-klin/`](../obudowa-klin/README.md) (leżący graniastosłup o podstawie trójkąta równobocznego, przyciski na zaokrąglonym wierzchołku, osobna płytka przycisków, zdejmowana pokrywa z elektroniką), ale **trzy ogniwa AAA leżą w układzie 2 + 1** zamiast w rzędzie, a baterie wkłada się **od prawego boku**, nie od spodu. Budowane tym samym skryptem [`tools/enclosure/build_wedge.py`](../../tools/enclosure/build_wedge.py) z przełącznikiem `TT_BATTERY`, z danych płytki wariantu „klin” ([`docs/pcb-klin/`](../pcb-klin/README.md)). Wariant 1 (rząd) zostaje bez zmian. Dalsza iteracja z ciaśniejszym upakowaniem (wyświetlacz osobno, płytka na tyle, ogniwa od góry, zatrzask zamiast wkrętów): [`docs/obudowa-klin-3/`](../obudowa-klin-3/README.md).
 
 ```bash
 TT_BATTERY=triangle /Applications/Blender.app/Contents/MacOS/Blender --background \
