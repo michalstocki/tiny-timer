@@ -13,8 +13,9 @@ Pierwsza i druga iteracja dotyczą wyglądu zewnętrznego, przycisków, koszyka 
 1. **Bez studni dla ATtiny.** Dostęp do układu jest po rozkręceniu obudowy.
 2. **Dwie części i wkręty.** Przednia czara trzyma płytkę, tylny blok trzyma koszyk i głośnik. Cztery wkręty M2,5 × 20 idą od tyłu. Po wykręceniu blok zdejmuje się, a tył płytki z gniazdem ATtiny jest w pełni odsłonięty ([07-otwarta-plytka.png](renders/07-otwarta-plytka.png), [08-rozlozona.png](renders/08-rozlozona.png)).
 3. **Margines klapki.** Klapka ma 3,5 mm od krawędzi obudowy po obu stronach w y i 8,2 mm od lewej krawędzi w x (wcześniej dochodziła prawie do krawędzi).
-4. **Zaokrąglenia.** Góra (front) R3,0, dół (tył) R1,5, narożniki pionowe R6. Mniejszy promień na dole zostawia płaskie pole pod klapkę i łby wkrętów.
-5. **Obrót układu o 90°.** Wyświetlacz jest równoległy do dłuższej krawędzi (76 mm). Ogniwa AAA leżą w poprzek wyświetlacza (wzdłuż krótszej krawędzi), kanały koszyka stoją obok siebie wzdłuż dłuższej krawędzi, a głośnik leży obok koszyka.
+4. **Zaokrąglenia.** Krawędź frontu R6,0, czyli taka sama jak krawędzie pionowe (narożniki są kuliste). Dół (tył) R1,5. Wnętrze czary jest zaokrąglone współśrodkowo (R4), więc grubość ścianki jest stała, ok. 1,6–2,0 mm. Mniejszy promień na dole zostawia płaskie pole pod klapkę i łby wkrętów.
+5. **Okno wyświetlacza z końcami w kształcie półkola (R5,3).** Zasłaniają rogi szkła, ale nie aktywny obszar (typowo 22,4 × 5,6 mm): jego róg leży ok. 0,7 mm wewnątrz łuku, a po uwzględnieniu ±0,3 mm położenia modułu zostaje ok. 0,4 mm. Aktywny obszar i jego środek to założenia ze specyfikacji, do sprawdzenia na module. Jeśli okaże się za ciasno, promień można zmniejszyć (parametr `R_WIN`).
+6. **Obrót układu o 90°.** Wyświetlacz jest równoległy do dłuższej krawędzi (76 mm). Ogniwa AAA leżą w poprzek wyświetlacza (wzdłuż krótszej krawędzi), kanały koszyka stoją obok siebie wzdłuż dłuższej krawędzi, a głośnik leży obok koszyka.
 
 ## Koncepcja: płaski stos
 

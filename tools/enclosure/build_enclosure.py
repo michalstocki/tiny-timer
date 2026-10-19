@@ -45,7 +45,7 @@ WALL = 2.0           # ścianki boczne
 PANEL = 1.6          # panel przedni
 GAP = 1.5            # luz płytki do ścianki komory (tolerancja zarysu ±0.3)
 R_OUT = 6.0          # promień pionowych narożników
-R_TOP = 3.0          # zaokrąglenie krawędzi frontu
+R_TOP = R_OUT        # zaokrąglenie krawędzi frontu: takie samo jak krawędzi pionowych
 R_BOT = 1.5          # zaokrąglenie krawędzi tyłu (większe zabierałoby miejsce klapce i łbom wkrętów)
 Z_PANEL_IN = 6.8     # wewnętrzna powierzchnia panelu (OLED 6.5, trzpień 7.3)
 Z_FRONT = Z_PANEL_IN + PANEL
@@ -92,6 +92,7 @@ SCREWS = [(XL + 4.3, 5.0), (XL + 4.3, BH - 5.0), (XR - 4.3, 5.0), (XR - 4.3, BH 
 
 CAP_R, CAP_FLANGE_R, CAP_TOP, CAP_BOT = 4.8, 5.9, Z_FRONT + 1.4, 6.0
 PANEL_HOLE_R = 5.1
+R_WIN = (GLASS[3] - GLASS[1] + 0.6) / 2 - 0.005   # półkole: promień = połowa wysokości okna (o 5 µm mniej, by uniknąć zdublowanych punktów)
 
 # ---------------------------------------------------------------- narzędzia
 scene = bpy.context.scene
@@ -180,10 +181,41 @@ def rrect_bm(x0, y0, z0, x1, y1, z1, r):
     return prism_bm(rrect_pts(x0, y0, x1, y1, r), z0, z1)
 
 
-def bevel_ring(bm, z, offset, segments):
-    edges = [e for e in bm.edges if all(abs(v.co.z - z) < 1e-6 for v in e.verts)]
-    bmesh.ops.bevel(bm, geom=edges, offset=offset, offset_type="OFFSET", segments=segments,
-                    profile=0.5, affect="EDGES")
+def loft_profile_bm(x0, y0, x1, y1, r_out, prof, min_r=0.3):
+    """Bryła warstwami: prof to lista (z, wcięcie od obrysu), od dołu do góry. Promień
+    narożnika w warstwie = r_out - wcięcie (powierzchnie współśrodkowe), nie mniej niż min_r."""
+    bm = bmesh.new()
+    rings = []
+    for z, d in prof:
+        pts = rrect_pts(x0 + d, y0 + d, x1 - d, y1 - d, max(r_out - d, min_r))
+        rings.append([bm.verts.new((x, y, z)) for x, y in pts])
+    n = len(rings[0])
+    for a_, b_ in zip(rings, rings[1:]):
+        for i in range(n):
+            j = (i + 1) % n
+            bm.faces.new((a_[i], a_[j], b_[j], b_[i]))
+    bm.faces.new(rings[0][::-1])
+    bm.faces.new(rings[-1])
+    return bm
+
+
+def top_arc(z_top, r, inset0, seg):
+    """łuk kołowy krawędzi górnej: od ściany (wcięcie inset0) do płaszczyzny z_top (wcięcie inset0 + r)"""
+    return [(z_top - r + r * math.sin(math.pi / 2 * k / seg), inset0 + r * (1 - math.cos(math.pi / 2 * k / seg)))
+            for k in range(seg + 1)]
+
+
+def loft_block_bm(x0, y0, x1, y1, z0, z1, r_out, r_bot, r_top, seg_bot=8, seg_top=24):
+    """Zaokrąglony prostopadłościan: pionowe narożniki r_out, krawędź dolna r_bot, górna r_top (0 = ostra)."""
+    prof = []
+    if r_bot > 0:
+        for k in range(seg_bot + 1):
+            f = math.pi / 2 * k / seg_bot
+            prof.append((z0 + r_bot * (1 - math.cos(f)), r_bot * (1 - math.sin(f))))
+    else:
+        prof.append((z0, 0.0))
+    prof += top_arc(z1, r_top, 0.0, seg_top) if r_top > 0 else [(z1, 0.0)]
+    return loft_profile_bm(x0, y0, x1, y1, r_out, prof)
 
 
 def evaluated_mesh(ob):
@@ -235,36 +267,41 @@ C_ORANGE = (0.95, 0.45, 0.15, 1)
 LID_C = (0.28, 0.30, 0.33, 1)
 
 # ---------------------------------------------------------------- czara przednia
-bm = rrect_bm(XL, Y0, Z_SPLIT, XR, Y1, Z_FRONT, R_OUT)
-bevel_ring(bm, Z_FRONT, R_TOP, 8)
+bm = loft_block_bm(XL, Y0, XR, Y1, Z_SPLIT, Z_FRONT, R_OUT, 0.0, R_TOP)
 front = finish("Obudowa_przod", bm, "Przod", C_BODY)
 
-# komora elektroniki otwarta od tyłu
-cut(front, finish("komora", rrect_bm(XL + WALL, Y_IN0, Z_SPLIT - 0.5, XR - WALL, Y_IN1, Z_PANEL_IN, 4.0), "tmp", (1,) * 4))
+# komora elektroniki otwarta od tyłu; sufit zaokrąglony współśrodkowo z frontem (grubość ścianki stała)
+R_IN = R_TOP - WALL
+cavity_prof = [(Z_SPLIT - 0.5, WALL), (Z_PANEL_IN - R_IN, WALL)] + top_arc(Z_PANEL_IN, R_IN, WALL, 24)[1:]
+cut(front, finish("komora", loft_profile_bm(XL, Y0, XR, Y1, R_OUT, cavity_prof), "tmp", (1,) * 4))
 
 # okno OLED (szkło + 0.3 mm luzu na stronę) i otwory pod kapsle
-cut(front, box("okno", GLASS[0] - 0.3, GLASS[1] - 0.3, Z_PANEL_IN - 0.5, GLASS[2] + 0.3, GLASS[3] + 0.3, Z_FRONT + 0.5))
+# końce okna to półkola (R_WIN); zasłaniają rogi szkła, ale nie aktywny obszar 22.4 x 5.6 mm (margines ok. 0.7 mm)
+cut(front, finish("okno", rrect_bm(GLASS[0] - 0.3, GLASS[1] - 0.3, Z_PANEL_IN - 0.5, GLASS[2] + 0.3, GLASS[3] + 0.3, Z_FRONT + 0.5, R_WIN), "tmp", (1,) * 4))
 for k, (bx, by) in BUTTONS.items():
     cut(front, cyl("otw", bx, by, Z_PANEL_IN - 0.5, Z_FRONT + 0.5, PANEL_HOLE_R))
 
-# słupki płytki (od frontu), otwór prowadzący pod M2.5
+# słupki płytki (od frontu) i słupki pod wkręty łączące; przycięte do zewnętrznej powierzchni czary,
+# bo przy dużym zaokrągleniu frontu przy ściankach powierzchnia zewnętrzna jest niżej niż sufit
+# (słupki sięgają ponad front i są przycinane przez INTERSECT, dzięki czemu nie ma styku wzdłuż linii)
+feat = None
 for hx, hy, _ in HOLES:
-    union(front, cyl("slupek", hx, hy, 0.0, Z_PANEL_IN + 0.3, 2.9, seg=32))
+    p_ = cyl("slupek", hx, hy, 0.0, Z_FRONT + 0.5, 2.9, seg=32)
+    feat = p_ if feat is None else (union(feat, p_) or feat)
+for sx, sy in SCREWS:
+    union(feat, cyl("boss", sx, sy, Z_SPLIT, Z_FRONT + 0.5, BOSS_R, seg=32))
+boolean(feat, finish("obrys", loft_block_bm(XL, Y0, XR, Y1, Z_SPLIT, Z_FRONT, R_OUT, 0.0, R_TOP), "tmp", (1,) * 4), "INTERSECT")
+union(front, feat)
 for hx, hy, _ in HOLES:
     cut(front, cyl("pilot", hx, hy, -0.1, 5.2, 1.05, seg=24))
-
-# słupki pod wkręty łączące czarę z blokiem (sięgają płaszczyzny podziału)
-for sx, sy in SCREWS:
-    union(front, cyl("boss", sx, sy, Z_SPLIT, Z_PANEL_IN + 0.3, BOSS_R, seg=32))
 for sx, sy in SCREWS:
     cut(front, cyl("pilot_w", sx, sy, Z_SPLIT - 0.5, Z_SPLIT + SCREW_PILOT_DEPTH, SCREW_PILOT_R, seg=24))
 
 # napis nad wyświetlaczem (grawer 0.4 mm)
-cut(front, text_cutter("TINY TIMER", 5.0, BW / 2, 45.5, Z_FRONT - 0.4, 1.0))
+cut(front, text_cutter("TINY TIMER", 5.0, BW / 2, 44.5, Z_FRONT - 0.4, 1.0))
 
 # ---------------------------------------------------------------- blok tylny
-bm = rrect_bm(XL, Y0, Z_BACK, XR, Y1, Z_SPLIT, R_OUT)
-bevel_ring(bm, Z_BACK, R_BOT, 4)
+bm = loft_block_bm(XL, Y0, XR, Y1, Z_BACK, Z_SPLIT, R_OUT, R_BOT, 0.0)
 rear = finish("Obudowa_tyl", bm, "Tyl", C_BODY)
 
 # koszyk: trzy kanały otwarte do tyłu, dzielniki, okno na baterie, wpust klapki
@@ -475,6 +512,17 @@ for ob in bpy.data.objects:
         bsdf.inputs["Base Color"].default_value = ob.color
         bsdf.inputs["Roughness"].default_value = 0.55
         ob.data.materials.append(mat)
+
+
+def smooth(ob):
+    """gładkie cieniowanie, ostre krawędzie tylko powyżej 35° (zaokrąglenia przestają wyglądać jak fasety)"""
+    ob.data.shade_smooth()
+    ob.data.set_sharp_from_angle(angle=math.radians(35))
+
+
+for ob in bpy.data.objects:
+    if ob.type == "MESH":
+        smooth(ob)
 scene.render.resolution_x, scene.render.resolution_y = 1500, 1100
 scene.render.image_settings.file_format = "PNG"
 scene.view_settings.view_transform = "Standard"
@@ -538,6 +586,7 @@ def make_section(axis, pos):
             else:
                 c = box("pl", pos - big, -big, -big, pos, big, big)
             boolean(dup, c)
+            smooth(dup)
             out.append(dup)
     GROUPS["Przekroj"] = out
     return out
