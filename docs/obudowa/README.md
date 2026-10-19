@@ -1,5 +1,7 @@
 # Obudowa minutnika: iteracja 2
 
+Wariant alternatywny, oparty na szkicu klina z osobną płytką przycisków: [`docs/obudowa-klin/`](../obudowa-klin/README.md).
+
 Model parametryczny w Blenderze 5.2, w milimetrach (1 jednostka = 1 mm), zbudowany skryptem [`tools/enclosure/build_enclosure.py`](../../tools/enclosure/build_enclosure.py) z danych płytki [`docs/pcb/pcb-layout.json`](../pcb/pcb-layout.json). Zmiana płytki w kolejnej iteracji wymaga tylko podmiany tego pliku i ponownego uruchomienia skryptu.
 
 ```bash
