@@ -1,5 +1,7 @@
 # Obudowa minutnika: wariant „klin 3.1”
 
+> **Uwaga:** zaczep zatrzasku jest tu skierowany do wnętrza, więc wciśnięcie języka (punkt 2) wciska zaczep głębiej w rowek. Zwolnić go można tylko, odciągając język na zewnątrz. Na pochyłej ściance „płaska” ścianka zaczepu działa jak skos 60° względem kierunku zdejmowania, a zatrzask jest tylko jeden, przy lewym końcu. Poprawione w [klinie 4](../obudowa-klin-4/README.md) (zatrzaski przy podstawie, szew tyłu na narożniku, mniejszy przekrój).
+
 Poprawki do [klina 3](../obudowa-klin-3/README.md) po uwagach właściciela (plik koncepcyjny [`obudowa-klin-3.1-concept.blend`](../obudowa-klin-3/obudowa-klin-3.1-concept.blend)). Klin 3 zostaje bez zmian.
 
 ```bash

@@ -670,16 +670,17 @@
   }
  },
  "button_board": {
-  "note": "separate board with the 3 buttons, wired to the KEY pads of the main board",
+  "note": "separate board with the 3 buttons, wired to the KEY pads of the main board; fits a 2.54 mm perfboard",
   "width": 50.0,
   "depth": 16.0,
   "thickness": 1.6,
   "corner_radius": 2.0,
+  "grid": 2.54,
   "buttons": [
    {
     "label": "minus",
     "ref": "S3",
-    "x": 7.0,
+    "x": 7.22,
     "y": 8.0
    },
    {
@@ -691,19 +692,19 @@
    {
     "label": "plus",
     "ref": "S2",
-    "x": 43.0,
+    "x": 42.78,
     "y": 8.0
    }
   ],
   "mounting_holes": [
    {
-    "x": 15.0,
-    "y": 8.0,
+    "x": 16.11,
+    "y": 2.92,
     "diameter": 2.2
    },
    {
-    "x": 35.0,
-    "y": 8.0,
+    "x": 33.89,
+    "y": 13.08,
     "diameter": 2.2
    }
   ],

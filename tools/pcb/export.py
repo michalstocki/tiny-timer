@@ -52,12 +52,17 @@ def layout_json_k3():
         outline=[B.P["oled_len"], B.P["oled_h"]], thickness=B.P["oled_thickness"], glass=[B.P["glass_w"], B.P["glass_h"]],
         pin_to_end=B.P["oled_pin_to_edge"], glass_to_pin=B.P["glass_to_pin"], header_standoff=B.P["oled_standoff"],
         pins=["SDA", "SCL", "VCC", "GND"], wires=dict(DISP1="SDA", DISP2="SCL", DISP3="VCC", DISP4="GND"))
+    # buttons 7 grid steps apart (17.78 mm) so the board can be a 2.54 mm perfboard; B3F legs (12.5 x 5.0) sit in a
+    # 5 x 2 grid rectangle, so button centres are at half a grid step in x and the M2 holes midway between them land on
+    # grid points; the holes are 2 grid steps off the button row (diagonally), so the enclosure posts clear the run cap flange
+    pitch, g = 7 * 2.54, 2.54
     d["button_board"] = dict(
-        note="separate board with the 3 buttons, wired to the KEY pads of the main board",
-        width=50.0, depth=16.0, thickness=B.P["thickness"], corner_radius=2.0,
-        buttons=[dict(label="minus", ref="S3", x=7.0, y=8.0), dict(label="run", ref="S1", x=25.0, y=8.0),
-                 dict(label="plus", ref="S2", x=43.0, y=8.0)],
-        mounting_holes=[dict(x=15.0, y=8.0, diameter=2.2), dict(x=35.0, y=8.0, diameter=2.2)],
+        note="separate board with the 3 buttons, wired to the KEY pads of the main board; fits a 2.54 mm perfboard",
+        width=50.0, depth=16.0, thickness=B.P["thickness"], corner_radius=2.0, grid=2.54,
+        buttons=[dict(label="minus", ref="S3", x=round(25.0 - pitch, 2), y=8.0), dict(label="run", ref="S1", x=25.0, y=8.0),
+                 dict(label="plus", ref="S2", x=round(25.0 + pitch, 2), y=8.0)],
+        mounting_holes=[dict(x=round(25.0 - pitch / 2, 2), y=round(8.0 - 2 * g, 2), diameter=2.2),
+                        dict(x=round(25.0 + pitch / 2, 2), y=round(8.0 + 2 * g, 2), diameter=2.2)],
         wires=dict(KEY1="GND (S1, S2 common)", KEY2="PB3 (S1 run)", KEY3="PB4 (S2 plus, S3 minus)",
                    KEY4="S3 low side (to R6 on the main board)"))
     return d
