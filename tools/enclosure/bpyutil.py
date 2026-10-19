@@ -191,6 +191,33 @@ def clip_top(poly, zc):
     return out
 
 
+def convex_hull(points):
+    """Otoczka wypukła (Andrew), wynik CCW."""
+    pts = sorted(set((round(x, 6), round(y, 6)) for x, y in points))
+    if len(pts) < 3:
+        return pts
+
+    def cross(o, a, b):
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+    lo, up = [], []
+    for q in pts:
+        while len(lo) >= 2 and cross(lo[-2], lo[-1], q) <= 0:
+            lo.pop()
+        lo.append(q)
+    for q in reversed(pts):
+        while len(up) >= 2 and cross(up[-2], up[-1], q) <= 0:
+            up.pop()
+        up.append(q)
+    return lo[:-1] + up[:-1]
+
+
+def discs_hull(centers, r, seg=24):
+    """Otoczka kół o promieniu r (zaokrąglony wielokąt wokół środków)."""
+    pts = [(cx + r * math.cos(2 * math.pi * k / seg), cy + r * math.sin(2 * math.pi * k / seg))
+           for cx, cy in centers for k in range(seg)]
+    return convex_hull(pts)
+
+
 def inside_convex(poly, p, margin=0.0):
     """Czy punkt leży we wnętrzu wypukłego wielokąta CCW (co najmniej margin od krawędzi)."""
     n = len(poly)

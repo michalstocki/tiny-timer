@@ -35,7 +35,7 @@ from mathutils import Matrix, Vector
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import bpyutil as U
-from bpyutil import (apply_matrix, bevel, box, box_bm, clip_top, coll, cut, cyl, cyl_bm, extrude_x_bm, fillet_poly,
+from bpyutil import (apply_matrix, bevel, box, box_bm, clip_top, coll, cut, cyl, cyl_bm, discs_hull, extrude_x_bm, fillet_poly,
                      finish, inside_convex, intersect, manifold_report, offset_poly, prism_bm, rrect_bm, rrect_pts,
                      union, write_stl)
 
@@ -43,7 +43,10 @@ ROOT = Path(__file__).resolve().parents[2]
 # domyślnie płytka wariantu "klin" (bez przycisków, 48 x 36 mm); TT_LAYOUT pozwala zbudować obudowę z innej płytki,
 # np. TT_LAYOUT=docs/pcb/pcb-layout.json (podstawowa 48 x 50 mm), a TT_OUT zmienia katalog wyjściowy
 LAYOUT = ROOT / os.environ.get("TT_LAYOUT", "docs/pcb-klin/pcb-layout.json")
-OUT = ROOT / os.environ.get("TT_OUT", "docs/obudowa-klin")
+# układ ogniw: "row" = 3 ogniwa obok siebie na podstawie, wkładane od spodu (klapka od spodu);
+# "triangle" = 3 ogniwa w układzie 2 + 1 (trójkąt) na podstawie, wkładane od prawego boku (pokrywka w kształcie trójkąta)
+BATTERY = os.environ.get("TT_BATTERY", "row")
+OUT = ROOT / os.environ.get("TT_OUT", "docs/obudowa-klin-2" if BATTERY == "triangle" else "docs/obudowa-klin")
 RENDERS = OUT / "renders"
 
 # ---------------------------------------------------------------- parametry
@@ -86,6 +89,14 @@ BAT_TOP = Z_CH_TOP + 1.6          # sufit koszyka 1,6
 TRAY_W = 3 * CH_W + 2 * DIV
 BAT_W = TRAY_W + 2 * SIDE
 CELL_ZC = Z_POCKET + CELL_D / 2
+
+# układ trójkątny 2 + 1: kanały r = 5,5 (ogniwo 5,25 + luz), osie w odległości B_PITCH (ścianka między kanałami 1,6),
+# dwa ogniwa na podłodze, trzecie nad nimi; obudowa kosza (otoczka kół B_RH) jest dolepiona do podłogi
+B_PITCH, B_RCH, B_WALL = 12.6, 5.5, 1.6
+B_RH = B_RCH + B_WALL
+B_RAP, B_RPLUG = 6.3, 6.0                                 # otwór w boku i wtyczka pokrywki (luz 0,3)
+B_ZL = Z_POCKET + B_RCH                                   # oś dolnych ogniw
+B_ZU = B_ZL + B_PITCH * math.sqrt(3) / 2                  # oś górnego ogniwa
 
 # głośnik Ø26,5 x 9 (ramka 4) przy lewym boku
 SPK_D, SPK_H, SPK_FR, SPK_POCKET = 26.5, 9.0, 4.0, 27.0
@@ -147,15 +158,12 @@ def envelope(s0):
 
 
 def feasible(side, s0):
-    """Sprawdza, czy w trójkącie o boku `side` mieszczą się: płytka z elementami (nachylona), koszyk
-    (nad którym nic nie wisi) i płytka przycisków pod wierzchołkiem."""
+    """Sprawdza, czy w trójkącie o boku `side` mieszczą się: płytka z elementami (nachylona), płytka przycisków
+    pod wierzchołkiem i ogniwa (BATTERY: rząd z nieruszanym obszarem nad nimi albo trójkąt 2 + 1)."""
     pr = profile(side)
     inner = pr["inner"]
     pts = envelope(s0)
     if any(not inside_convex(inner, p) for p in pts):
-        return None
-    yb = max([p[0] for p in pts if p[1] < BAT_ZTOP_CLEAR], default=0.0) + 0.5
-    if any(not inside_convex(inner, p) for p in [(yb, 2.0), (yb + BAT_W, 2.0), (yb, BAT_TOP), (yb + BAT_W, BAT_TOP)]):
         return None
     yc, zb = side / 2, pr["z_ceil"] - BZ_CEIL
     z_low = zb - BT - 1.9 - 0.5                      # nóżki przycisków pod laminatem
@@ -164,7 +172,28 @@ def feasible(side, s0):
             return None
     if any(yc - BB_D / 2 - 0.5 <= p[0] <= yc + BB_D / 2 + 0.5 and z_low <= p[1] <= zb + 4.6 for p in pts):
         return None
-    return dict(side=side, s0=s0, yb=yb)
+    if BATTERY == "row":
+        yb = max([p[0] for p in pts if p[1] < BAT_ZTOP_CLEAR], default=0.0) + 0.5
+        if any(not inside_convex(inner, p) for p in [(yb, 2.0), (yb + BAT_W, 2.0), (yb, BAT_TOP), (yb + BAT_W, BAT_TOP)]):
+            return None
+        return dict(side=side, s0=s0, yb=yb)
+    # trójkąt 2 + 1: znajdź położenie y środka zestawu (dolne ogniwa na podłodze)
+    bb = [(yc - BB_D / 2 - 0.5, z_low), (yc + BB_D / 2 + 0.5, z_low), (yc - BB_D / 2 - 0.5, zb + 4.6), (yc + BB_D / 2 + 0.5, zb + 4.6)]
+    for k in range(int(side * 0.7 / 0.5)):
+        y0 = side * 0.15 + k * 0.5
+        cs = [(y0 - B_PITCH / 2, B_ZL), (y0 + B_PITCH / 2, B_ZL), (y0, B_ZU)]
+        if not all(inside_convex(inner, q, B_RCH - 0.5) for q in cs):
+            continue
+        if any(min(math.hypot(p[0] - q[0], p[1] - q[1]) for q in cs) < B_RH for p in pts):
+            continue
+        if any(y0 - B_PITCH / 2 - B_RH <= p[0] <= y0 + B_PITCH / 2 + B_RH and p[1] < B_ZL for p in pts):
+            continue
+        if any(min(math.hypot(px - q[0], pz - q[1]) for q in cs) < B_RH for px, pz in bb):
+            continue
+        if bb[0][0] - B_RH <= y0 <= bb[1][0] + B_RH and bb[0][1] - B_RH <= B_ZU <= bb[2][1] + B_RH:
+            continue
+        return dict(side=side, s0=s0, yc=y0)
+    return None
 
 
 def solve_side():
@@ -177,7 +206,10 @@ def solve_side():
 
 
 SOL = solve_side()
-SIDE_LEN, S0, YB = SOL["side"], SOL["s0"], SOL["yb"]
+SIDE_LEN, S0 = SOL["side"], SOL["s0"]
+YB = SOL.get("yb")                                    # rząd: początek kosza w Y
+B_YC = SOL.get("yc")                                  # trójkąt: oś symetrii zestawu w Y
+BCELLS = None if B_YC is None else [(B_YC - B_PITCH / 2, B_ZL), (B_YC + B_PITCH / 2, B_ZL), (B_YC, B_ZU)]
 PR = profile(SIDE_LEN)
 B, H, Z_TOP, Z_CEIL = SIDE_LEN, PR["H"], PR["z_top"], PR["z_ceil"]
 OUTER, INNER, INNER_FULL = PR["outer"], PR["inner"], PR["inner_full"]
@@ -306,14 +338,18 @@ def boxuv(name, u0, u1, v0, v1, z0, z1, group="tmp", color=T):
 # koszyk (pełny blok od podstawy) zostaje w materiale: odejmuję go od wnętrza zamiast dokładać do gotowej
 # powłoki (dolna ściana bloku leżałaby w jednej płaszczyźnie z podstawą, co daje zdegenerowane krawędzie)
 TX0, TX1 = X_BLOCK0, UB + 1.2
-V0 = YB + SIDE
-CH_V = [(V0 + i * (CH_W + DIV), V0 + i * (CH_W + DIV) + CH_W) for i in range(3)]
-CH_VC = [(a + b) / 2 for a, b in CH_V]
-V1 = CH_V[2][1]
+if BATTERY == "row":
+    V0 = YB + SIDE
+    CH_V = [(V0 + i * (CH_W + DIV), V0 + i * (CH_W + DIV) + CH_W) for i in range(3)]
+    CH_VC = [(a + b) / 2 for a, b in CH_V]
+    V1 = CH_V[2][1]
 shell = outer_solid()
 bevel(shell, R_END, segments=6)
 cavity = tmp("wnetrze", extrude_x_bm(INNER, WE, L - WE))
-cut(cavity, boxuv("koszyk", TX0, TX1, YB, YB + BAT_W, 0.0, BAT_TOP))
+if BATTERY == "row":
+    cut(cavity, boxuv("koszyk", TX0, TX1, YB, YB + BAT_W, 0.0, BAT_TOP))
+else:                                                 # obudowa kosza: otoczka trzech kanałów, do prawego boku
+    cut(cavity, tmp("koszyk", extrude_x_bm(discs_hull(BCELLS, B_RH), TX0, L - WE)))
 cut(shell, cavity)
 chk("powłoka", shell)
 
@@ -369,26 +405,45 @@ for y, z in BOSSES:
 chk("pokrywa: bosy", cover)
 
 # ================================================================ KORPUS
-# koszyk: trzy kanały otwarte od spodu, okno w podłodze, wpust klapki
-for va, vb in CH_V:
-    cut(body, boxuv("kanal", UA, UB, va, vb, Z_POCKET, Z_CH_TOP))
-chk("kanały", body)
-WIN_U, WIN_V = (UA + 1.0, UB - 1.0), (CH_V[0][0] + 0.05, V1 - 0.05)
-cut(body, boxuv("okno_bat", *WIN_U, *WIN_V, -0.5, Z_POCKET + 0.3))
-REC_U, REC_V = (WIN_U[0] - 1.0, WIN_U[1] + 1.0), (WIN_V[0] - 0.9, WIN_V[1] + 0.9)
-cut(body, boxuv("wpust_bat", *REC_U, *REC_V, -0.5, 0.8))
-chk("okno+wpust", body)
-d1, d2 = (CH_V[0][1], CH_V[1][0]), (CH_V[1][1], CH_V[2][0])
-cut(body, boxuv("sz1", UB - 0.7, UB + 0.1, d1[0] - 0.2, d1[1] + 0.2, Z_POCKET, Z_CH_TOP),
-    boxuv("sz2", UA - 0.1, UA + 0.7, d2[0] - 0.2, d2[1] + 0.2, Z_POCKET, Z_CH_TOP))
-HK_U = (UA + 2.5, UA + 6.0)
-cut(body, boxuv("zat1", HK_U[0] - 0.5, HK_U[1] + 0.5, CH_V[0][0] - 0.6, CH_V[0][0] + 0.2, Z_POCKET + 1.2, Z_POCKET + 3.2),
-    boxuv("zat2", HK_U[0] - 0.5, HK_U[1] + 0.5, V1 - 0.2, V1 + 0.6, Z_POCKET + 1.2, Z_POCKET + 3.2))
-chk("szczeliny+zatrzaski", body)
-cut(body, cyl("palec", UB + 2.0, (WIN_V[0] + WIN_V[1]) / 2, -0.5, 0.8, 4.5, seg=40))
-# otwory na przewody baterii w suficie koszyka (minus przy lewym końcu kanału 1, plus przy prawym kanału 3)
-cut(body, cyl("prz_minus", UA + 2.5, CH_VC[0], Z_CH_TOP - 0.5, BAT_TOP + 0.5, 1.5, seg=24),
-    cyl("prz_plus", UB - 2.5, CH_VC[2], Z_CH_TOP - 0.5, BAT_TOP + 0.5, 1.5, seg=24))
+if BATTERY == "row":
+    # koszyk: trzy kanały otwarte od spodu, okno w podłodze, wpust klapki
+    for va, vb in CH_V:
+        cut(body, boxuv("kanal", UA, UB, va, vb, Z_POCKET, Z_CH_TOP))
+    chk("kanały", body)
+    WIN_U, WIN_V = (UA + 1.0, UB - 1.0), (CH_V[0][0] + 0.05, V1 - 0.05)
+    cut(body, boxuv("okno_bat", *WIN_U, *WIN_V, -0.5, Z_POCKET + 0.3))
+    REC_U, REC_V = (WIN_U[0] - 1.0, WIN_U[1] + 1.0), (WIN_V[0] - 0.9, WIN_V[1] + 0.9)
+    cut(body, boxuv("wpust_bat", *REC_U, *REC_V, -0.5, 0.8))
+    chk("okno+wpust", body)
+    d1, d2 = (CH_V[0][1], CH_V[1][0]), (CH_V[1][1], CH_V[2][0])
+    cut(body, boxuv("sz1", UB - 0.7, UB + 0.1, d1[0] - 0.2, d1[1] + 0.2, Z_POCKET, Z_CH_TOP),
+        boxuv("sz2", UA - 0.1, UA + 0.7, d2[0] - 0.2, d2[1] + 0.2, Z_POCKET, Z_CH_TOP))
+    HK_U = (UA + 2.5, UA + 6.0)
+    cut(body, boxuv("zat1", HK_U[0] - 0.5, HK_U[1] + 0.5, CH_V[0][0] - 0.6, CH_V[0][0] + 0.2, Z_POCKET + 1.2, Z_POCKET + 3.2),
+        boxuv("zat2", HK_U[0] - 0.5, HK_U[1] + 0.5, V1 - 0.2, V1 + 0.6, Z_POCKET + 1.2, Z_POCKET + 3.2))
+    chk("szczeliny+zatrzaski", body)
+    cut(body, cyl("palec", UB + 2.0, (WIN_V[0] + WIN_V[1]) / 2, -0.5, 0.8, 4.5, seg=40))
+    # otwory na przewody baterii w suficie koszyka (minus przy lewym końcu kanału 1, plus przy prawym kanału 3)
+    cut(body, cyl("prz_minus", UA + 2.5, CH_VC[0], Z_CH_TOP - 0.5, BAT_TOP + 0.5, 1.5, seg=24),
+        cyl("prz_plus", UB - 2.5, CH_VC[2], Z_CH_TOP - 0.5, BAT_TOP + 0.5, 1.5, seg=24))
+
+else:
+    # koszyk 2 + 1: trzy osobne kanały, otwór w prawym boku w kształcie zaokrąglonego trójkąta (kanały są większe niż ogniwa),
+    # przewody baterii przez otwory nad końcami kanałów, otwór prowadzący pod śrubę pokrywki
+    for cy_, cz_ in BCELLS:
+        cut(body, xcyl("kanal", cy_, cz_, UA, UB, B_RCH, 48))
+    chk("kanały", body)
+    cut(body, tmp("apertura", extrude_x_bm(discs_hull(BCELLS, B_RAP), UB - 0.3, L + 0.5)))
+    chk("apertura", body)
+    cut(body, cyl("prz_minus", UA + 2.5, BCELLS[0][0], B_ZL, B_ZL + B_RH + 0.5, 1.5, seg=24),
+        cyl("prz_plus", UB - 2.5, BCELLS[2][0], B_ZU, B_ZU + B_RH + 0.5, 1.5, seg=24))
+    B_CY = sum(c[0] for c in BCELLS) / 3                # środek ciężkości zestawu: tu leży śruba pokrywki
+    B_CZ = sum(c[1] for c in BCELLS) / 3
+    cut(body, xcyl("pilot_pok", B_CY, B_CZ, UB - 6.0, UB, 0.85, 20))
+    # szczeliny w przegrodach między kanałami pod płytki łączące (B-C przy lewym końcu, A-B przy prawym)
+    cut(body, tmp("sz_niski", extrude_x_bm(discs_hull([BCELLS[1], BCELLS[2]], 4.8, 24), UA - 0.1, UA + 0.7)),
+        tmp("sz_wysoki", extrude_x_bm(discs_hull([BCELLS[0], BCELLS[1]], 4.8, 24), UB - 0.7, UB + 0.1)))
+    chk("szczeliny styków", body)
 
 # głośnik: pierścień oporowy przy lewym boku i otwory dźwiękowe w trójkątnym boku
 ring = xcyl("pierscien", SPK_CY, SPK_CZ, WE - 0.2, WE + RING_L, SPK_POCKET / 2 + 1.9, 96)
@@ -414,16 +469,26 @@ for y, z in BOSSES:
         xcyl("w_otw_p", y, z, L - WE - 0.1, L + 0.5, 1.35, 24), xcyl("w_lb_p", y, z, L - 1.0, L + 0.5, 2.4, 32))
 chk("wkręty boczne", body)
 
-# ================================================================ KLAPKA KOSZYKA
-lid = finish("Klapka_baterii", box_bm(REC_U[0] + 0.25, REC_V[0] + 0.25, 0.0, REC_U[1] - 0.25, REC_V[1] - 0.25, 0.8),
-             "Klapka", LID_C)
-union(lid, boxuv("wtyk", WIN_U[0] + 0.25, WIN_U[1] - 0.25, WIN_V[0] + 0.25, WIN_V[1] - 0.25, 0.8, Z_POCKET))
-vl, vh = WIN_V[0] + 0.25, WIN_V[1] - 0.25
-union(lid,
-      boxuv("jezyk1", *HK_U, vl, vl + 0.8, Z_POCKET, Z_POCKET + 3.0),
-      boxuv("zab1", *HK_U, CH_V[0][0] - 0.4, vl + 0.1, Z_POCKET + 1.4, Z_POCKET + 2.9),
-      boxuv("jezyk2", *HK_U, vh - 0.8, vh, Z_POCKET, Z_POCKET + 3.0),
-      boxuv("zab2", *HK_U, vh - 0.1, V1 + 0.4, Z_POCKET + 1.4, Z_POCKET + 2.9))
+# ================================================================ KLAPKA / POKRYWKA KOSZYKA
+if BATTERY == "row":
+    lid = finish("Klapka_baterii", box_bm(REC_U[0] + 0.25, REC_V[0] + 0.25, 0.0, REC_U[1] - 0.25, REC_V[1] - 0.25, 0.8),
+                 "Klapka", LID_C)
+    union(lid, boxuv("wtyk", WIN_U[0] + 0.25, WIN_U[1] - 0.25, WIN_V[0] + 0.25, WIN_V[1] - 0.25, 0.8, Z_POCKET))
+    vl, vh = WIN_V[0] + 0.25, WIN_V[1] - 0.25
+    union(lid,
+          boxuv("jezyk1", *HK_U, vl, vl + 0.8, Z_POCKET, Z_POCKET + 3.0),
+          boxuv("zab1", *HK_U, CH_V[0][0] - 0.4, vl + 0.1, Z_POCKET + 1.4, Z_POCKET + 2.9),
+          boxuv("jezyk2", *HK_U, vh - 0.8, vh, Z_POCKET, Z_POCKET + 3.0),
+          boxuv("zab2", *HK_U, vh - 0.1, V1 + 0.4, Z_POCKET + 1.4, Z_POCKET + 2.9))
+
+else:
+    # pokrywka w prawym boku: wtyczka w kształcie zaokrąglonego trójkąta (miniatura boku), śruba M2 w środku zestawu,
+    # licowana z zaokrągleniem krawędzi boku (wtyczka przycięta do obrysu z R_END)
+    lid = finish("Klapka_baterii", extrude_x_bm(discs_hull(BCELLS, B_RPLUG), UB, L + 1.0), "Klapka", LID_C)
+    end_shape = outer_solid()
+    bevel(end_shape, R_END, segments=6)
+    intersect(lid, end_shape)
+    cut(lid, xcyl("sruba", B_CY, B_CZ, UB - 0.5, L + 1.5, 1.1, 20), xcyl("sruba_lb", B_CY, B_CZ, L - 1.4, L + 1.5, 2.2, 32))
 
 # ================================================================ KAPSLE (w układzie płytki przycisków)
 caps = []
@@ -463,8 +528,9 @@ for k, bx in BTN_X.items():
 # ================================================================ STYKI, OGNIWA (podgląd)
 C_NICKEL, C_CELL, C_GOLD = (0.78, 0.74, 0.62, 1), (0.20, 0.42, 0.72, 1), (0.85, 0.65, 0.20, 1)
 SPR_R = 3.0
+CELLS = [(vc, CELL_ZC) for vc in CH_VC] if BATTERY == "row" else BCELLS      # środki ogniw (y, z)
 swap = [False, True, False]          # ogniwo 2 odwrócone (szereg)
-for i, vc in enumerate(CH_VC):
+for i, (cy_, cz_) in enumerate(CELLS):
     if not swap[i]:
         c0 = UA + 6.0
         c1 = c0 + CELL_L
@@ -473,29 +539,41 @@ for i, vc in enumerate(CH_VC):
         c0 = UA + 0.5
         c1 = c0 + CELL_L
         body_u, nub_u = (c0 + 0.8, c1), (c0, c0 + 0.8)
-    finish(f"AAA_{i + 1}", cyl_bm(vc, CELL_ZC, body_u[0], body_u[1], CELL_D / 2, axis="X"), "Baterie", C_CELL)
-    finish(f"AAA_{i + 1}_plus", cyl_bm(vc, CELL_ZC, nub_u[0], nub_u[1], 2.0, axis="X"), "Baterie", C_GOLD)
+    finish(f"AAA_{i + 1}", cyl_bm(cy_, cz_, body_u[0], body_u[1], CELL_D / 2, axis="X"), "Baterie", C_CELL)
+    finish(f"AAA_{i + 1}_plus", cyl_bm(cy_, cz_, nub_u[0], nub_u[1], 2.0, axis="X"), "Baterie", C_GOLD)
 
 
-def plate(name, u_end, va, vb):
+def plate(name, u_end, ca, cb=None):
+    """Płytka styku 0,5 mm przy końcu wnęki: pasek 9 mm wzdłuż odcinka ca-cb (albo kwadrat 9 x 9 dla jednego ogniwa)."""
+    cb = cb or ca
+    (y1, z1), (y2, z2) = ca, cb
+    d = math.hypot(y2 - y1, z2 - z1)
+    ang = math.atan2(z2 - z1, y2 - y1) if d > 0 else 0.0
+    hl, hw = d / 2 + 4.5, 4.5
+    cy_, cz_ = (y1 + y2) / 2, (z1 + z2) / 2
+    if BATTERY == "row":
+        pts = [(cy_ + x * math.cos(ang) - y * math.sin(ang), cz_ + x * math.sin(ang) + y * math.cos(ang))
+               for x, y in ((-hl, -hw), (hl, -hw), (hl, hw), (-hl, hw))]
+    else:                                            # okrągłe kanały: płytka jak pastylka (otoczka kół r = 4,5)
+        pts = discs_hull([ca, cb], 4.5, 24)
     ua, ub = (u_end, u_end + 0.5) if u_end == UA else (u_end - 0.5, u_end)
-    return box(name, ua, va, CELL_ZC - 4.5, ub, vb, CELL_ZC + 4.5, "Styki", C_NICKEL)
+    return finish(name, extrude_x_bm(pts, ua, ub), "Styki", C_NICKEL)
 
 
-def spring(name, vc, low_end):
+def spring(name, c, low_end):
     if low_end:
-        return finish(name, cyl_bm(vc, CELL_ZC, UA + 0.5, UA + 6.0, SPR_R, r2=SPR_R * 0.55, axis="X", seg=32), "Styki", C_NICKEL)
-    return finish(name, cyl_bm(vc, CELL_ZC, UA + 0.5 + CELL_L, UB - 0.5, SPR_R * 0.55, r2=SPR_R, axis="X", seg=32), "Styki", C_NICKEL)
+        return finish(name, cyl_bm(c[0], c[1], UA + 0.5, UA + 6.0, SPR_R, r2=SPR_R * 0.55, axis="X", seg=32), "Styki", C_NICKEL)
+    return finish(name, cyl_bm(c[0], c[1], UA + 0.5 + CELL_L, UB - 0.5, SPR_R * 0.55, r2=SPR_R, axis="X", seg=32), "Styki", C_NICKEL)
 
 
-v1, v2, v3 = CH_VC
-spring("sprezyna_1", v1, True)
-plate("plytka_1_neg", UA, v1 - 4.5, v1 + 4.5)
-spring("sprezyna_3", v3, True)
-plate("plytka_lacznik_niski", UA, v2 - 4.5, v3 + 4.5)
-spring("sprezyna_2", v2, False)
-plate("plytka_lacznik_wysoki", UB, v1 - 4.5, v2 + 4.5)
-plate("plytka_3_pos", UB, v3 - 4.5, v3 + 4.5)
+c1_, c2_, c3_ = CELLS
+spring("sprezyna_1", c1_, True)
+plate("plytka_1_neg", UA, c1_)
+spring("sprezyna_3", c3_, True)
+plate("plytka_lacznik_niski", UA, c2_, c3_)
+spring("sprezyna_2", c2_, False)
+plate("plytka_lacznik_wysoki", UB, c1_, c2_)
+plate("plytka_3_pos", UB, c3_)
 
 # ================================================================ PŁYTKI I GŁOŚNIK (podgląd, nie do wydruku)
 C_PCB, C_BLACK, C_PART = (0.10, 0.42, 0.22, 1), (0.04, 0.04, 0.05, 1), (0.55, 0.40, 0.25, 1)
@@ -529,7 +607,7 @@ cyl("Glosnik_stozek", SPK_CY, SPK_CZ, WE + SPK_FR, WE + SPK_H, 10.0, "Glosnik", 
 printable = {
     "korpus": [body],
     "pokrywa": [cover],
-    "klapka-baterii": [lid],
+    ("klapka-baterii" if BATTERY == "row" else "pokrywka-baterii"): [lid],
     "kapsle": caps,
 }
 OUT.mkdir(parents=True, exist_ok=True)
@@ -542,7 +620,7 @@ for fname, objs in printable.items():
         d = ob.dimensions
         report.append(f"{ob.name:18s} wymiary {d.x:6.1f} x {d.y:5.1f} x {d.z:5.1f} mm  objętość {vol:9.1f} mm3  krawędzie nie-rozmaitościowe: {bad}")
 print("\n".join(report))
-print(f"Trójkąt: bok {B:.1f}  wysokość ostrego wierzchołka {H:.1f}, szczyt po zaokrągleniu {Z_TOP:.1f}  s0 {S0}  koszyk y {YB:.1f}..{YB + BAT_W:.1f}")
+print(f"Trójkąt: bok {B:.1f}  wysokość ostrego wierzchołka {H:.1f}, szczyt po zaokrągleniu {Z_TOP:.1f}  s0 {S0}  " + (f"koszyk y {YB:.1f}..{YB + BAT_W:.1f}" if BATTERY == "row" else f"zestaw 2+1: oś y {B_YC:.1f}, ogniwa {[(round(y, 1), round(z, 1)) for y, z in BCELLS]}"))
 print(f"Obrys: L {L:.1f}  płytki w X {XB - 24:.1f}..{XB + 24:.1f}  płytka przycisków x {XB - BB_W / 2:.1f}..{XB + BB_W / 2:.1f}, z góry {ZB:.1f}  sufit {Z_CEIL:.1f}")
 print(f"Głośnik: środek (y {SPK_CY:.1f}, z {SPK_CZ:.1f}), r wolne {SPK_FIT:.1f} (potrzeba {SPK_POCKET / 2 + 1.9:.1f} z pierścieniem)")
 print(f"Bosy (y, z): {[(round(y, 1), round(z, 1)) for y, z in BOSSES]}")
@@ -660,8 +738,13 @@ render("01-przod-iso.png", SHELL, (cx + 200, -150, H * 0.8 + 120), (cx, B * 0.5,
 render("02-przod-prostopadle.png", SHELL, front_c + n_front * 400, front_c, up=(0, cos_t, sin_t), ortho=140)
 render("03-gora.png", SHELL, (cx, YC, 500), (cx, YC, 0), up=(0, 1, 0), ortho=130)
 render("04-bok-lewy-glosnik.png", SHELL, (-300, B / 2, H / 2), (0, B / 2, H / 2), ortho=120)
-render("05-spod-klapka.png", SHELL, (cx, B * 0.5, -300), (cx, B * 0.5, 0), up=(0, 1, 0), ortho=130)
-render("06-spod-koszyk-otwarty.png", ["Korpus", "Pokrywa", "Kapsle", "Styki", "Baterie"], (cx + 60, B * 0.5 - 90, -230), (cx, B * 0.5, 8), up=(0, 1, 0), lens=70)
+if BATTERY == "row":
+    render("05-spod-klapka.png", SHELL, (cx, B * 0.5, -300), (cx, B * 0.5, 0), up=(0, 1, 0), ortho=130)
+    render("06-spod-koszyk-otwarty.png", ["Korpus", "Pokrywa", "Kapsle", "Styki", "Baterie"], (cx + 60, B * 0.5 - 90, -230), (cx, B * 0.5, 8), up=(0, 1, 0), lens=70)
+else:
+    render("05-spod.png", SHELL, (cx, B * 0.5, -300), (cx, B * 0.5, 0), up=(0, 1, 0), ortho=130)
+    render("05b-prawy-bok-pokrywka.png", SHELL, (L + 300, B / 2, H / 2), (L, B / 2, H / 2), ortho=120)
+    render("06-prawy-bok-ogniwa.png", ["Korpus", "Pokrywa", "Kapsle", "Styki", "Baterie"], (L + 200, B * 0.5 - 60, H * 0.35), (L, B / 2, B_ZL + 4), lens=75)
 render("07-tyl-iso.png", SHELL, (cx - 150, B + 180, H * 0.8 + 100), (cx, B * 0.5, H * 0.4), lens=70)
 
 # pokrywa zdjęta razem z płytkami: podnoszona pionowo (pokrywa obejmuje wierzchołek, więc tylko w górę)

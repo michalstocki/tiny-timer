@@ -13,6 +13,8 @@ TT_LAYOUT=docs/pcb/pcb-layout.json TT_OUT=docs/obudowa-klin-48x50 \
 
 Ostatnia komenda buduje obudowę na płytce podstawowej 48 × 50 mm (jej przyciski S1–S3 są ignorowane, bo w tym wariancie są na osobnej płytce): trójkąt wychodzi wtedy większy.
 
+**Wariant 2** z ogniwami w trójkącie 2 + 1 i wkładaniem od prawego boku: [`docs/obudowa-klin-2/`](../obudowa-klin-2/README.md) (o 2,5 mm mniejszy; solver pokazuje, że rozmiar wynika już z płytki przycisków, nie z ogniw).
+
 ## Kształt
 
 | Szkic | W modelu |
@@ -37,7 +39,7 @@ Z czego wynika bok 80 mm:
 - koszyk (39,4 × 14,2 mm w przekroju) leży z tyłu podstawy (y = 30,0…69,4), nad nim nic nie wisi,
 - płytka przycisków (16 mm w głąb) leży w wierzchołku, nad nią sufit jest 6,8 mm nad laminatem.
 
-Dla porównania: ten sam trójkąt na płytce 48 × 50 mm miałby bok ok. 82 mm i wysokość z zaokrągleniem ok. 59 mm. Mniejsze rogi (R12 przy wierzchołku, R4 przy podstawie) zmniejszają bok tylko o ok. 2 mm. Płytka główna jest już najkrótszą, jaką da się rozmieścić (patrz README płytki), a o rozmiarze decyduje głównie koszyk 39,4 mm i płytka przycisków. Układ ogniw w trójkąt (2 + 1) albo koszyk przy tylnej ściance dałby mniejszy trójkąt, ale to inna koncepcja niż szkic (koszyk od spodu).
+Dla porównania: ten sam trójkąt na płytce 48 × 50 mm miałby bok ok. 82 mm i wysokość z zaokrągleniem ok. 59 mm. Mniejsze rogi (R12 przy wierzchołku, R4 przy podstawie) zmniejszają bok tylko o ok. 2 mm. Płytka główna jest już najkrótszą, jaką da się rozmieścić (patrz README płytki), a o rozmiarze decyduje głównie koszyk 39,4 mm i płytka przycisków. Układ ogniw w trójkąt (2 + 1) daje bok 77,5 mm zamiast 80 mm (patrz wariant 2), a koszyk płasko na tylnej ściance nie daje nic.
 
 ## Konstrukcja i montaż
 
@@ -94,4 +96,4 @@ Nie jest osobnym projektem PCB, tylko danymi w `pcb-layout.json` (klucz `button_
 5. Zęby zatrzasków klapki są prostokątne (jak w iteracji 2), potrzebują skosów wejściowych.
 6. **Kapsle.** Wygląd „−” i „+” (owalny kontur wynika z przecięcia walca z walcem) i tabletki warto ocenić na wydruku. Tabletka siedzi w otworze z luzem 0,3 mm, jej kołnierz od spodu jest ogranicznikiem wysuwu. Skok przycisku B3F nie jest znany (karta nie podaje), luz na ruch trzpienia przyjęty 0,5 mm.
 7. Wysokość układu w podstawce (8,5 mm), grubość modułu OLED (4,0 mm) i styki Keystone: jak w README iteracji 2.
-8. Jeśli ten kształt okaże się za duży, najpierw sprawdzić układ ogniw (patrz Wymiary), bo na niego wpływa najwięcej.
+8. Jeśli ten kształt okaże się za duży: układ ogniw da tylko 2,5 mm (wariant 2), więcej da mniejszy promień wierzchołka lub układ elementów przy górnej krawędzi płytki głównej (patrz README wariantu 2).
