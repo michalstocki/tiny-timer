@@ -35,7 +35,7 @@ R6 (8,2 kΩ dla „−”) **zostaje na płytce głównej**, żeby płytka przyc
 | KEY3 | PB4 | S2 „+” i S3 „−” (drabinka z R5) | (28,95; 32,85) |
 | KEY4 | S3LOW | dolna strona S3 „−”, na płytce głównej do R6 → GND | (25,45; 32,85) |
 
-Płytka przycisków: 48 × 16 mm, 3 × B3F-4055 w x = 8, 24, 40 mm (rozstaw 16 mm), 2 otwory M2 w x = 16 i 32 mm. Jej układ (S1 „run”: KEY1–KEY2, S2 „+”: KEY1–KEY3, S3 „−”: KEY3–KEY4) wynika ze schematu z [`docs/schemat.md`](../schemat.md): tego układu nie rysowałem jako osobnego PCB.
+Płytka przycisków: 52 × 16 mm, 3 × B3F-4055 w x = 8, 26, 44 mm (rozstaw 18 mm), 2 otwory M2 w x = 16 i 36 mm. Jej układ (S1 „run”: KEY1–KEY2, S2 „+”: KEY1–KEY3, S3 „−”: KEY3–KEY4) wynika ze schematu z [`docs/schemat.md`](../schemat.md): tego układu nie rysowałem jako osobnego PCB.
 
 ## Rozmieszczenie i kontrola
 

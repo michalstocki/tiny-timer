@@ -673,7 +673,7 @@
  "variant": "klin",
  "button_board": {
   "note": "separate board with the 3 buttons, wired to the KEY pads of the main board",
-  "width": 48.0,
+  "width": 52.0,
   "depth": 16.0,
   "thickness": 1.6,
   "corner_radius": 2.0,
@@ -687,13 +687,13 @@
    {
     "label": "run",
     "ref": "S1",
-    "x": 24.0,
+    "x": 26.0,
     "y": 8.0
    },
    {
     "label": "plus",
     "ref": "S2",
-    "x": 40.0,
+    "x": 44.0,
     "y": 8.0
    }
   ],
@@ -704,7 +704,7 @@
     "diameter": 2.2
    },
    {
-    "x": 32.0,
+    "x": 36.0,
     "y": 8.0,
     "diameter": 2.2
    }

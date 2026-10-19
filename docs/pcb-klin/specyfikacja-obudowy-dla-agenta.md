@@ -2,7 +2,7 @@
 
 Dokument opisuje wyłącznie **fizyczne i mechaniczne** wymagania płytki: wymiary, położenie elementów, wysokości, strefy zakazane, tolerancje. Wygląd obudowy, głośnik i koszyk baterii zostaną dodane przez właściciela projektu w osobnych sekcjach (patrz „Miejsce na wizję właściciela”).
 
-**To jest wariant równoległy** do podstawowej płytki z `docs/pcb/` (tam przyciski są na płytce głównej). Tu przyciski są na **osobnej małej płytce** (48 × 16 mm, patrz `pcb-layout.json`, klucz `button_board`), a płytka główna jest krótsza. Oba warianty rozwijamy osobno. Źródłem prawdy są pliki w tym katalogu, w katalogu `docs/pcb-klin/`, generowane poleceniem `python3 tools/pcb/build.py --variant klin`:
+**To jest wariant równoległy** do podstawowej płytki z `docs/pcb/` (tam przyciski są na płytce głównej). Tu przyciski są na **osobnej małej płytce** (52 × 16 mm, patrz `pcb-layout.json`, klucz `button_board`), a płytka główna jest krótsza. Oba warianty rozwijamy osobno. Źródłem prawdy są pliki w tym katalogu, w katalogu `docs/pcb-klin/`, generowane poleceniem `python3 tools/pcb/build.py --variant klin`:
 
 | Plik | Do czego |
 | --- | --- |
@@ -52,7 +52,7 @@ Moduł wlutowany jest piny w płytkę; piny przycina się po stronie tyłu. Szk�
 
 ### 3.2 Przyciski: poza tą płytką
 
-Trzy przyciski Omron B3F-4055 (S3 „−”, S1 „run”, S2 „+”) leżą na **osobnej płytce 48 × 16 mm** (środki x = 8, 24, 40, y = 8, otwory montażowe M2 w x = 16 i 32). Łączy ją z tą płytką **4 przewody** wlutowane w pola KEY (patrz sekcja 4): GND, PB3 (run), PB4 („+” i „−”), dolna strona „−” (do R6, który zostaje na tej płytce). Wymiary przycisków i skok: jak w płytce podstawowej (karta Omron B3F-4050/4055/5050/5051: korpus 12 × 12 mm, góra trzpienia 7,3 mm nad płytką).
+Trzy przyciski Omron B3F-4055 (S3 „−”, S1 „run”, S2 „+”) leżą na **osobnej płytce 52 × 16 mm** (środki x = 8, 26, 44, y = 8, rozstaw 18 mm, otwory montażowe M2 w x = 16 i 36). Łączy ją z tą płytką **4 przewody** wlutowane w pola KEY (patrz sekcja 4): GND, PB3 (run), PB4 („+” i „−”), dolna strona „−” (do R6, który zostaje na tej płytce). Wymiary przycisków i skok: jak w płytce podstawowej (karta Omron B3F-4050/4055/5050/5051: korpus 12 × 12 mm, góra trzpienia 7,3 mm nad płytką).
 
 ### 3.3 Pozostała strona przednia
 

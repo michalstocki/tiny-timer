@@ -27,7 +27,7 @@ def build():
     w("")
     if KL:
         w("**To jest wariant równoległy** do podstawowej płytki z `docs/pcb/` (tam przyciski są na płytce głównej). Tu przyciski są na **osobnej małej płytce** "
-          "(48 × 16 mm, patrz `pcb-layout.json`, klucz `button_board`), a płytka główna jest krótsza. Oba warianty rozwijamy osobno. Źródłem prawdy są pliki w tym katalogu, "
+          "(52 × 16 mm, patrz `pcb-layout.json`, klucz `button_board`), a płytka główna jest krótsza. Oba warianty rozwijamy osobno. Źródłem prawdy są pliki w tym katalogu, "
           "w katalogu `%s/`, generowane poleceniem `python3 tools/pcb/build.py --variant klin`:" % DIR)
     else:
         w("**To jest pierwsza iteracja.** Wymiary płytki i położenia elementów mogą się zmienić w kolejnych iteracjach. Źródłem prawdy są pliki w tym katalogu, "
@@ -114,7 +114,7 @@ def build():
     if KL:
         w("### 3.2 Przyciski: poza tą płytką")
         w("")
-        w("Trzy przyciski Omron B3F-4055 (S3 „−”, S1 „run”, S2 „+”) leżą na **osobnej płytce 48 × 16 mm** (środki x = 8, 24, 40, y = 8, otwory montażowe M2 w x = 16 i 32). "
+        w("Trzy przyciski Omron B3F-4055 (S3 „−”, S1 „run”, S2 „+”) leżą na **osobnej płytce 52 × 16 mm** (środki x = 8, 26, 44, y = 8, rozstaw 18 mm, otwory montażowe M2 w x = 16 i 36). "
           "Łączy ją z tą płytką **4 przewody** wlutowane w pola KEY (patrz sekcja 4): GND, PB3 (run), PB4 („+” i „−”), dolna strona „−” (do R6, który zostaje na tej płytce). "
           "Wymiary przycisków i skok: jak w płytce podstawowej (karta Omron B3F-4050/4055/5050/5051: korpus 12 × 12 mm, góra trzpienia 7,3 mm nad płytką).")
         w("")

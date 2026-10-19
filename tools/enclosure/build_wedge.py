@@ -1,4 +1,4 @@
-"""Obudowa minutnika, wariant "klin" (alternatywa dla płaskiego stosu z iteracji 2).
+"""Obudowa minutnika, wariant "klin": leżący graniastosłup o podstawie trójkąta równobocznego.
 
 Uruchomienie (bez okna):
     /Applications/Blender.app/Contents/MacOS/Blender --background \
@@ -6,19 +6,21 @@ Uruchomienie (bez okna):
 
 Wejście: docs/pcb-klin/pcb-layout.json (płytka wariantu klin). Wyjście: docs/obudowa-klin/ (.blend, STL, rendery).
 
-Koncepcja ze szkicu właściciela: bryła w kształcie klina (przekrój poprzeczny to ścięty trójkąt,
-boki trójkątne wzdłuż X), wyświetlacz na pochyłej ściance frontowej, trzy przyciski na płaskim
-grzbiecie. Przyciski leżą w innej płaszczyźnie niż ekran, więc są na OSOBNEJ płytce
-(poziomej, pod grzbietem). Środkowy przycisk (run) stoi niżej, w płytkim wklęsłym zagłębieniu.
+Koncepcja ze szkicu właściciela: bok (przekrój poprzeczny) to trójkąt równoboczny o zaokrąglonych rogach, bryła
+leży wzdłuż osi X. Wszystkie krawędzie są zaokrąglone (rogi trójkąta oraz obwód boków). Wyświetlacz jest na
+skośnej ściance frontowej, trzy przyciski na zaokrąglonym wierzchołku (górna krawędź):
+  - "-" i "+" mają powierzchnię zlicowaną z zaokrągleniem wierzchołka (dlatego są wypukłe),
+  - środkowy ("run") to lekko wypukła tabletka w wydłużonym obniżeniu.
+Przyciski są na OSOBNEJ płytce (poziomej, pod wierzchołkiem), bo leżą w innej płaszczyźnie niż ekran.
 
-Układ współrzędnych obudowy: X wzdłuż klina, Y w głąb (od frontu do tyłu), Z w górę, podstawa na z = 0.
-Płytka główna leży równolegle do ścianki frontowej (kąt ALPHA), jej układ (bx, by, bz) jak w specyfikacji:
+Układ współrzędnych obudowy: X wzdłuż graniastosłupa, Y w głąb (od frontu do tyłu), Z w górę, podstawa na z = 0.
+Płytka główna leży równolegle do ścianki frontowej (kąt THETA), jej układ (bx, by, bz) jak w specyfikacji:
 bx w prawo, by w górę po skosie, bz w stronę użytkownika (od laminatu do panelu).
 
 Części:
-  - korpus: tył, podstawa z koszykiem 3xAAA, boki trójkątne (głośnik po lewej), tylna część grzbietu,
-  - pokrywa: ścianka frontowa + grzbiet. Niesie obie płytki (główną i przycisków), więc po wykręceniu
-    czterech wkrętów z boków schodzi razem z elektroniką. Do korpusu idą tylko przewody baterii i głośnika,
+  - korpus: tył, podstawa z koszykiem 3xAAA, boki trójkątne (głośnik po lewej),
+  - pokrywa: front + wierzchołek + wierzch tyłu. Niesie obie płytki, więc po wykręceniu czterech wkrętów
+    z boków schodzi (pionowo w górę) razem z elektroniką. Do korpusu idą tylko przewody baterii i głośnika,
   - klapka koszyka (od spodu) i trzy kapsle przycisków.
 """
 import json
@@ -33,12 +35,12 @@ from mathutils import Matrix, Vector
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import bpyutil as U
-from bpyutil import (apply_matrix, bevel, box, box_bm, coll, cut, cyl, cyl_bm, extrude_x_bm, fillet_poly,
-                     finish, intersect, manifold_report, offset_poly, prism_bm, rrect_bm, text_cutter,
+from bpyutil import (apply_matrix, bevel, box, box_bm, clip_top, coll, cut, cyl, cyl_bm, extrude_x_bm, fillet_poly,
+                     finish, inside_convex, intersect, manifold_report, offset_poly, prism_bm, rrect_bm, rrect_pts,
                      union, write_stl)
 
 ROOT = Path(__file__).resolve().parents[2]
-# domyślnie płytka wariantu "klin" (bez przycisków, 48 x 36 mm); TT_LAYOUT pozwala zbudować klin z innej płytki,
+# domyślnie płytka wariantu "klin" (bez przycisków, 48 x 36 mm); TT_LAYOUT pozwala zbudować obudowę z innej płytki,
 # np. TT_LAYOUT=docs/pcb/pcb-layout.json (podstawowa 48 x 50 mm), a TT_OUT zmienia katalog wyjściowy
 LAYOUT = ROOT / os.environ.get("TT_LAYOUT", "docs/pcb-klin/pcb-layout.json")
 OUT = ROOT / os.environ.get("TT_OUT", "docs/obudowa-klin")
@@ -50,22 +52,29 @@ BW, BH, BT = (layout["board"][k] for k in ("width", "height", "thickness"))
 HOLES = [(h["x"], h["y"], h["diameter"]) for h in layout["mounting_holes"]]
 OLED = layout["parts"]["OLED"]["body"]
 GLASS = layout["derived"]["oled_module"]["glass_rect"]
-BTN_X = {"minus": 8.0, "run": 24.0, "plus": 40.0}          # środki przycisków na płytce przycisków (rozstaw 16 mm)
-BTN_LABEL = {"minus": "-", "run": "run", "plus": "+"}
 HEIGHT_OVERRIDE = {"U1": 8.5}
 REAR = {k: p for k, p in layout["parts"].items() if p["side"] == "bottom" and
         HEIGHT_OVERRIDE.get(k, p["height_above_board"]) > 0}
 
-ALPHA, BETA = 60.0, 80.0          # kąt skosu frontu (płytka równolegle) i kąt tylnej ścianki
-WALL, PANEL, TOP = 2.0, 1.6, 3.6  # ścianki, panel przedni, grzbiet (3,6 = 1,6 pod zagłębieniem + 2,0 jego głębokości)
+THETA = 60.0                      # kąt przy podstawie: 60° = trójkąt równoboczny (skos frontu = skos tyłu)
+RA, RB = 13.0, 5.0                # promienie zaokrągleń: wierzchołek (przyciski) i rogi podstawy
+WALL, PANEL = 2.0, 1.6            # ścianki; panel przedni
+T_TOP = 4.4                       # grubość masy pod wierzchołkiem: 2,4 pod obniżeniem + głębokość obniżenia 2,0
+WE = 3.0                          # grubość boków trójkątnych
+R_END = 3.0                       # zaokrąglenie krawędzi boków trójkątnych
 D_PCB = 8.4                       # laminat płytki głównej pod zewnętrzną powierzchnią skosu (OLED 6,5 + luz 0,3 + panel 1,6)
 Z_PANEL_IN = D_PCB - PANEL        # wewnętrzna powierzchnia panelu w układzie płytki (bz)
-D_BTN = 10.4                      # laminat płytki przycisków pod zewnętrzną powierzchnią grzbietu
-BB_W, BB_D = 48.0, 16.0           # płytka przycisków
-DISH_R, DISH_H = 10.0, 2.0        # zagłębienie pod środkowy przycisk: promień na powierzchni, głębokość
-CAP_UP = 1.4                      # kapsel wystaje ponad lokalną powierzchnię
+BZ_CEIL = 6.8                     # wewnętrzna powierzchnia sufitu pod wierzchołkiem w układzie płytki przycisków (bz)
+D_BTN = T_TOP + BZ_CEIL           # laminat płytki przycisków pod zewnętrznym szczytem wierzchołka
+BB_W, BB_D = 52.0, 16.0           # płytka przycisków (rozstaw przycisków 18 mm)
+BTN_X = {"minus": 8.0, "run": 26.0, "plus": 44.0}
+BTN_LABEL = {"minus": "-", "run": "run", "plus": "+"}
+BTN_SCREW_X = (16.0, 36.0)
+PILL_L, PILL_W = 14.0, 9.5        # środkowy kapsel: tabletka
+DISH_AX, DISH_BY, DISH_DEPTH = 11.0, 6.0, 2.0   # obniżenie: półosie na powierzchni (X, Y) i głębokość
+PILL_DROP = 0.6                   # szczyt tabletki pod szczytem wierzchołka
+DOME_R = 25.0                     # promień wypukłości tabletki
 MARGIN = 1.0
-R_END = 2.0                       # zaokrąglenie krawędzi boków trójkątnych
 
 # koszyk 3xAAA (ogniwo Ø10,5 x 44,5), ogniwa wzdłuż X, kanały obok siebie wzdłuż Y, otwarte od spodu
 CELL_D, CELL_L = 10.5, 44.5
@@ -82,30 +91,49 @@ CELL_ZC = Z_POCKET + CELL_D / 2
 SPK_D, SPK_H, SPK_FR, SPK_POCKET = 26.5, 9.0, 4.0, 27.0
 SPK_ZONE = 11.2
 RING_L = 5.5
-SCR_ZONE = 7.0                    # strefa wkrętów i zapasu przewodów z prawej strony
+SCR_ZONE = 8.0                    # strefa wkrętów i zapasu przewodów z prawej strony
 BOSS_R, BOSS_L = 3.0, 6.5
 
 # układ w X
-UA = WALL + SPK_ZONE + 1.2        # początek wnęki koszyka
+UA = WE + SPK_ZONE + 1.2          # początek wnęki koszyka
 UB = UA + CAV_L
 X_BLOCK0 = UA - 1.2
 PCB_W = UB - X_BLOCK0
 XB = X_BLOCK0 + PCB_W / 2         # środek płytek w X
-L = UB + SCR_ZONE + WALL
-
+L = UB + SCR_ZONE + WE
 
 # ---------------------------------------------------------------- przekrój poprzeczny (Y, Z)
-a_, b_ = math.radians(ALPHA), math.radians(BETA)
-tan_a, tan_b = math.tan(a_), math.tan(b_)
-sin_a, cos_a = math.sin(a_), math.cos(a_)
+th = math.radians(THETA)
+sin_t, cos_t, tan_t = math.sin(th), math.cos(th), math.tan(th)
+NF = (-sin_t, cos_t)              # normalna zewnętrzna frontu (y, z)
+NB = (sin_t, cos_t)               # normalna zewnętrzna tyłu
+UBK = (cos_t, -sin_t)             # kierunek wzdłuż tyłu w dół od wierzchołka
 BAT_ZTOP_CLEAR = BAT_TOP + 0.5
+S_LO = 9.5                        # dolna krawędź pokrywy po skosie (powyżej zaokrąglenia rogu podstawy)
+S_TANG_A = RA / math.tan(math.radians((180 - 2 * THETA) / 2))      # od ostrego wierzchołka do początku łuku
+S_BACK = S_TANG_A + 14.0          # tylna krawędź pokrywy: po tyle od ostrego wierzchołka wzdłuż tyłu
+
+
+def profile(side):
+    """Wielokąty zewnętrzny i wewnętrzny (z zaokrągleniami) trójkąta o podstawie `side`."""
+    h = side / 2 * tan_t
+    out_pts = [(0.0, 0.0), (side, 0.0), (side / 2, h)]
+    in_pts = offset_poly(out_pts, [WALL, WALL, PANEL])        # krawędzie: podstawa, tył, front
+    gamma = math.pi - 2 * th
+    z_top = h - RA * (1 / math.sin(gamma / 2) - 1)
+    outer = fillet_poly(out_pts, [RB, RB, RA])
+    inner_full = fillet_poly(in_pts, [max(RB - WALL, 0.8), max(RB - WALL, 0.8), max(RA - 1.8, 0.8)])
+    z_ceil = z_top - T_TOP
+    inner = clip_top(inner_full, z_ceil)                       # sufit pod wierzchołkiem (masa pod przyciskami)
+    return dict(side=side, H=h, z_top=z_top, z_ceil=z_ceil, out_pts=out_pts, in_pts=in_pts, outer=outer,
+                inner=inner, inner_full=inner_full)
 
 
 def envelope(s0):
-    """Punkty (y, z) zajmowane z tyłu płytki głównej (laminat i elementy z marginesem), próbkowane gęsto."""
+    """Punkty (y, z) zajmowane przez płytkę główną i jej elementy od tyłu (z marginesem), próbkowane gęsto."""
     pts = []
-    P = lambda s, d: (s * cos_a + d * sin_a, s * sin_a - d * cos_a)
-    rects = [(s0 - 1.5, s0 + BH + 1.5, 0.0, D_PCB + BT + MARGIN)]
+    P = lambda s, d: (s * cos_t + d * sin_t, s * sin_t - d * cos_t)
+    rects = [(s0 - 1.5, s0 + BH + 1.5, 2.0, D_PCB + BT + MARGIN)]
     for k, p in REAR.items():
         x0, y0, x1, y1 = p["body"]
         h = HEIGHT_OVERRIDE.get(k, p["height_above_board"])
@@ -118,45 +146,53 @@ def envelope(s0):
     return pts
 
 
-def solve_profile():
-    """Najmniejszy przekrój (H x B), w którym mieszczą się: płytka z elementami od tyłu, koszyk, nad którym
-    nic nie wisi, i płytka przycisków pod grzbietem z pasem na styk pokrywy z korpusem."""
-    best = None
-    bb_below = D_BTN + 1.6 + 1.9 + 1.0          # w dół od grzbietu: płytka, laminat, nóżki, luz
-    for s0 in [x * 0.5 for x in range(8, 70)]:
-        pts = envelope(s0)
-        if min(p[1] for p in pts) < WALL + 0.5:
-            continue
-        for dh in range(0, 17, 2):
-            yb = max([p[0] for p in pts if p[1] < BAT_ZTOP_CLEAR], default=0.0) + 0.5
-            H = max((s0 + BH + 1.5 + 3.5) * sin_a, max(p[1] for p in pts) + TOP) + dh
-            yf = H / tan_a
-            band = [p for p in pts if p[1] >= H - bb_below]
-            yk = max(max([p[0] for p in band], default=yf) + 1.0, yf + 1.0)
-            y_cut = yk + BB_D + 1.5                  # koniec pokrywy na grzbiecie
-            need_back = max(max(p[0] + p[1] / tan_b for p in pts),
-                            yb + BAT_W + BAT_TOP / tan_b,
-                            y_cut + 7.2 + H / tan_b)  # 7,2: zaokrąglenie narożnika grzbietu + pas korpusu
-            B = need_back + WALL / math.sin(b_)
-            if best is None or H * B < best["H"] * best["B"]:
-                best = dict(s0=s0, dh=dh, H=H, B=B, yb=yb, yk=yk, yf=yf, y_cut=y_cut)
-    return best
+def feasible(side, s0):
+    """Sprawdza, czy w trójkącie o boku `side` mieszczą się: płytka z elementami (nachylona), koszyk
+    (nad którym nic nie wisi) i płytka przycisków pod wierzchołkiem."""
+    pr = profile(side)
+    inner = pr["inner"]
+    pts = envelope(s0)
+    if any(not inside_convex(inner, p) for p in pts):
+        return None
+    yb = max([p[0] for p in pts if p[1] < BAT_ZTOP_CLEAR], default=0.0) + 0.5
+    if any(not inside_convex(inner, p) for p in [(yb, 2.0), (yb + BAT_W, 2.0), (yb, BAT_TOP), (yb + BAT_W, BAT_TOP)]):
+        return None
+    yc, zb = side / 2, pr["z_ceil"] - BZ_CEIL
+    z_low = zb - BT - 1.9 - 0.5                      # nóżki przycisków pod laminatem
+    for hw, z0, z1 in ((BB_D / 2 + 0.5, z_low, zb), (6.5, zb, zb + 4.3 + 0.3)):
+        if any(not inside_convex(inner, p) for p in [(yc - hw, z0), (yc + hw, z0), (yc - hw, z1), (yc + hw, z1)]):
+            return None
+    if any(yc - BB_D / 2 - 0.5 <= p[0] <= yc + BB_D / 2 + 0.5 and z_low <= p[1] <= zb + 4.6 for p in pts):
+        return None
+    return dict(side=side, s0=s0, yb=yb)
 
 
-SOL = solve_profile()
-S0, H, B, YB, YK, YF, Y_CUT = (SOL[k] for k in ("s0", "H", "B", "yb", "yk", "yf", "y_cut"))
-YV = B - H / tan_b                                   # tylny narożnik grzbietu
-OUT_PTS = [(0.0, 0.0), (B, 0.0), (YV, H), (YF, H)]
-IN_PTS = offset_poly(OUT_PTS, [WALL, WALL, TOP, PANEL])
-OUTER = fillet_poly(OUT_PTS, [3.0, 3.0, 5.0, 5.0])
-INNER = fillet_poly(IN_PTS, [1.0, 1.0, 3.0, 3.0])
-NF = (-sin_a, cos_a)                                  # normalna zewnętrzna frontu (y, z)
-S_LO = 6.75                                           # dolna krawędź pokrywy (po skosie od krawędzi podstawy)
+def solve_side():
+    for side in [x * 0.5 for x in range(100, 260)]:
+        for s0 in [x * 0.5 for x in range(14, 60)]:
+            r = feasible(side, s0)
+            if r:
+                return r
+    raise SystemExit("brak rozwiązania przekroju")
+
+
+SOL = solve_side()
+SIDE_LEN, S0, YB = SOL["side"], SOL["s0"], SOL["yb"]
+PR = profile(SIDE_LEN)
+B, H, Z_TOP, Z_CEIL = SIDE_LEN, PR["H"], PR["z_top"], PR["z_ceil"]
+OUTER, INNER, INNER_FULL = PR["outer"], PR["inner"], PR["inner_full"]
+YC = B / 2                                            # oś grzbietu (wierzchołka) w Y
+ZB = Z_CEIL - BZ_CEIL                                 # górna powierzchnia płytki przycisków
 
 
 def pt_slope(s, d):
-    """Punkt (y, z) na skosie: s po skosie od krawędzi podstawy, d w głąb od zewnętrznej powierzchni."""
-    return (s * cos_a + d * sin_a, s * sin_a - d * cos_a)
+    """Punkt (y, z) na froncie: s po skosie od krawędzi podstawy, d w głąb od zewnętrznej powierzchni."""
+    return (s * cos_t + d * sin_t, s * sin_t - d * cos_t)
+
+
+def pt_back(s, d):
+    """Punkt (y, z) na tyle: s po tylnej ściance od ostrego wierzchołka w dół, d w głąb od zewnętrznej powierzchni."""
+    return (YC + s * UBK[0] - d * NB[0], H + s * UBK[1] - d * NB[1])
 
 
 def incircle(poly):
@@ -167,8 +203,7 @@ def incircle(poly):
         d = 1e9
         for i in range(n):
             (x0, y0), (x1, y1) = poly[i], poly[(i + 1) % n]
-            ln = math.hypot(x1 - x0, y1 - y0)
-            d = min(d, ((x1 - x0) * (p[1] - y0) - (y1 - y0) * (p[0] - x0)) / ln)
+            d = min(d, ((x1 - x0) * (p[1] - y0) - (y1 - y0) * (p[0] - x0)) / math.hypot(x1 - x0, y1 - y0))
         return d
     cx, cy = sum(p[0] for p in poly) / n, sum(p[1] for p in poly) / n
     best, step = (cx, cy, dist((cx, cy))), 4.0
@@ -184,21 +219,20 @@ def incircle(poly):
     return best
 
 
-SPK_CY, SPK_CZ, SPK_FIT = incircle(IN_PTS)
+SPK_CY, SPK_CZ, SPK_FIT = incircle(INNER_FULL)
 
 # ---------------------------------------------------------------- transformacje
-M_SLOPE = Matrix(((1, 0, 0, 0), (0, cos_a, -sin_a, D_PCB * sin_a), (0, sin_a, cos_a, -D_PCB * cos_a), (0, 0, 0, 1)))
+M_SLOPE = Matrix(((1, 0, 0, 0), (0, cos_t, -sin_t, D_PCB * sin_t), (0, sin_t, cos_t, -D_PCB * cos_t), (0, 0, 0, 1)))
 M_BOARD = M_SLOPE @ Matrix.Translation((XB - BW / 2, S0, 0))       # (bx, by, bz) płytki głównej -> świat
-M_BTN = Matrix.Translation((XB - BB_W / 2, YK, H - D_BTN))           # (bx, by, bz) płytki przycisków -> świat
-BTN_Y = YK + BB_D / 2
+M_BTN = Matrix.Translation((XB - BB_W / 2, YC - BB_D / 2, ZB))      # (bx, by, bz) płytki przycisków -> świat
 R_WIN = (GLASS[3] - GLASS[1] + 0.6) / 2 - 0.005
-D_RUN = D_BTN - DISH_H                                              # bz powierzchni na dnie zagłębienia
-CAP_TOP = {"minus": D_BTN + CAP_UP, "plus": D_BTN + CAP_UP, "run": D_RUN + CAP_UP}
+BZ_TOP = D_BTN                                                      # bz szczytu wierzchołka (w układzie płytki przycisków)
+BZ_PILL = BZ_TOP - PILL_DROP                                        # szczyt tabletki
 CAP_BOT, CAP_R, CAP_FLANGE_R, PANEL_HOLE_R = 6.0, 4.8, 5.9, 5.1
 
 # wkręty łączące pokrywę z korpusem: po dwa na stronę, wzdłuż X, w bosach pokrywy
-Y_A, Z_A = pt_slope(11.5, PANEL + BOSS_R - 0.6)                      # bos przy dolnej krawędzi frontu
-Y_B, Z_B = (YF + YK) / 2, H - TOP - BOSS_R + 0.6                     # bos pod grzbietem, przed płytką przycisków
+Y_A, Z_A = pt_slope(S_LO + 3.5, PANEL + BOSS_R - 0.6)               # bos przy dolnej krawędzi frontu
+Y_B, Z_B = pt_back(S_BACK - 7.0, WALL + BOSS_R - 0.6)               # bos pod tylną krawędzią pokrywy
 BOSSES = [(Y_A, Z_A), (Y_B, Z_B)]
 
 
@@ -247,13 +281,16 @@ def outer_solid(x0=0.0, x1=L):
     return tmp("obrys", extrude_x_bm(OUTER, x0, x1))
 
 
-def zone_poly(s_lo, y_cut):
-    """Pas ścianek frontu i grzbietu: od s_lo po skosie do y_cut na grzbiecie (z 4 mm wnętrza)."""
-    fy, fz = s_lo * cos_a, s_lo * sin_a
-    a_in = (fy - 4.4 * NF[0], fz - 4.4 * NF[1])
-    a_out = (fy + 8 * NF[0], fz + 8 * NF[1])
-    c_out = (YF + 6 * NF[0], H + 6 * (NF[1] + 1.0))
-    return [a_in, a_out, c_out, (y_cut, H + 6), (y_cut, H - 5.6)]
+def zone_poly(s_lo, s_back):
+    """Pas ścianek pokrywy: od s_lo po froncie (od krawędzi podstawy), przez wierzchołek, do s_back po tyle
+    (od ostrego wierzchołka). Obejmuje też ok. 4 mm wnętrza, ale nie koszyk."""
+    fy, fz = s_lo * cos_t, s_lo * sin_t
+    a_in, a_out = (fy - 4.4 * NF[0], fz - 4.4 * NF[1]), (fy + 8 * NF[0], fz + 8 * NF[1])
+    by_, bz_ = YC + s_back * UBK[0], H + s_back * UBK[1]
+    b_in, b_out = (by_ - 4.4 * NB[0], bz_ - 4.4 * NB[1]), (by_ + 8 * NB[0], bz_ + 8 * NB[1])
+    p1 = (YC + 10 * NF[0], H + 10 * NF[1] + 10)
+    p2 = (YC + 10 * NB[0], H + 10 * NB[1] + 10)
+    return [a_in, a_out, p1, p2, b_out, b_in]
 
 
 def xcyl(name, y, z, x0, x1, r, seg=32):
@@ -265,7 +302,7 @@ def boxuv(name, u0, u1, v0, v1, z0, z1, group="tmp", color=T):
     return box(name, u0, v0, z0, u1, v1, z1, group, color)
 
 
-# --- powłoka: obrys - wnętrze (wnętrze od x = WALL do L - WALL)
+# --- powłoka: obrys (zaokrąglony także na krawędziach boków) - wnętrze z sufitem pod wierzchołkiem
 # koszyk (pełny blok od podstawy) zostaje w materiale: odejmuję go od wnętrza zamiast dokładać do gotowej
 # powłoki (dolna ściana bloku leżałaby w jednej płaszczyźnie z podstawą, co daje zdegenerowane krawędzie)
 TX0, TX1 = X_BLOCK0, UB + 1.2
@@ -274,20 +311,20 @@ CH_V = [(V0 + i * (CH_W + DIV), V0 + i * (CH_W + DIV) + CH_W) for i in range(3)]
 CH_VC = [(a + b) / 2 for a, b in CH_V]
 V1 = CH_V[2][1]
 shell = outer_solid()
-bevel(shell, R_END, segments=5)
-cavity = tmp("wnetrze", extrude_x_bm(INNER, WALL, L - WALL))
+bevel(shell, R_END, segments=6)
+cavity = tmp("wnetrze", extrude_x_bm(INNER, WE, L - WE))
 cut(cavity, boxuv("koszyk", TX0, TX1, YB, YB + BAT_W, 0.0, BAT_TOP))
 cut(shell, cavity)
 chk("powłoka", shell)
 
-# --- podział na pokrywę i korpus (szczeliny 0,25 mm)
+# --- podział na pokrywę i korpus (szczeliny 0,25 mm), pokrywa w x = WE+0,25 ... L-WE-0,25, poza zaokrągleniem boków
 cover = bpy.data.objects.new("Pokrywa", shell.data.copy())
 coll("tmp").objects.link(cover)
 regroup(cover, "Pokrywa", LID_C)
-intersect(cover, tmp("strefa_pokrywy", extrude_x_bm(zone_poly(S_LO, Y_CUT), WALL + 0.25, L - WALL - 0.25)))
+intersect(cover, tmp("strefa_pokrywy", extrude_x_bm(zone_poly(S_LO, S_BACK), WE + 0.25, L - WE - 0.25)))
 body = regroup(shell, "Korpus", C_BODY)
 body.name = "Korpus"
-cut(body, tmp("strefa_korpusu", extrude_x_bm(zone_poly(S_LO - 0.25, Y_CUT + 0.25), WALL, L - WALL)))
+cut(body, tmp("strefa_korpusu", extrude_x_bm(zone_poly(S_LO - 0.25, S_BACK + 0.25), WE, L - WE)))
 chk("podział", body)
 
 # ================================================================ POKRYWA
@@ -304,32 +341,35 @@ union(cover, to_world(feat, M_BOARD))
 for hx, hy, _ in HOLES:
     cut(cover, to_world(cyl("pilot", hx, hy, -0.1, 5.2, 1.05, seg=24), M_BOARD))
 
-# otwory pod kapsle na grzbiecie, zagłębienie pod środkowy przycisk (kulisty wycinek)
-for k, bx in BTN_X.items():
-    cut(cover, to_world(cyl("otw", bx, BB_D / 2, D_BTN - TOP - 0.5, D_BTN + 0.6, PANEL_HOLE_R), M_BTN))
-R_SPH = (DISH_R ** 2 + DISH_H ** 2) / (2 * DISH_H)
+# otwory pod kapsle w wierzchołku (przez grubą masę), obniżenie pod środkową tabletkę
+for k in ("minus", "plus"):
+    cut(cover, to_world(cyl("otw", BTN_X[k], BB_D / 2, BZ_CEIL - 0.5, BZ_TOP + 4.0, PANEL_HOLE_R), M_BTN))
+cut(cover, to_world(tmp("otw_run", rrect_bm(BTN_X["run"] - PILL_L / 2 - 0.3, BB_D / 2 - PILL_W / 2 - 0.3, BZ_CEIL - 0.5,
+                                            BTN_X["run"] + PILL_L / 2 + 0.3, BB_D / 2 + PILL_W / 2 + 0.3, BZ_TOP + 4.0,
+                                            PILL_W / 2 + 0.3)), M_BTN))
+RS = (DISH_BY ** 2 + DISH_DEPTH ** 2) / (2 * DISH_DEPTH)            # promień kuli, z której powstaje obniżenie
 bm = bmesh.new()
-bmesh.ops.create_uvsphere(bm, u_segments=96, v_segments=48, radius=R_SPH)
-bmesh.ops.translate(bm, vec=(XB, BTN_Y, H - DISH_H + R_SPH), verts=bm.verts)
+bmesh.ops.create_uvsphere(bm, u_segments=96, v_segments=48, radius=RS)
+bmesh.ops.scale(bm, vec=(DISH_AX / DISH_BY, 1.0, 1.0), verts=bm.verts)
+bmesh.ops.translate(bm, vec=(XB, YC, Z_TOP - DISH_DEPTH + RS), verts=bm.verts)
 cut(cover, tmp("zaglebienie", bm))
+chk("pokrywa: przyciski", cover)
 
 # słupki płytki przycisków (2 szt. między przyciskami), M2 od spodu po zdjęciu pokrywy
-for bx in (16.0, 32.0):
-    union(cover, to_world(cyl("slupek_b", bx, BB_D / 2, 0.0, D_BTN - TOP + 0.6, 1.8, seg=24), M_BTN))
+for bx in BTN_SCREW_X:
+    union(cover, to_world(cyl("slupek_b", bx, BB_D / 2, 0.0, BZ_CEIL + 0.6, 1.8, seg=24), M_BTN))
     cut(cover, to_world(cyl("pilot_b", bx, BB_D / 2, -0.1, 5.5, 0.85, seg=20), M_BTN))
 
 # bosy na wkręty boczne (wzdłuż X), otwory prowadzące
 for y, z in BOSSES:
-    union(cover, xcyl("bos_l", y, z, WALL + 0.25, WALL + 0.25 + BOSS_L, BOSS_R),
-          xcyl("bos_p", y, z, L - WALL - 0.25 - BOSS_L, L - WALL - 0.25, BOSS_R))
-    cut(cover, xcyl("pilot_l", y, z, WALL + 0.2, WALL + 0.25 + BOSS_L - 0.8, 1.05, 24),
-        xcyl("pilot_p", y, z, L - WALL - 0.25 - BOSS_L + 0.8, L - WALL - 0.2, 1.05, 24))
-
-# napis na dolnym pasie frontu (grawer 0,4 mm)
-cut(cover, to_world(text_cutter("TINY TIMER", 4.2, XB, 10.4, D_PCB - 0.4, 1.0), M_SLOPE))
+    union(cover, xcyl("bos_l", y, z, WE + 0.25, WE + 0.25 + BOSS_L, BOSS_R),
+          xcyl("bos_p", y, z, L - WE - 0.25 - BOSS_L, L - WE - 0.25, BOSS_R))
+    cut(cover, xcyl("pilot_l", y, z, WE + 0.2, WE + 0.25 + BOSS_L - 0.5, 1.05, 24),
+        xcyl("pilot_p", y, z, L - WE - 0.25 - BOSS_L + 0.5, L - WE - 0.2, 1.05, 24))
+chk("pokrywa: bosy", cover)
 
 # ================================================================ KORPUS
-# koszyk: blok od podstawy, trzy kanały otwarte od spodu, okno w podłodze, wpust klapki
+# koszyk: trzy kanały otwarte od spodu, okno w podłodze, wpust klapki
 for va, vb in CH_V:
     cut(body, boxuv("kanal", UA, UB, va, vb, Z_POCKET, Z_CH_TOP))
 chk("kanały", body)
@@ -351,8 +391,8 @@ cut(body, cyl("prz_minus", UA + 2.5, CH_VC[0], Z_CH_TOP - 0.5, BAT_TOP + 0.5, 1.
     cyl("prz_plus", UB - 2.5, CH_VC[2], Z_CH_TOP - 0.5, BAT_TOP + 0.5, 1.5, seg=24))
 
 # głośnik: pierścień oporowy przy lewym boku i otwory dźwiękowe w trójkątnym boku
-ring = xcyl("pierscien", SPK_CY, SPK_CZ, WALL - 0.2, WALL + RING_L, SPK_POCKET / 2 + 1.9, 96)
-cut(ring, xcyl("pierscien_w", SPK_CY, SPK_CZ, WALL - 0.5, WALL + RING_L + 0.5, SPK_POCKET / 2, 96))
+ring = xcyl("pierscien", SPK_CY, SPK_CZ, WE - 0.2, WE + RING_L, SPK_POCKET / 2 + 1.9, 96)
+cut(ring, xcyl("pierscien_w", SPK_CY, SPK_CZ, WE - 0.5, WE + RING_L + 0.5, SPK_POCKET / 2, 96))
 intersect(ring, outer_solid())
 union(body, ring)
 chk("pierścień", body)
@@ -362,20 +402,19 @@ holes += [(9.0 * math.cos(2 * math.pi * i / 14 + 0.07), 9.0 * math.sin(2 * math.
 # wszystkie otwory jednym wycięciem (jeden cutter z wieloma walcami: mniej artefaktów niż 23 osobne booleany)
 bm = bmesh.new()
 for dy, dz in holes:
-    ret = bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=20, radius1=1.0, radius2=1.0, depth=WALL + 0.8)
+    ret = bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=20, radius1=1.0, radius2=1.0, depth=WE + 0.8)
     bmesh.ops.rotate(bm, verts=ret["verts"], cent=(0, 0, 0), matrix=Matrix.Rotation(math.pi / 2, 3, "Y"))
-    bmesh.ops.translate(bm, vec=((WALL + 0.3 - 0.5) / 2, SPK_CY + dy, SPK_CZ + dz), verts=ret["verts"])
+    bmesh.ops.translate(bm, vec=((WE + 0.3 - 0.5) / 2, SPK_CY + dy, SPK_CZ + dz), verts=ret["verts"])
 cut(body, tmp("dzwieki", bm))
-
 chk("otwory głośnika", body)
+
 # wkręty boczne: otwór przelotowy w boku i zagłębienie na łeb
 for y, z in BOSSES:
-    cut(body, xcyl("w_otw_l", y, z, -0.5, WALL + 0.1, 1.35, 24), xcyl("w_lb_l", y, z, -0.5, 1.0, 2.4, 32),
-        xcyl("w_otw_p", y, z, L - WALL - 0.1, L + 0.5, 1.35, 24), xcyl("w_lb_p", y, z, L - 1.0, L + 0.5, 2.4, 32))
-
+    cut(body, xcyl("w_otw_l", y, z, -0.5, WE + 0.1, 1.35, 24), xcyl("w_lb_l", y, z, -0.5, 1.0, 2.4, 32),
+        xcyl("w_otw_p", y, z, L - WE - 0.1, L + 0.5, 1.35, 24), xcyl("w_lb_p", y, z, L - 1.0, L + 0.5, 2.4, 32))
 chk("wkręty boczne", body)
 
-# ================================================================ KLAPKA KORYTA
+# ================================================================ KLAPKA KOSZYKA
 lid = finish("Klapka_baterii", box_bm(REC_U[0] + 0.25, REC_V[0] + 0.25, 0.0, REC_U[1] - 0.25, REC_V[1] - 0.25, 0.8),
              "Klapka", LID_C)
 union(lid, boxuv("wtyk", WIN_U[0] + 0.25, WIN_U[1] - 0.25, WIN_V[0] + 0.25, WIN_V[1] - 0.25, 0.8, Z_POCKET))
@@ -386,21 +425,38 @@ union(lid,
       boxuv("jezyk2", *HK_U, vh - 0.8, vh, Z_POCKET, Z_POCKET + 3.0),
       boxuv("zab2", *HK_U, vh - 0.1, V1 + 0.4, Z_POCKET + 1.4, Z_POCKET + 2.9))
 
-# ================================================================ KAPSLE
+# ================================================================ KAPSLE (w układzie płytki przycisków)
 caps = []
+SURF_R = RA - 0.15                                    # powierzchnia "-" i "+": zlicowana z zaokrągleniem wierzchołka
 for k, bx in BTN_X.items():
-    lab, top = BTN_LABEL[k], CAP_TOP[k]
-    cap = cyl("Kapsel_" + lab, bx, BB_D / 2, CAP_BOT, top, CAP_R, "Kapsle", {"minus": C_DARK, "run": C_ORANGE, "plus": C_DARK}[k], seg=48)
-    union(cap, cyl("kolnierz", bx, BB_D / 2, CAP_BOT, CAP_BOT + 0.6, CAP_FLANGE_R, seg=48))
-    cut(cap, box("gniazdo", bx - 2.0, BB_D / 2 - 2.0, CAP_BOT - 0.1, bx + 2.0, BB_D / 2 + 2.0, 7.3))
-    zt, y0 = top - 0.4, BB_D / 2
-    if lab == "-":
-        cut(cap, box("m", bx - 2.2, y0 - 0.5, zt, bx + 2.2, y0 + 0.5, top + 0.1))
-    elif lab == "+":
-        cut(cap, box("p1", bx - 2.2, y0 - 0.5, zt, bx + 2.2, y0 + 0.5, top + 0.1),
-            box("p2", bx - 0.5, y0 - 2.2, zt, bx + 0.5, y0 + 2.2, top + 0.1))
-    else:
+    lab = BTN_LABEL[k]
+    color = {"minus": C_DARK, "run": C_ORANGE, "plus": C_DARK}[k]
+    y0 = BB_D / 2
+    if k == "run":
+        top = BZ_PILL
+        cap = finish("Kapsel_run", rrect_bm(bx - PILL_L / 2, y0 - PILL_W / 2, CAP_BOT, bx + PILL_L / 2, y0 + PILL_W / 2,
+                                              top + 3.0, PILL_W / 2), "Kapsle", color)
+        dome = bmesh.new()
+        bmesh.ops.create_uvsphere(dome, u_segments=96, v_segments=48, radius=DOME_R)
+        bmesh.ops.translate(dome, vec=(bx, y0, top - DOME_R), verts=dome.verts)
+        intersect(cap, tmp("kopula", dome))                       # lekko wypukła tabletka
+        union(cap, finish("kolnierz", rrect_bm(bx - PILL_L / 2 - 0.8, y0 - PILL_W / 2 - 0.8, CAP_BOT,
+                                               bx + PILL_L / 2 + 0.8, y0 + PILL_W / 2 + 0.8, CAP_BOT + 0.6,
+                                               PILL_W / 2 + 0.8), "tmp", T))
+        zt = top - 0.4
         cut(cap, finish("tri", prism_bm([(bx - 1.6, y0 - 2.1), (bx + 2.3, y0), (bx - 1.6, y0 + 2.1)], zt, top + 0.1), "tmp", T))
+    else:
+        cap = cyl("Kapsel_" + lab, bx, y0, CAP_BOT, BZ_TOP + 2.0, CAP_R, "Kapsle", color, seg=48)
+        surf = cyl("powierzchnia", y0, BZ_TOP - RA, bx - 8, bx + 8, SURF_R, seg=96, axis="X")
+        intersect(cap, surf)                                      # górna powierzchnia = zaokrąglenie wierzchołka
+        union(cap, cyl("kolnierz", bx, y0, CAP_BOT, CAP_BOT + 0.6, CAP_FLANGE_R, seg=48))
+        zt = BZ_TOP - 0.15 - 0.4
+        if lab == "-":
+            cut(cap, box("m", bx - 2.2, y0 - 0.5, zt, bx + 2.2, y0 + 0.5, BZ_TOP + 0.5))
+        else:
+            cut(cap, box("p1", bx - 2.2, y0 - 0.5, zt, bx + 2.2, y0 + 0.5, BZ_TOP + 0.5),
+                box("p2", bx - 0.5, y0 - 2.2, zt, bx + 0.5, y0 + 2.2, BZ_TOP + 0.5))
+    cut(cap, box("gniazdo", bx - 2.0, y0 - 2.0, CAP_BOT - 0.1, bx + 2.0, y0 + 2.0, 7.3))
     to_world(cap, M_BTN)
     caps.append(cap)
 
@@ -455,7 +511,7 @@ for name, p in REAR.items():
     to_world(box("el_" + name, bx0, by0, -BT - h, bx1, by1, -BT, "Plytka", C_PART), M_BOARD)
 
 bpcb = finish("PCB_przyciski", rrect_bm(0, 0, -BT, BB_W, BB_D, 0, 2.0), "Plytka_przyciskow", C_PCB)
-for bx in (16.0, 32.0):
+for bx in BTN_SCREW_X:
     cut(bpcb, cyl("o", bx, BB_D / 2, -BT - 0.5, 0.5, 1.1, seg=20))
 to_world(bpcb, M_BTN)
 for k, bx in BTN_X.items():
@@ -466,8 +522,8 @@ for k, bx in BTN_X.items():
     for p_ in parts:
         to_world(p_, M_BTN)
 
-cyl("Glosnik_ramka", SPK_CY, SPK_CZ, WALL, WALL + SPK_FR, SPK_D / 2, "Glosnik", (0.12, 0.12, 0.13, 1), seg=96, axis="X")
-cyl("Glosnik_stozek", SPK_CY, SPK_CZ, WALL + SPK_FR, WALL + SPK_H, 10.0, "Glosnik", (0.2, 0.2, 0.22, 1), seg=64, axis="X")
+cyl("Glosnik_ramka", SPK_CY, SPK_CZ, WE, WE + SPK_FR, SPK_D / 2, "Glosnik", (0.12, 0.12, 0.13, 1), seg=96, axis="X")
+cyl("Glosnik_stozek", SPK_CY, SPK_CZ, WE + SPK_FR, WE + SPK_H, 10.0, "Glosnik", (0.2, 0.2, 0.22, 1), seg=64, axis="X")
 
 # ================================================================ KONTROLA I EKSPORT
 printable = {
@@ -486,9 +542,9 @@ for fname, objs in printable.items():
         d = ob.dimensions
         report.append(f"{ob.name:18s} wymiary {d.x:6.1f} x {d.y:5.1f} x {d.z:5.1f} mm  objętość {vol:9.1f} mm3  krawędzie nie-rozmaitościowe: {bad}")
 print("\n".join(report))
-print(f"Profil: ALPHA {ALPHA} BETA {BETA}  H {H:.1f}  B {B:.1f}  grzbiet {YV - YF:.1f}  s0 {S0}  dh {SOL['dh']}  koszyk y {YB:.1f}..{YB + BAT_W:.1f}")
-print(f"Obrys: L {L:.1f}  płytki w X {XB - 24:.1f}..{XB + 24:.1f}  wnęka koszyka {UA:.1f}..{UB:.1f}  YK {YK:.1f}  Y_CUT {Y_CUT:.1f}")
-print(f"Głośnik: środek (y {SPK_CY:.1f}, z {SPK_CZ:.1f}), r wolne {SPK_FIT:.1f} (potrzeba {SPK_POCKET / 2:.1f})")
+print(f"Trójkąt: bok {B:.1f}  wysokość ostrego wierzchołka {H:.1f}, szczyt po zaokrągleniu {Z_TOP:.1f}  s0 {S0}  koszyk y {YB:.1f}..{YB + BAT_W:.1f}")
+print(f"Obrys: L {L:.1f}  płytki w X {XB - 24:.1f}..{XB + 24:.1f}  płytka przycisków x {XB - BB_W / 2:.1f}..{XB + BB_W / 2:.1f}, z góry {ZB:.1f}  sufit {Z_CEIL:.1f}")
+print(f"Głośnik: środek (y {SPK_CY:.1f}, z {SPK_CZ:.1f}), r wolne {SPK_FIT:.1f} (potrzeba {SPK_POCKET / 2 + 1.9:.1f} z pierścieniem)")
 print(f"Bosy (y, z): {[(round(y, 1), round(z, 1)) for y, z in BOSSES]}")
 
 bpy.ops.wm.save_as_mainfile(filepath=str(OUT / "obudowa-klin.blend"))
@@ -596,39 +652,36 @@ def drop_section(objs):
 
 ALL = ["Korpus", "Pokrywa", "Klapka", "Kapsle", "Styki", "Baterie", "Plytka", "Plytka_przyciskow", "Glosnik"]
 SHELL = ["Korpus", "Pokrywa", "Klapka", "Kapsle"]
-cx, cy, cz = L / 2, B / 2, H / 2
-n_out = Vector((0, NF[0], NF[1]))
-front_c = Vector((XB, *pt_slope(40, 0)))
+cx = L / 2
+n_front = Vector((0, NF[0], NF[1]))
+front_c = Vector((XB, *pt_slope(S0 + 18, 0)))
 
-render("01-przod-iso.png", SHELL, (cx + 150, -170, H + 140), (cx, B * 0.4, H * 0.45), lens=70)
-render("02-przod-prostopadle.png", SHELL, front_c + n_out * 400, front_c, up=(0, math.cos(a_), math.sin(a_)), ortho=135)
-render("03-gora.png", SHELL, (cx, B * 0.5, 500), (cx, B * 0.5, 0), up=(0, 1, 0), ortho=120)
-render("04-bok-lewy-glosnik.png", SHELL, (-300, B / 2, H / 2), (0, B / 2, H / 2), ortho=110)
-render("05-spod-klapka.png", SHELL, (cx, B * 0.5, -300), (cx, B * 0.5, 0), up=(0, 1, 0), ortho=120)
-render("06-spod-koszyk-otwarty.png", ["Korpus", "Pokrywa", "Kapsle", "Styki", "Baterie"], (cx + 60, B * 0.5 - 80, -230), (cx, B * 0.5, 8), up=(0, 1, 0), lens=70)
-render("07-tyl-iso.png", SHELL, (cx - 130, B + 160, H + 130), (cx, B * 0.5, H * 0.4), lens=70)
+render("01-przod-iso.png", SHELL, (cx + 200, -150, H * 0.8 + 120), (cx, B * 0.5, H * 0.4), lens=70)
+render("02-przod-prostopadle.png", SHELL, front_c + n_front * 400, front_c, up=(0, cos_t, sin_t), ortho=140)
+render("03-gora.png", SHELL, (cx, YC, 500), (cx, YC, 0), up=(0, 1, 0), ortho=130)
+render("04-bok-lewy-glosnik.png", SHELL, (-300, B / 2, H / 2), (0, B / 2, H / 2), ortho=120)
+render("05-spod-klapka.png", SHELL, (cx, B * 0.5, -300), (cx, B * 0.5, 0), up=(0, 1, 0), ortho=130)
+render("06-spod-koszyk-otwarty.png", ["Korpus", "Pokrywa", "Kapsle", "Styki", "Baterie"], (cx + 60, B * 0.5 - 90, -230), (cx, B * 0.5, 8), up=(0, 1, 0), lens=70)
+render("07-tyl-iso.png", SHELL, (cx - 150, B + 180, H * 0.8 + 100), (cx, B * 0.5, H * 0.4), lens=70)
 
-# pokrywa zdjęta razem z płytkami: przesunięta w górę i do przodu po normalnej frontu
-lift = n_out * 70
+# pokrywa zdjęta razem z płytkami: podnoszona pionowo (pokrywa obejmuje wierzchołek, więc tylko w górę)
+lift = Vector((0, 0, 70))
 for g in ("Pokrywa", "Kapsle", "Plytka", "Plytka_przyciskow"):
     for o in GROUPS[g]:
         o.location += lift
-render("08-pokrywa-zdjeta.png", ALL, (cx + 170, -150, H + 190), (cx, B * 0.45, H * 0.45), lens=60)
-for g in ("Pokrywa", "Kapsle", "Plytka", "Plytka_przyciskow"):
-    for o in GROUPS[g]:
-        o.location -= lift
-# tył pokrywy: widok na płytkę od strony elementów
-for g in ("Pokrywa", "Kapsle", "Plytka", "Plytka_przyciskow"):
-    for o in GROUPS[g]:
-        o.location += lift
-render("09-pokrywa-od-tylu.png", ["Pokrywa", "Kapsle", "Plytka", "Plytka_przyciskow"], (cx - 100, B * 0.9 + 130, H * 0.1 - 60), (cx, B * 0.45 + lift.y, H * 0.5 + lift.z), lens=70)
+render("08-pokrywa-zdjeta.png", ALL, (cx + 300, -240, H * 0.8 + 200), (cx, B * 0.45, H * 0.8), lens=50)
+render("09-pokrywa-od-tylu.png", ["Pokrywa", "Kapsle", "Plytka", "Plytka_przyciskow"], (cx - 60, B + 90, H * 0.4 + lift.z), (cx, B * 0.45, H * 0.5 + lift.z), lens=65)
 for g in ("Pokrywa", "Kapsle", "Plytka", "Plytka_przyciskow"):
     for o in GROUPS[g]:
         o.location -= lift
 sec = make_section("x", XB)
 render("10-przekroj-poprzeczny.png", ["Przekroj"], (-400, B / 2, H / 2), (XB, B / 2, H / 2), ortho=120)
 drop_section(sec)
-render("11-przyciski-zblizenie.png", SHELL, (XB + 50, YK - 80, H + 70), (XB, YK + 8, H - 3), lens=95)
+sec = make_section("x", XB + BTN_X["plus"] - BTN_X["run"])        # przekrój przez przycisk "+"
+render("11-przekroj-przycisk-plus.png", ["Przekroj"], (-400, YC, Z_TOP - 20), (XB, YC, Z_TOP - 20), ortho=60)
+drop_section(sec)
+render("12-przyciski-zblizenie.png", SHELL, (XB + 55, YC - 70, Z_TOP + 60), (XB, YC, Z_TOP - 2), lens=95)
+render("13-przyciski-z-gory.png", SHELL, (XB, YC, Z_TOP + 200), (XB, YC, Z_TOP), up=(0, 1, 0), ortho=60)
 
 for ob in bpy.data.objects:
     ob.hide_render = False

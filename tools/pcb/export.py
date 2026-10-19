@@ -30,10 +30,10 @@ def layout_json():
         d["derived"]["front_free_zone_above_board"] = "everything on the front except the OLED module must stay below 2.0 mm (solder joints of the back parts)"
         d["button_board"] = dict(
             note="separate board with the 3 buttons, wired to the KEY pads of the main board",
-            width=48.0, depth=16.0, thickness=B.P["thickness"], corner_radius=2.0,
-            buttons=[dict(label="minus", ref="S3", x=8.0, y=8.0), dict(label="run", ref="S1", x=24.0, y=8.0),
-                     dict(label="plus", ref="S2", x=40.0, y=8.0)],
-            mounting_holes=[dict(x=16.0, y=8.0, diameter=2.2), dict(x=32.0, y=8.0, diameter=2.2)],
+            width=52.0, depth=16.0, thickness=B.P["thickness"], corner_radius=2.0,
+            buttons=[dict(label="minus", ref="S3", x=8.0, y=8.0), dict(label="run", ref="S1", x=26.0, y=8.0),
+                     dict(label="plus", ref="S2", x=44.0, y=8.0)],
+            mounting_holes=[dict(x=16.0, y=8.0, diameter=2.2), dict(x=36.0, y=8.0, diameter=2.2)],
             wires=dict(KEY1="GND (S1, S2 common)", KEY2="PB3 (S1 run)", KEY3="PB4 (S2 plus, S3 minus)",
                        KEY4="S3 low side (to R6 on the main board)"))
     return d
