@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 498" width="1040" height="498" font-family="Helvetica, Arial, sans-serif">
+<rect width="100%" height="100%" fill="#fff"/>
+<text x="40" y="22" font-size="12" font-weight="bold">Rzut z boku: wysokości elementów (wszystkie elementy rzutowane na płaszczyznę x–z; x w prawo)</text>
+<rect x="40.0" y="186.0" width="960.0" height="32.0" fill="#2f6b3a" stroke="#222" stroke-width="1"/>
+<rect x="140.0" y="112.0" width="760.0" height="24.0" fill="#16335f" stroke="#222" stroke-width="1"/>
+<text x="520.0" y="127.0" font-size="9" text-anchor="middle" fill="#111">OLED</text>
+<rect x="270.0" y="56.0" width="500.0" height="56.0" fill="#05070b" stroke="#222" stroke-width="1"/>
+<rect x="144.0" y="136.0" width="52.0" height="50.0" fill="#555" stroke="#222" stroke-width="1"/>
+<rect x="80.0" y="100.0" width="240.0" height="86.0" fill="#3a3a40" stroke="#222" stroke-width="1"/>
+<text x="200.0" y="146.0" font-size="9" text-anchor="middle" fill="#111">S3</text>
+<rect x="129.0" y="76.0" width="142.0" height="24.0" fill="#202024" stroke="#222" stroke-width="1"/>
+<rect x="162.0" y="40.0" width="76.0" height="36.0" fill="#555" stroke="#222" stroke-width="1"/>
+<rect x="400.0" y="100.0" width="240.0" height="86.0" fill="#3a3a40" stroke="#222" stroke-width="1"/>
+<text x="520.0" y="146.0" font-size="9" text-anchor="middle" fill="#111">S1</text>
+<rect x="449.0" y="76.0" width="142.0" height="24.0" fill="#202024" stroke="#222" stroke-width="1"/>
+<rect x="482.0" y="40.0" width="76.0" height="36.0" fill="#555" stroke="#222" stroke-width="1"/>
+<rect x="720.0" y="100.0" width="240.0" height="86.0" fill="#3a3a40" stroke="#222" stroke-width="1"/>
+<text x="840.0" y="146.0" font-size="9" text-anchor="middle" fill="#111">S2</text>
+<rect x="769.0" y="76.0" width="142.0" height="24.0" fill="#202024" stroke="#222" stroke-width="1"/>
+<rect x="802.0" y="40.0" width="76.0" height="36.0" fill="#555" stroke="#222" stroke-width="1"/>
+<rect x="230.0" y="218.0" width="208.0" height="90.0" fill="#2b2b30" stroke="#222" stroke-width="1"/>
+<text x="334.0" y="266.0" font-size="9" text-anchor="middle" fill="#111">gniazdo</text>
+<rect x="254.0" y="308.0" width="160.0" height="80.0" fill="#111" stroke="#222" stroke-width="1"/>
+<text x="334.0" y="351.0" font-size="9" text-anchor="middle" fill="#111">ATtiny</text>
+<rect x="444.0" y="218.0" width="110.0" height="150.0" fill="#e8d3a6" stroke="#222" stroke-width="1"/>
+<text x="499.0" y="296.0" font-size="9" text-anchor="middle" fill="#111">R1</text>
+<rect x="550.0" y="218.0" width="60.0" height="150.0" fill="#e8d3a6" stroke="#222" stroke-width="1"/>
+<text x="580.0" y="296.0" font-size="9" text-anchor="middle" fill="#111">R2</text>
+<rect x="756.0" y="218.0" width="110.0" height="150.0" fill="#e8d3a6" stroke="#222" stroke-width="1"/>
+<text x="811.0" y="296.0" font-size="9" text-anchor="middle" fill="#111">R3</text>
+<rect x="361.0" y="218.0" width="182.0" height="80.0" fill="#e8d3a6" stroke="#222" stroke-width="1"/>
+<text x="452.0" y="261.0" font-size="9" text-anchor="middle" fill="#111">R4</text>
+<rect x="574.0" y="218.0" width="60.0" height="150.0" fill="#e8d3a6" stroke="#222" stroke-width="1"/>
+<text x="604.0" y="296.0" font-size="9" text-anchor="middle" fill="#111">R5</text>
+<rect x="107.0" y="218.0" width="110.0" height="150.0" fill="#e8d3a6" stroke="#222" stroke-width="1"/>
+<text x="162.0" y="296.0" font-size="9" text-anchor="middle" fill="#111">R6</text>
+<rect x="446.0" y="218.0" width="122.0" height="120.0" fill="#e8d3a6" stroke="#222" stroke-width="1"/>
+<text x="507.0" y="281.0" font-size="9" text-anchor="middle" fill="#111">C1</text>
+<rect x="69.0" y="218.0" width="88.0" height="120.0" fill="#e8d3a6" stroke="#222" stroke-width="1"/>
+<text x="113.0" y="281.0" font-size="9" text-anchor="middle" fill="#111">C2</text>
+<rect x="437.0" y="218.0" width="100.0" height="160.0" fill="#e8d3a6" stroke="#222" stroke-width="1"/>
+<text x="487.0" y="301.0" font-size="9" text-anchor="middle" fill="#111">C3</text>
+<rect x="684.0" y="218.0" width="108.0" height="174.0" fill="#e8d3a6" stroke="#222" stroke-width="1"/>
+<text x="738.0" y="308.0" font-size="9" text-anchor="middle" fill="#111">D1</text>
+<rect x="632.0" y="218.0" width="104.0" height="110.0" fill="#e8d3a6" stroke="#222" stroke-width="1"/>
+<text x="684.0" y="276.0" font-size="9" text-anchor="middle" fill="#111">Q1</text>
+<rect x="630.0" y="218.0" width="48.0" height="0.0" fill="#e8d3a6" stroke="#222" stroke-width="1"/>
+<text x="654.0" y="221.0" font-size="9" text-anchor="middle" fill="#111">SPK</text>
+<rect x="327.0" y="218.0" width="100.0" height="0.0" fill="#e8d3a6" stroke="#222" stroke-width="1"/>
+<text x="377.0" y="221.0" font-size="9" text-anchor="middle" fill="#111">BAT</text>
+<line x1="40" y1="398.0" x2="1000" y2="398.0" stroke="#b00" stroke-dasharray="4 3"/>
+<text x="44" y="410.0" font-size="10" fill="#b00">obwiednia tyłu: 9.0 mm pod płytką</text>
+<line x1="40" y1="40.0" x2="1000" y2="40.0" stroke="#080" stroke-dasharray="4 3"/>
+<text x="44" y="36.0" font-size="10" fill="#080">góra trzpienia przycisku: 7.3 mm nad płytką</text>
+</svg>

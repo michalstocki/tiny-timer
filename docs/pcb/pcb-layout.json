@@ -1,0 +1,801 @@
+{
+ "units": "mm",
+ "frame": "front view (top side), origin lower-left of the outline, +x right, +y up",
+ "board": {
+  "width": 48.0,
+  "height": 50.0,
+  "thickness": 1.6,
+  "corner_radius": 3.0
+ },
+ "mounting_holes": [
+  {
+   "x": 3.5,
+   "y": 3.5,
+   "diameter": 2.7,
+   "keepout_radius": 3.2
+  },
+  {
+   "x": 44.5,
+   "y": 3.5,
+   "diameter": 2.7,
+   "keepout_radius": 3.2
+  },
+  {
+   "x": 3.5,
+   "y": 46.5,
+   "diameter": 2.7,
+   "keepout_radius": 3.2
+  },
+  {
+   "x": 44.5,
+   "y": 46.5,
+   "diameter": 2.7,
+   "keepout_radius": 3.2
+  }
+ ],
+ "parts": {
+  "OLED": {
+   "footprint": "oled",
+   "side": "top",
+   "value": "SSD1306 128x32 module",
+   "rotation": 0,
+   "height_above_board": 6.5,
+   "pads": {
+    "SDA": {
+     "x": 6.5,
+     "y": 36.31
+    },
+    "SCL": {
+     "x": 6.5,
+     "y": 33.77
+    },
+    "VCC": {
+     "x": 6.5,
+     "y": 31.23
+    },
+    "GND": {
+     "x": 6.5,
+     "y": 28.69
+    }
+   },
+   "body": [
+    5.0,
+    26.5,
+    43.0,
+    38.5
+   ]
+  },
+  "S3": {
+   "footprint": "b3f",
+   "side": "top",
+   "value": "B3F-4055 (-)",
+   "rotation": 0,
+   "height_above_board": 7.3,
+   "pads": {
+    "4": {
+     "x": 1.75,
+     "y": 20.0
+    },
+    "3": {
+     "x": 14.25,
+     "y": 20.0
+    },
+    "2": {
+     "x": 1.75,
+     "y": 15.0
+    },
+    "1": {
+     "x": 14.25,
+     "y": 15.0
+    }
+   },
+   "body": [
+    2.0,
+    11.5,
+    14.0,
+    23.5
+   ]
+  },
+  "S1": {
+   "footprint": "b3f",
+   "side": "top",
+   "value": "B3F-4055 (run)",
+   "rotation": 0,
+   "height_above_board": 7.3,
+   "pads": {
+    "4": {
+     "x": 17.75,
+     "y": 20.0
+    },
+    "3": {
+     "x": 30.25,
+     "y": 20.0
+    },
+    "2": {
+     "x": 17.75,
+     "y": 15.0
+    },
+    "1": {
+     "x": 30.25,
+     "y": 15.0
+    }
+   },
+   "body": [
+    18.0,
+    11.5,
+    30.0,
+    23.5
+   ]
+  },
+  "S2": {
+   "footprint": "b3f",
+   "side": "top",
+   "value": "B3F-4055 (+)",
+   "rotation": 0,
+   "height_above_board": 7.3,
+   "pads": {
+    "4": {
+     "x": 33.75,
+     "y": 20.0
+    },
+    "3": {
+     "x": 46.25,
+     "y": 20.0
+    },
+    "2": {
+     "x": 33.75,
+     "y": 15.0
+    },
+    "1": {
+     "x": 46.25,
+     "y": 15.0
+    }
+   },
+   "body": [
+    34.0,
+    11.5,
+    46.0,
+    23.5
+   ]
+  },
+  "U1": {
+   "footprint": "dip8",
+   "side": "bottom",
+   "value": "ATtiny13A in DIP-8 socket",
+   "rotation": 0,
+   "height_above_board": 4.5,
+   "pads": {
+    "1": {
+     "x": 18.5,
+     "y": 10.05
+    },
+    "2": {
+     "x": 18.5,
+     "y": 7.51
+    },
+    "3": {
+     "x": 18.5,
+     "y": 4.97
+    },
+    "4": {
+     "x": 18.5,
+     "y": 2.43
+    },
+    "5": {
+     "x": 10.88,
+     "y": 2.43
+    },
+    "6": {
+     "x": 10.88,
+     "y": 4.97
+    },
+    "7": {
+     "x": 10.88,
+     "y": 7.51
+    },
+    "8": {
+     "x": 10.88,
+     "y": 10.05
+    }
+   },
+   "body": [
+    9.5,
+    1.15,
+    19.9,
+    11.45
+   ]
+  },
+  "R1": {
+   "footprint": "res_v",
+   "side": "bottom",
+   "value": "15 k",
+   "rotation": 0,
+   "height_above_board": 7.5,
+   "pads": {
+    "1": {
+     "x": 24.2,
+     "y": 10.0
+    },
+    "2": {
+     "x": 21.66,
+     "y": 10.0
+    }
+   },
+   "body": [
+    20.2,
+    8.5,
+    25.7,
+    11.5
+   ]
+  },
+  "R2": {
+   "footprint": "res_v",
+   "side": "bottom",
+   "value": "470",
+   "rotation": 90,
+   "height_above_board": 7.5,
+   "pads": {
+    "1": {
+     "x": 27.0,
+     "y": 42.3
+    },
+    "2": {
+     "x": 27.0,
+     "y": 39.76
+    }
+   },
+   "body": [
+    25.5,
+    38.3,
+    28.5,
+    43.8
+   ]
+  },
+  "R3": {
+   "footprint": "res_v",
+   "side": "bottom",
+   "value": "47 k",
+   "rotation": 180,
+   "height_above_board": 7.5,
+   "pads": {
+    "1": {
+     "x": 37.3,
+     "y": 39.8
+    },
+    "2": {
+     "x": 39.84,
+     "y": 39.8
+    }
+   },
+   "body": [
+    35.8,
+    38.3,
+    41.3,
+    41.3
+   ]
+  },
+  "R4": {
+   "footprint": "res_h",
+   "side": "bottom",
+   "value": "33, 1/2 W",
+   "rotation": 0,
+   "height_above_board": 4.0,
+   "pads": {
+    "1": {
+     "x": 26.95,
+     "y": 45.5
+    },
+    "2": {
+     "x": 14.25,
+     "y": 45.5
+    }
+   },
+   "body": [
+    16.05,
+    43.5,
+    25.15,
+    47.5
+   ]
+  },
+  "R5": {
+   "footprint": "res_v",
+   "side": "bottom",
+   "value": "8.2 k",
+   "rotation": 90,
+   "height_above_board": 7.5,
+   "pads": {
+    "1": {
+     "x": 28.2,
+     "y": 8.25
+    },
+    "2": {
+     "x": 28.2,
+     "y": 5.71
+    }
+   },
+   "body": [
+    26.7,
+    4.25,
+    29.7,
+    9.75
+   ]
+  },
+  "R6": {
+   "footprint": "res_v",
+   "side": "bottom",
+   "value": "8.2 k",
+   "rotation": 0,
+   "height_above_board": 7.5,
+   "pads": {
+    "1": {
+     "x": 7.35,
+     "y": 10.2
+    },
+    "2": {
+     "x": 4.81,
+     "y": 10.2
+    }
+   },
+   "body": [
+    3.35,
+    8.7,
+    8.85,
+    11.7
+   ]
+  },
+  "C1": {
+   "footprint": "cap5",
+   "side": "bottom",
+   "value": "100 nF",
+   "rotation": 0,
+   "height_above_board": 6.0,
+   "pads": {
+    "1": {
+     "x": 25.9,
+     "y": 5.75
+    },
+    "2": {
+     "x": 20.82,
+     "y": 5.75
+    }
+   },
+   "body": [
+    20.3,
+    3.55,
+    26.4,
+    7.95
+   ]
+  },
+  "C2": {
+   "footprint": "cap5",
+   "side": "bottom",
+   "value": "100 nF",
+   "rotation": 90,
+   "height_above_board": 6.0,
+   "pads": {
+    "1": {
+     "x": 3.65,
+     "y": 33.95
+    },
+    "2": {
+     "x": 3.65,
+     "y": 28.87
+    }
+   },
+   "body": [
+    1.45,
+    28.35,
+    5.85,
+    34.45
+   ]
+  },
+  "C3": {
+   "footprint": "elco5",
+   "side": "bottom",
+   "value": "100 uF",
+   "rotation": 0,
+   "height_above_board": 8.0,
+   "pads": {
+    "+": {
+     "x": 23.65,
+     "y": 40.0
+    },
+    "-": {
+     "x": 21.11,
+     "y": 40.0
+    }
+   },
+   "body": [
+    19.85,
+    37.4,
+    24.85,
+    42.6
+   ]
+  },
+  "D1": {
+   "footprint": "led",
+   "side": "bottom",
+   "value": "LED",
+   "rotation": 270,
+   "height_above_board": 8.7,
+   "pads": {
+    "A": {
+     "x": 34.9,
+     "y": 43.0
+    },
+    "K": {
+     "x": 34.9,
+     "y": 45.54
+    }
+   },
+   "body": [
+    32.2,
+    41.7,
+    37.6,
+    46.9
+   ]
+  },
+  "Q1": {
+   "footprint": "to92",
+   "side": "bottom",
+   "value": "BC547B",
+   "rotation": 180,
+   "height_above_board": 5.5,
+   "pads": {
+    "C": {
+     "x": 29.66,
+     "y": 40.35
+    },
+    "B": {
+     "x": 32.2,
+     "y": 40.35
+    },
+    "E": {
+     "x": 34.74,
+     "y": 40.35
+    }
+   },
+   "body": [
+    29.6,
+    36.15,
+    34.8,
+    41.05
+   ]
+  },
+  "SPK": {
+   "footprint": "wire2",
+   "side": "bottom",
+   "value": "speaker leads",
+   "rotation": 90,
+   "height_above_board": 0.0,
+   "pads": {
+    "1": {
+     "x": 30.7,
+     "y": 45.4
+    },
+    "2": {
+     "x": 30.7,
+     "y": 42.86
+    }
+   },
+   "body": [
+    29.5,
+    41.6,
+    31.9,
+    46.6
+   ]
+  },
+  "BAT": {
+   "footprint": "wire2",
+   "side": "bottom",
+   "value": "battery leads",
+   "rotation": 180,
+   "height_above_board": 0.0,
+   "pads": {
+    "1": {
+     "x": 15.55,
+     "y": 40.1
+    },
+    "2": {
+     "x": 18.09,
+     "y": 40.1
+    }
+   },
+   "body": [
+    14.35,
+    38.9,
+    19.35,
+    41.3
+   ]
+  }
+ },
+ "nets": {
+  "VCC": [
+   [
+    "U1",
+    "8"
+   ],
+   [
+    "R1",
+    "2"
+   ],
+   [
+    "R5",
+    "2"
+   ],
+   [
+    "R4",
+    "2"
+   ],
+   [
+    "C1",
+    "2"
+   ],
+   [
+    "C2",
+    "2"
+   ],
+   [
+    "C3",
+    "+"
+   ],
+   [
+    "OLED",
+    "VCC"
+   ],
+   [
+    "BAT",
+    "1"
+   ]
+  ],
+  "GND": [
+   [
+    "U1",
+    "4"
+   ],
+   [
+    "Q1",
+    "E"
+   ],
+   [
+    "R3",
+    "2"
+   ],
+   [
+    "R6",
+    "2"
+   ],
+   [
+    "C1",
+    "1"
+   ],
+   [
+    "C2",
+    "1"
+   ],
+   [
+    "C3",
+    "-"
+   ],
+   [
+    "OLED",
+    "GND"
+   ],
+   [
+    "BAT",
+    "2"
+   ],
+   [
+    "S1",
+    "2"
+   ],
+   [
+    "S1",
+    "1"
+   ],
+   [
+    "S2",
+    "2"
+   ],
+   [
+    "S2",
+    "1"
+   ]
+  ],
+  "RESET": [
+   [
+    "U1",
+    "1"
+   ],
+   [
+    "R1",
+    "1"
+   ]
+  ],
+  "PB3": [
+   [
+    "U1",
+    "2"
+   ],
+   [
+    "S1",
+    "4"
+   ],
+   [
+    "S1",
+    "3"
+   ]
+  ],
+  "PB4": [
+   [
+    "U1",
+    "3"
+   ],
+   [
+    "R5",
+    "1"
+   ],
+   [
+    "S2",
+    "4"
+   ],
+   [
+    "S2",
+    "3"
+   ],
+   [
+    "S3",
+    "4"
+   ],
+   [
+    "S3",
+    "3"
+   ]
+  ],
+  "S3LOW": [
+   [
+    "S3",
+    "2"
+   ],
+   [
+    "S3",
+    "1"
+   ],
+   [
+    "R6",
+    "1"
+   ]
+  ],
+  "SDA": [
+   [
+    "U1",
+    "5"
+   ],
+   [
+    "OLED",
+    "SDA"
+   ]
+  ],
+  "SCL": [
+   [
+    "U1",
+    "7"
+   ],
+   [
+    "OLED",
+    "SCL"
+   ]
+  ],
+  "PB1": [
+   [
+    "U1",
+    "6"
+   ],
+   [
+    "R2",
+    "1"
+   ]
+  ],
+  "BASE": [
+   [
+    "R2",
+    "2"
+   ],
+   [
+    "Q1",
+    "B"
+   ],
+   [
+    "R3",
+    "1"
+   ]
+  ],
+  "COLL": [
+   [
+    "Q1",
+    "C"
+   ],
+   [
+    "SPK",
+    "2"
+   ],
+   [
+    "D1",
+    "A"
+   ]
+  ],
+  "SPKR": [
+   [
+    "SPK",
+    "1"
+   ],
+   [
+    "D1",
+    "K"
+   ],
+   [
+    "R4",
+    "1"
+   ]
+  ]
+ },
+ "derived": {
+  "board_center": [
+   24.0,
+   25.0
+  ],
+  "oled_module": {
+   "rect": [
+    5.0,
+    26.5,
+    43.0,
+    38.5
+   ],
+   "pcb_thickness_assumed": 1.2,
+   "total_thickness_above_board": 6.5,
+   "glass_rect": [
+    11.5,
+    27.5,
+    36.5,
+    37.5
+   ]
+  },
+  "buttons": {
+   "S3": {
+    "centre": [
+     8.0,
+     17.5
+    ],
+    "body": 12.0,
+    "plunger_square": 3.8,
+    "cap_diameter": 7.1,
+    "top_above_board": 7.3,
+    "label": "minus"
+   },
+   "S1": {
+    "centre": [
+     24.0,
+     17.5
+    ],
+    "body": 12.0,
+    "plunger_square": 3.8,
+    "cap_diameter": 7.1,
+    "top_above_board": 7.3,
+    "label": "run"
+   },
+   "S2": {
+    "centre": [
+     40.0,
+     17.5
+    ],
+    "body": 12.0,
+    "plunger_square": 3.8,
+    "cap_diameter": 7.1,
+    "top_above_board": 7.3,
+    "label": "plus"
+   }
+  },
+  "back_envelope_height": 9.0,
+  "front_free_zone_above_board": "everything on the front except the OLED module and the buttons must stay below 2.0 mm (solder joints of the back parts)"
+ }
+}
