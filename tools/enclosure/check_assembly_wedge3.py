@@ -32,7 +32,7 @@ def disjoint(a, b):
     return any(a1[i] < b0[i] or b1[i] < a0[i] for i in range(3))
 
 
-def overlap(a, b):
+def overlap_once(a, b):
     if disjoint(a, b):
         return 0.0
     tmp = bpy.data.objects.new("t", a.data.copy())
@@ -47,6 +47,10 @@ def overlap(a, b):
     for o in (tmp, t2):
         bpy.data.objects.remove(o, do_unlink=True)
     return v
+
+
+def overlap(a, b):
+    return max(overlap_once(a, b), overlap_once(b, a))
 
 
 def of(*groups):

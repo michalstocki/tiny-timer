@@ -44,7 +44,8 @@ Z_POCKET = 1.6
 B_ZL = Z_POCKET + B_RCH
 B_ZU = B_ZL + math.sqrt(B_DIST ** 2 - (B_PITCH / 2) ** 2)
 FRONT_BAND_CLEAR = 6.5                # oś ogniwa od wewnętrznej płaszczyzny frontu (5,25 + 1,0 pogrubienie zakładki + 0,25 luzu)
-LIP_B = 10.0                          # długość języka zatrzasku na tyle (po ściance)
+LIP_B = 10.0                          # długość języka zatrzasku na tyle (po ściance); klin 3.1 używa 5 mm
+S_TANG_B = RB / math.tan(math.radians(30))   # od wierzchołka podstawy do końca prostego odcinka tyłu (kąt 60°)
 HEIGHT_OVERRIDE = {"U1": 8.5}
 WIRE_PAD_H = 4.0                      # nad polami przewodów zostaje miejsce na wygięcie przewodów
 
@@ -159,7 +160,7 @@ def min_dist(a, b):
     return math.sqrt(d2.min())
 
 
-def solve(layout_path, ra=RA, t_top=T_TOP, plug_h=PLUG_H, sides=None, verbose=False, skip=()):
+def solve(layout_path, ra=RA, t_top=T_TOP, plug_h=PLUG_H, sides=None, verbose=False, skip=(), plug_bundle=True, lip_b=None, front_clear=None):
     """Zwraca najmniejsze rozwiązanie albo None. plug_zone=True: wtyczki poza zasięgiem X ogniw i płytki (osobna strefa)."""
     bw, bh, parts = load_pcb(layout_path)
     for side in sides or [x * 0.5 for x in range(100, 180)]:
@@ -188,7 +189,8 @@ def solve(layout_path, ra=RA, t_top=T_TOP, plug_h=PLUG_H, sides=None, verbose=Fa
         if not disp:
             continue
         # płytka główna na tyle: położenie dalszego brzegu płytki sb_far (od ostrego wierzchołka), obrót o 180° lub nie
-        s_back_max = side - 2.9 - 0.3 - LIP_B - 2.0        # pod pokrywą musi zostać miejsce na język zatrzasku i jego żebro
+        # warga zatrzasku (lip_b + 0,5) musi się zmieścić na prostym odcinku tyłu (kończy się 8,66 mm od narożnika podstawy)
+        s_back_max = side - S_TANG_B + 0.3 - ((lip_b if lip_b is not None else LIP_B) + 0.5) - 2.0
         pcb = []
         for flip in (False, True):
             for sb_far in [x * 0.5 for x in range(int(2 * (bh + 5)), int(2 * s_back_max))]:
@@ -208,13 +210,13 @@ def solve(layout_path, ra=RA, t_top=T_TOP, plug_h=PLUG_H, sides=None, verbose=Fa
             cs = tubes(yc)
             if not all(sdist_inside(inner, [q])[0] >= B_RCH - 0.5 for q in cs):
                 continue
-            if any(q[0] * sin_t - q[1] * cos_t - PANEL < FRONT_BAND_CLEAR for q in cs):
+            if any(q[0] * sin_t - q[1] * cos_t - PANEL < (FRONT_BAND_CLEAR if front_clear is None else front_clear) for q in cs):
                 continue            # zakładka frontu pogrubia ściankę od wnętrza o ok. 1 mm
             if "bundle" in skip:
                 return dict(side=side, yc=yc)
             if not bundle_clear(bb, yc):
                 continue
-            dsel = [d for d in disp if bundle_clear(np.vstack([d[1], d[2]]), yc, sweep=True)]
+            dsel = [d for d in disp if bundle_clear(np.vstack([d[1], d[2]]) if plug_bundle else d[1], yc, sweep=True)]
             if not dsel:
                 continue
             psel = [p for p in pcb if bundle_clear(p[2], yc, sweep=True)]

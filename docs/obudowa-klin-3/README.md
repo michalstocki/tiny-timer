@@ -1,5 +1,7 @@
 # Obudowa minutnika: wariant „klin 3” (ciaśniejsze upakowanie)
 
+> **Uwaga:** w tym wariancie język zatrzasku (10 mm) wystaje ok. 3 mm poza prosty odcinek tyłu, w zaokrąglenie narożnika (kolizje tego nie wykrywają). Poprawione w [klinie 3.1](../obudowa-klin-3.1/README.md), który ma też inne rozwiązanie szwów i zatrzasku.
+
 Kolejna iteracja leżącego graniastosłupa o podstawie zaokrąglonego trójkąta równobocznego ([klin 1](../obudowa-klin/README.md), [klin 2](../obudowa-klin-2/README.md)). Cel: jak najmniejsze wymiary. Wariant powstał ze szkicu przekroju od właściciela, który potwierdził układ opisany niżej. Wcześniejsze warianty zostają bez zmian.
 
 ```bash

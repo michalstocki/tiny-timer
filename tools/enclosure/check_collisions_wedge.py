@@ -17,7 +17,7 @@ def volume(ob):
     return v
 
 
-def overlap(a, b):
+def overlap_once(a, b):
     tmp = bpy.data.objects.new("t", a.data.copy())
     bpy.context.scene.collection.objects.link(tmp)
     m = tmp.modifiers.new("i", "BOOLEAN")
@@ -29,6 +29,11 @@ def overlap(a, b):
     for o in (tmp, t2):
         bpy.data.objects.remove(o, do_unlink=True)
     return v
+
+
+def overlap(a, b):
+    """Objętość wspólna liczona w obu kolejnościach (dokładne booleany bywają asymetryczne przy stykających się powierzchniach)."""
+    return max(overlap_once(a, b), overlap_once(b, a))
 
 
 SOLID = ("Korpus", "Pokrywa", "Klapka")
