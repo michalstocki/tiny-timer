@@ -171,7 +171,7 @@ STAGE_CHECKS = {
     3: ("work", [
         cont("T+9", "T-9", "plus nie jest zwarty z minusem", False),
         cont("d20", "T-9", "baza nie jest zwarta z masą", False),
-        res("d20", "T-9", "R3", "≈ 47 kΩ|baza do masy przez R3"),
+        res("d20", "T-9", "R3", "≈ 47 kΩ|baza do masy przez R3; **mierz przy wyjętym tranzystorze albo czerwoną sondą na T−9** (przy odwrotnej polaryzacji złącze baza–emiter tranzystora przewodzi i odczyt spada prawie do 0)"),
         cont("d13", "d20", "PB1 nie jest zwarte z bazą (jest 470 Ω)", False),
         res("d13", "d20", "R2", "≈ 470 Ω|pin 6 (PB1) do bazy przez szary przewód i R2; układ scalony może obniżyć odczyt"),
         cont("a21", "T-9", "emiter (kolumna 21) jest połączony z masą"),
@@ -233,6 +233,12 @@ def steps_md(stage):
         txt = step_text(it)
         if it.get("optional"):
             txt = "**(opcjonalnie)** " + txt
+        if it["kind"] == "wire" and ":" not in it["a"] + it["b"]:
+            def colof(h):
+                return int(h[2:]) if h[:2] in d.RAILS else int(h[1:])
+            span = abs(colof(it["a"]) - colof(it["b"]))
+            if span >= 12:
+                txt += " **Długi przewód**: ok. %d cm." % (round(span * 0.254 + 3))
         note = it.get("note", "")
         if note:
             txt += " — %s." % note.rstrip(".")
@@ -265,12 +271,12 @@ def bom_md():
     rows.append("| Kondensator elektrolityczny 100 µF, min. 10 V | 1 | **polaryzacja**: długa nóżka = plus | C3 |")
     rows.append("| Tranzystor BC547A | 1 | wyprowadzenia C-B-E | Q1 |")
     rows.append("| Dioda LED, dowolna | 1 | **polaryzacja**: długa nóżka = anoda | D1 |")
-    rows.append("| Przycisk tact (4 nóżki) | 3 | „run”, „+”, „−” | S1, S2, S3 |")
+    rows.append("| Przycisk tact **duży (ok. 12 mm, obudowa szeroka na ok. 5 kolumn)**, 4 nóżki | 3 | „run”, „+”, „−”; rozstaw nóżek jak w małych (kolumny co 2) | S1, S2, S3 |")
     rows.append("| Głośnik 6,4 Ω z zabawki | 1 | dwa przewody do przedłużenia | SPK |")
     rows.append("| Moduł OLED 128×32, SSD1306, I2C, 4 piny | 1 | adres 0x3C | OLED |")
     rows.append("| Koszyk 3×AAA z przewodami | 1 | 4,5 V | BAT |")
     rows.append("| Płytka programatora ISP (UNO z ArduinoISP, gniazdo DIP-8, kondensator 10 µF) | 1 | Twoja, gotowa; ATtiny wkładasz do gniazda i programujesz poza układem | |")
-    rows.append("| Płytka stykowa 400 otworów (30 kolumn) | 1 | szyny po obu stronach | |")
+    rows.append("| Płytka stykowa, **60 kolumn** (układ zajmuje kolumny 1–46) | 1 | szyny po obu stronach; w briefie była płytka 400 otworów (30 kolumn), ale duże przyciski się na niej nie mieszczą | |")
     rows.append("")
     rows.append("**Przewody połączeniowe** (liczby z tej instrukcji):")
     rows.append("")
@@ -327,9 +333,10 @@ def build():
     w("  - **B+** = dolna szyna wewnętrzna (bliżej rzędu j), plus;")
     w("  - **B−** = dolna szyna zewnętrzna (przy krawędzi), minus.")
     w("  - Adres szyny zawiera numer kolumny, przy której leży otwór, np. **T+11** = otwór szyny T+ na wysokości kolumny 11.")
-    w("- Układ mieści się w 30 kolumnach. Wszystkie kolumny podane w krokach są liczone od lewej strony płytki.")
+    w("- Płytka ma **60 kolumn**. Obwód zajmuje kolumny 1–30, a trzy duże przyciski kolumny 32–46 (brief zakładał "
+      "płytkę 400 otworów, ale duże przyciski się na niej nie mieszczą). Wszystkie kolumny w krokach są liczone od lewej strony płytki.")
     w("- **Przed zaczęciem sprawdź ciągłość szyn**: multimetr na piszczenie, jedna sonda przy kolumnie 1, "
-      "druga przy kolumnie 30 tej samej szyny. Jeśli szyna jest przerwana w środku (zdarza się w dłuższych "
+      "druga przy kolumnie 46 tej samej szyny. Jeśli szyna jest przerwana w środku (zdarza się w dłuższych "
       "płytkach), połącz obie połówki przewodem.")
     w("- Orientacja: płytka leży przed Tobą, rząd a jest **dalej** od Ciebie (u góry rysunku), rząd j **bliżej**.")
     w("")
@@ -376,7 +383,8 @@ def build():
     w("2. Sprawdź, że nóżki z **różnych** par nie piszczą, dopóki nie wciśniesz przycisku; po wciśnięciu piszczą wszystkie.")
     w("3. Włóż przycisk tak, aby **każda para leżała po jednej stronie rowka** (a nie w poprzek rowka). "
       "Gdyby para leżała w poprzek, przycisk zwierałby rowek na stałe.")
-    w("4. Przycisk „łapie” rowek środkowy: dwie nóżki w rzędzie e, dwie w rzędzie f, w kolumnach odległych o 2.")
+    w("4. Przycisk „łapie” rowek środkowy: dwie nóżki w rzędzie e, dwie w rzędzie f, w kolumnach odległych o 2. "
+      "Duża obudowa (ok. 12 mm) zasłania ok. 5 kolumn i rzędy e–f: dlatego każdy przycisk ma w instrukcji własne 6 kolumn.")
     w("")
     w("### 0.3 Moduł OLED")
     w("")
@@ -473,6 +481,18 @@ def build():
     w("")
     w(checks_md(3))
     w("")
+    w("**Test tranzystora (wyjęty z płytki, miernik w trybie diody ▷|):**")
+    w("")
+    w("| Czerwona sonda (+) | Czarna sonda (−) | Oczekiwane |")
+    w("| --- | --- | --- |")
+    w("| baza (środkowa nóżka) | emiter (prawa) | ok. 0,55–0,75 V |")
+    w("| baza | kolektor (lewa) | ok. 0,55–0,75 V |")
+    w("| emiter lub kolektor | baza | brak przewodzenia („OL” / „1”) |")
+    w("| kolektor ↔ emiter, w obie strony | | brak przewodzenia |")
+    w("")
+    w("Nóżka, która przewodzi do obu pozostałych, gdy jest pod czerwoną sondą, to baza. Ma być w środku. Jeśli baza jest "
+      "gdzie indziej (np. kolejność E-B-C jak w 2N3904), obróć tranzystor w d19/d20/d21 albo napisz, co jest na obudowie.")
+    w("")
     w("**Test na urządzeniu:**")
     w("")
     w("1. Baterię odłącz, wyjmij ATtiny, zaprogramuj `test_tone.hex` w gnieździe (`make flash PROG=test_tone`), włóż układ z powrotem (wcięcie po lewej) i wpnij baterię.")
@@ -523,7 +543,10 @@ def build():
     # --- stage 5
     w("## Etap 5: przyciski")
     w("")
-    w("**Cel:** trzy przyciski i drabinka rezystorowa na PB4.")
+    w("**Cel:** trzy duże przyciski (kolumny 32–46) i drabinka rezystorowa na PB4.")
+    w("")
+    w("Przyciski stoją w wolnej części dużej płytki, po prawej stronie obwodu: „run” w kolumnach 32 i 34, „+” w 38 i 40, „−” w 44 i 46. "
+      "Dwa przewody (pomarańczowy i niebieski „−”) są dłuższe, bo wracają do ATtiny w kolumnach 12–13.")
     w("")
     w("![Etap 5](img/etap-5.svg)")
     w("")

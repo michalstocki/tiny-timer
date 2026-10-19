@@ -44,7 +44,7 @@ Prawdziwa dokładność oscylatora, działanie OLED (inicjalizacja SSD1306 to ty
 
 ## 5. Przyjęte założenia (zmień, jeśli nie pasują)
 
-- ATtiny13A w obudowie **DIP-8** i płytka 400 otworów (30 kolumn): **potwierdzone przez użytkownika.**
+- ATtiny13A w obudowie **DIP-8** potwierdzone. Płytka stykowa ma **60 kolumn** (nie 400 otworów z briefu), bo użytkownik ma tylko duże przyciski tact (obudowa ok. 5 kolumn): obwód w kolumnach 1–30, przyciski w 32–46.
 - Adres OLED 0x3C, 128×32; sygnał 1 s na 2000 Hz (do wyboru testem tonów); minimalny czas 1:00; start odliczania: ekran 2:00, po 1 s 1:59.
 - System: **macOS** (potwierdzone); instrukcja programowania zostaje przy portach `/dev/cu.usbmodem*`.
 - **Programowanie poza układem:** użytkownik ma płytkę programatora z gniazdem DIP-8, UNO z ArduinoISP i kondensatorem 10 µF. Na płytce stykowej nie ma przewodów ISP, kondensatora 10 µF ani zasilania z UNO; zasilanie od Etapu 1 jest z baterii; po każdej zmianie programu ATtiny przechodzi między gniazdem a płytką (procedura w programowanie.md).
