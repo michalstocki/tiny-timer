@@ -13,7 +13,7 @@ import layout  # noqa: F401
 PAIRS = [("C1", "U1", 1.5), ("C2", "OLED", 1.0), ("R1", "U1", 1.5), ("R5", "U1", 1.5),
          ("Q1", "R2", 1.5), ("Q1", "R3", 1.5), ("Q1", "D1", 1.0), ("Q1", "R4", 1.0), ("Q1", "SPK", 1.0),
          ("D1", "SPK", 1.0), ("R4", "SPK", 1.0), ("C3", "Q1", 0.7), ("R6", "S3", 1.5), ("BAT", "C3", 0.7),
-         ("R2", "U1", 0.7)]
+         ("R2", "U1", 0.7), ("R6", "KEY", 1.5), ("KEY", "U1", 0.8)]
 
 
 def _c(ref):
@@ -27,6 +27,8 @@ def cost():
     v = B.violations()
     pair = 0.0
     for a, b, wgt in PAIRS:
+        if a not in B.PARTS or b not in B.PARTS:
+            continue            # pair of another variant (S3 only in base, KEY only in klin)
         (ax, ay), (bx, by) = _c(a), _c(b)
         pair += wgt * math.hypot(ax - bx, ay - by)
     return B.hpwl() + pair + 40.0 * len(v), v

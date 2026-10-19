@@ -13,7 +13,14 @@ Sides:  top    = front, user-facing: OLED module + 3 buttons
 """
 import json
 import math
+import os
 import sys
+
+# Variant of the design (parallel concepts, the base one must stay untouched):
+#   base = iteration 1, buttons on the main board (48 x 50 mm)
+#   klin = wedge enclosure: buttons on a separate small board, a shorter main board
+VARIANT = os.environ.get("PCB_VARIANT", "base")
+KLIN_H = 36.0
 
 # ---------------------------------------------------------------- params ----
 P = dict(
@@ -39,6 +46,8 @@ P = dict(
     pad_d=1.8, pad_d_btn=2.2, via_d=0.9, via_drill=0.4, hole_d=0.9,
     bottom_height=9.0,           # envelope of the back side (chip in socket ~8.5)
 )
+if VARIANT == "klin":
+    P["H"] = float(os.environ.get("PCB_H", KLIN_H))
 
 # ------------------------------------------------------------ footprints ----
 # Pads are given in the part's local COMPONENT VIEW (looking at the part
@@ -64,6 +73,9 @@ FP = {
                  body=(-2.6, -0.7, 2.6, 4.2), height=5.5, hole=0.8, pad=1.7),
     "wire2": dict(pads={"1": (0.0, 0.0), "2": (2.54, 0.0)}, body=(-1.2, -1.2, 3.8, 1.2),
                   height=0.0, hole=1.2, pad=2.3),
+    # 4 wires to the separate button board (GND, PB3, PB4, S3 low side); pitch 3.5 keeps 1.2 mm between pads
+    "wire4": dict(pads={str(i + 1): (3.5 * i, 0.0) for i in range(4)}, body=(-1.2, -1.2, 11.7, 1.2),
+                  height=0.0, hole=1.2, pad=2.3),
 }
 # OLED header (top side), local frame = front view, origin = pin SDA
 FP["oled"] = dict(pads={"SDA": (0.0, 0.0), "SCL": (0.0, -2.54), "VCC": (0.0, -5.08), "GND": (0.0, -7.62)},
@@ -83,6 +95,8 @@ def derived():
     d["cx"], d["cy"] = p["W"] / 2, p["H"] / 2
     d["oled_pin_x"] = d["cx"] - (p["glass_to_pin"] + p["glass_w"] / 2)       # SDA pin column
     d["oled_cy"] = d["cy"] + (p["oled_h"] + p["group_gap_y"]) / 2
+    if VARIANT == "klin":
+        d["oled_cy"] = d["cy"]              # no buttons below: the module sits in the middle
     d["btn_cy"] = d["cy"] - (p["btn_body"] + p["group_gap_y"]) / 2
     pitch = p["btn_body"] + p["btn_gap_x"]
     d["btn_cx"] = [d["cx"] - pitch, d["cx"], d["cx"] + pitch]
@@ -108,10 +122,11 @@ def place_all():
     # OLED: pin SDA is the upper pin; header pitch 2.54; centre of the 4 pins = module centre
     oy_top = D["oled_cy"] + 3.81
     add("OLED", "oled", "top", D["oled_pin_x"], oy_top, 0, "SSD1306 128x32 module")
-    # buttons left to right: "-", "run", "+"
-    add("S3", "b3f", "top", D["btn_cx"][0], D["btn_cy"], 0, "B3F-4055 (-)")
-    add("S1", "b3f", "top", D["btn_cx"][1], D["btn_cy"], 0, "B3F-4055 (run)")
-    add("S2", "b3f", "top", D["btn_cx"][2], D["btn_cy"], 0, "B3F-4055 (+)")
+    # buttons left to right: "-", "run", "+" (klin: on a separate board, wired to the KEY pads)
+    if VARIANT == "base":
+        add("S3", "b3f", "top", D["btn_cx"][0], D["btn_cy"], 0, "B3F-4055 (-)")
+        add("S1", "b3f", "top", D["btn_cx"][1], D["btn_cy"], 0, "B3F-4055 (run)")
+        add("S2", "b3f", "top", D["btn_cx"][2], D["btn_cy"], 0, "B3F-4055 (+)")
     # --- back side (positions are filled in by LAYOUT below) -----------------
     for ref, (fp, x, y, rot, val) in LAYOUT.items():
         add(ref, fp, "bottom", x, y, rot, val)
@@ -180,6 +195,15 @@ NETS = {
 # These part numbers are used in the schematic of the project (see docs/schemat.md).
 REFS_BOTTOM = ["U1", "R1", "R2", "R3", "R4", "R5", "R6", "C1", "C2", "C3", "D1", "Q1", "SPK", "BAT"]
 
+if VARIANT == "klin":
+    # S1..S3 live on the button board: S1 joins PB3 and GND, S2 joins PB4 and GND, S3 joins PB4 and R6 (to GND).
+    # KEY pads: 1 = GND, 2 = PB3, 3 = PB4, 4 = S3 low side (R6 stays on the main board).
+    NETS["GND"] = [p for p in NETS["GND"] if p[0] not in ("S1", "S2")] + [("KEY", "1")]
+    NETS["PB3"] = [("U1", "2"), ("KEY", "2")]
+    NETS["PB4"] = [("U1", "3"), ("R5", "1"), ("KEY", "3")]
+    NETS["S3LOW"] = [("R6", "1"), ("KEY", "4")]
+    REFS_BOTTOM = REFS_BOTTOM + ["KEY"]
+
 
 def mount_holes():
     m, W, H = P["hole_margin"], P["W"], P["H"]
@@ -224,7 +248,8 @@ def top_bodies():
     ref = "OLED"
     out.append((ref, body_rect(ref)))
     for ref in ("S1", "S2", "S3"):
-        out.append((ref, body_rect(ref)))
+        if ref in PARTS:
+            out.append((ref, body_rect(ref)))
     return out
 
 

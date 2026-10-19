@@ -4,7 +4,7 @@ Uruchomienie (bez okna):
     /Applications/Blender.app/Contents/MacOS/Blender --background \
         --python tools/enclosure/build_wedge.py
 
-Wejście: docs/pcb/pcb-layout.json. Wyjście: docs/obudowa-klin/ (.blend, STL, rendery).
+Wejście: docs/pcb-klin/pcb-layout.json (płytka wariantu klin). Wyjście: docs/obudowa-klin/ (.blend, STL, rendery).
 
 Koncepcja ze szkicu właściciela: bryła w kształcie klina (przekrój poprzeczny to ścięty trójkąt,
 boki trójkątne wzdłuż X), wyświetlacz na pochyłej ściance frontowej, trzy przyciski na płaskim
@@ -23,6 +23,7 @@ Części:
 """
 import json
 import math
+import os
 import sys
 from pathlib import Path
 
@@ -37,8 +38,10 @@ from bpyutil import (apply_matrix, bevel, box, box_bm, coll, cut, cyl, cyl_bm, e
                      union, write_stl)
 
 ROOT = Path(__file__).resolve().parents[2]
-LAYOUT = ROOT / "docs/pcb/pcb-layout.json"
-OUT = ROOT / "docs/obudowa-klin"
+# domyślnie płytka wariantu "klin" (bez przycisków, 48 x 36 mm); TT_LAYOUT pozwala zbudować klin z innej płytki,
+# np. TT_LAYOUT=docs/pcb/pcb-layout.json (podstawowa 48 x 50 mm), a TT_OUT zmienia katalog wyjściowy
+LAYOUT = ROOT / os.environ.get("TT_LAYOUT", "docs/pcb-klin/pcb-layout.json")
+OUT = ROOT / os.environ.get("TT_OUT", "docs/obudowa-klin")
 RENDERS = OUT / "renders"
 
 # ---------------------------------------------------------------- parametry
@@ -213,6 +216,20 @@ LID_C = (0.28, 0.30, 0.33, 1)
 T = (1, 1, 1, 1)
 
 
+def chk(label, ob):
+    """TT_DEBUG=1: liczba krawędzi nierozmaitościowych po etapie (do szukania kłopotliwych booleanów)."""
+    if os.environ.get("TT_DEBUG"):
+        print(f"  [{label}] {ob.name}: nie-rozmaitościowe {manifold_report(ob)[0]}")
+        if os.environ.get("TT_DEBUG") == "2":
+            bmm = bmesh.new()
+            bmm.from_mesh(ob.data)
+            for e in bmm.edges:
+                if not e.is_manifold:
+                    a, b = (v.co for v in e.verts)
+                    print(f"      krawędź ({a.x:.2f},{a.y:.2f},{a.z:.2f}) - ({b.x:.2f},{b.y:.2f},{b.z:.2f})")
+            bmm.free()
+
+
 def tmp(name, bm):
     return finish(name, bm, "tmp", T)
 
@@ -249,9 +266,19 @@ def boxuv(name, u0, u1, v0, v1, z0, z1, group="tmp", color=T):
 
 
 # --- powłoka: obrys - wnętrze (wnętrze od x = WALL do L - WALL)
+# koszyk (pełny blok od podstawy) zostaje w materiale: odejmuję go od wnętrza zamiast dokładać do gotowej
+# powłoki (dolna ściana bloku leżałaby w jednej płaszczyźnie z podstawą, co daje zdegenerowane krawędzie)
+TX0, TX1 = X_BLOCK0, UB + 1.2
+V0 = YB + SIDE
+CH_V = [(V0 + i * (CH_W + DIV), V0 + i * (CH_W + DIV) + CH_W) for i in range(3)]
+CH_VC = [(a + b) / 2 for a, b in CH_V]
+V1 = CH_V[2][1]
 shell = outer_solid()
 bevel(shell, R_END, segments=5)
-cut(shell, tmp("wnetrze", extrude_x_bm(INNER, WALL, L - WALL)))
+cavity = tmp("wnetrze", extrude_x_bm(INNER, WALL, L - WALL))
+cut(cavity, boxuv("koszyk", TX0, TX1, YB, YB + BAT_W, 0.0, BAT_TOP))
+cut(shell, cavity)
+chk("powłoka", shell)
 
 # --- podział na pokrywę i korpus (szczeliny 0,25 mm)
 cover = bpy.data.objects.new("Pokrywa", shell.data.copy())
@@ -261,6 +288,7 @@ intersect(cover, tmp("strefa_pokrywy", extrude_x_bm(zone_poly(S_LO, Y_CUT), WALL
 body = regroup(shell, "Korpus", C_BODY)
 body.name = "Korpus"
 cut(body, tmp("strefa_korpusu", extrude_x_bm(zone_poly(S_LO - 0.25, Y_CUT + 0.25), WALL, L - WALL)))
+chk("podział", body)
 
 # ================================================================ POKRYWA
 # okno OLED (szkło + 0,3 mm luzu na stronę), końce półkoliste
@@ -302,26 +330,21 @@ cut(cover, to_world(text_cutter("TINY TIMER", 4.2, XB, 10.4, D_PCB - 0.4, 1.0), 
 
 # ================================================================ KORPUS
 # koszyk: blok od podstawy, trzy kanały otwarte od spodu, okno w podłodze, wpust klapki
-TX0, TX1 = X_BLOCK0, UB + 1.2
-V0 = YB + SIDE
-CH_V = [(V0 + i * (CH_W + DIV), V0 + i * (CH_W + DIV) + CH_W) for i in range(3)]
-CH_VC = [(a + b) / 2 for a, b in CH_V]
-V1 = CH_V[2][1]
-tray = boxuv("koszyk", TX0, TX1, YB, YB + BAT_W, 0.0, BAT_TOP)
-intersect(tray, outer_solid())
-union(body, tray)
 for va, vb in CH_V:
     cut(body, boxuv("kanal", UA, UB, va, vb, Z_POCKET, Z_CH_TOP))
+chk("kanały", body)
 WIN_U, WIN_V = (UA + 1.0, UB - 1.0), (CH_V[0][0] + 0.05, V1 - 0.05)
 cut(body, boxuv("okno_bat", *WIN_U, *WIN_V, -0.5, Z_POCKET + 0.3))
 REC_U, REC_V = (WIN_U[0] - 1.0, WIN_U[1] + 1.0), (WIN_V[0] - 0.9, WIN_V[1] + 0.9)
 cut(body, boxuv("wpust_bat", *REC_U, *REC_V, -0.5, 0.8))
+chk("okno+wpust", body)
 d1, d2 = (CH_V[0][1], CH_V[1][0]), (CH_V[1][1], CH_V[2][0])
-cut(body, boxuv("sz1", UB - 0.7, UB + 0.1, d1[0], d1[1], Z_POCKET, Z_CH_TOP),
-    boxuv("sz2", UA - 0.1, UA + 0.7, d2[0], d2[1], Z_POCKET, Z_CH_TOP))
+cut(body, boxuv("sz1", UB - 0.7, UB + 0.1, d1[0] - 0.2, d1[1] + 0.2, Z_POCKET, Z_CH_TOP),
+    boxuv("sz2", UA - 0.1, UA + 0.7, d2[0] - 0.2, d2[1] + 0.2, Z_POCKET, Z_CH_TOP))
 HK_U = (UA + 2.5, UA + 6.0)
-cut(body, boxuv("zat1", HK_U[0] - 0.5, HK_U[1] + 0.5, CH_V[0][0] - 0.6, CH_V[0][0], Z_POCKET + 1.2, Z_POCKET + 3.2),
-    boxuv("zat2", HK_U[0] - 0.5, HK_U[1] + 0.5, V1, V1 + 0.6, Z_POCKET + 1.2, Z_POCKET + 3.2))
+cut(body, boxuv("zat1", HK_U[0] - 0.5, HK_U[1] + 0.5, CH_V[0][0] - 0.6, CH_V[0][0] + 0.2, Z_POCKET + 1.2, Z_POCKET + 3.2),
+    boxuv("zat2", HK_U[0] - 0.5, HK_U[1] + 0.5, V1 - 0.2, V1 + 0.6, Z_POCKET + 1.2, Z_POCKET + 3.2))
+chk("szczeliny+zatrzaski", body)
 cut(body, cyl("palec", UB + 2.0, (WIN_V[0] + WIN_V[1]) / 2, -0.5, 0.8, 4.5, seg=40))
 # otwory na przewody baterii w suficie koszyka (minus przy lewym końcu kanału 1, plus przy prawym kanału 3)
 cut(body, cyl("prz_minus", UA + 2.5, CH_VC[0], Z_CH_TOP - 0.5, BAT_TOP + 0.5, 1.5, seg=24),
@@ -332,16 +355,25 @@ ring = xcyl("pierscien", SPK_CY, SPK_CZ, WALL - 0.2, WALL + RING_L, SPK_POCKET /
 cut(ring, xcyl("pierscien_w", SPK_CY, SPK_CZ, WALL - 0.5, WALL + RING_L + 0.5, SPK_POCKET / 2, 96))
 intersect(ring, outer_solid())
 union(body, ring)
+chk("pierścień", body)
 holes = [(0.0, 0.0)]
 holes += [(4.5 * math.cos(2 * math.pi * i / 8 + 0.2), 4.5 * math.sin(2 * math.pi * i / 8 + 0.2)) for i in range(8)]
-holes += [(9.0 * math.cos(2 * math.pi * i / 14), 9.0 * math.sin(2 * math.pi * i / 14)) for i in range(14)]
+holes += [(9.0 * math.cos(2 * math.pi * i / 14 + 0.07), 9.0 * math.sin(2 * math.pi * i / 14 + 0.07)) for i in range(14)]
+# wszystkie otwory jednym wycięciem (jeden cutter z wieloma walcami: mniej artefaktów niż 23 osobne booleany)
+bm = bmesh.new()
 for dy, dz in holes:
-    cut(body, xcyl("dzw", SPK_CY + dy, SPK_CZ + dz, -0.5, WALL + 0.3, 1.0, 16))
+    ret = bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=20, radius1=1.0, radius2=1.0, depth=WALL + 0.8)
+    bmesh.ops.rotate(bm, verts=ret["verts"], cent=(0, 0, 0), matrix=Matrix.Rotation(math.pi / 2, 3, "Y"))
+    bmesh.ops.translate(bm, vec=((WALL + 0.3 - 0.5) / 2, SPK_CY + dy, SPK_CZ + dz), verts=ret["verts"])
+cut(body, tmp("dzwieki", bm))
 
+chk("otwory głośnika", body)
 # wkręty boczne: otwór przelotowy w boku i zagłębienie na łeb
 for y, z in BOSSES:
     cut(body, xcyl("w_otw_l", y, z, -0.5, WALL + 0.1, 1.35, 24), xcyl("w_lb_l", y, z, -0.5, 1.0, 2.4, 32),
         xcyl("w_otw_p", y, z, L - WALL - 0.1, L + 0.5, 1.35, 24), xcyl("w_lb_p", y, z, L - 1.0, L + 0.5, 2.4, 32))
+
+chk("wkręty boczne", body)
 
 # ================================================================ KLAPKA KORYTA
 lid = finish("Klapka_baterii", box_bm(REC_U[0] + 0.25, REC_V[0] + 0.25, 0.0, REC_U[1] - 0.25, REC_V[1] - 0.25, 0.8),

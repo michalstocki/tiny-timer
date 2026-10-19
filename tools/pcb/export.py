@@ -22,9 +22,20 @@ def layout_json():
                            plunger_square=B.P["btn_plunger"], cap_diameter=B.P["btn_cap_d"],
                            top_above_board=B.P["btn_height"],
                            label={"S3": "minus", "S1": "run", "S2": "plus"}[ref])
-                 for ref in ("S3", "S1", "S2")},
+                 for ref in ("S3", "S1", "S2") if ref in B.PARTS},
         back_envelope_height=B.P["bottom_height"],
         front_free_zone_above_board="everything on the front except the OLED module and the buttons must stay below 2.0 mm (solder joints of the back parts)")
+    if B.VARIANT == "klin":
+        d["variant"] = "klin"
+        d["derived"]["front_free_zone_above_board"] = "everything on the front except the OLED module must stay below 2.0 mm (solder joints of the back parts)"
+        d["button_board"] = dict(
+            note="separate board with the 3 buttons, wired to the KEY pads of the main board",
+            width=48.0, depth=16.0, thickness=B.P["thickness"], corner_radius=2.0,
+            buttons=[dict(label="minus", ref="S3", x=8.0, y=8.0), dict(label="run", ref="S1", x=24.0, y=8.0),
+                     dict(label="plus", ref="S2", x=40.0, y=8.0)],
+            mounting_holes=[dict(x=16.0, y=8.0, diameter=2.2), dict(x=32.0, y=8.0, diameter=2.2)],
+            wires=dict(KEY1="GND (S1, S2 common)", KEY2="PB3 (S1 run)", KEY3="PB4 (S2 plus, S3 minus)",
+                       KEY4="S3 low side (to R6 on the main board)"))
     return d
 
 
@@ -42,7 +53,10 @@ def scad_params(d):
     for ref, b in d["derived"]["buttons"].items():
         L.append("button_%s = [%.2f, %.2f]; // centre; body 12x12, plunger 3.8 sq, cap d 7.1, top at %.1f mm" % (
             b["label"], b["centre"][0], b["centre"][1], b["top_above_board"]))
-    L.append("button_top_height = %.2f; button_body = 12; button_plunger = 3.8; button_cap_d = 7.1;" % B.P["btn_height"])
+    if B.VARIANT == "base":
+        L.append("button_top_height = %.2f; button_body = 12; button_plunger = 3.8; button_cap_d = 7.1;" % B.P["btn_height"])
+    else:
+        L.append("// buttons are on a separate board (48 x 16 mm), see pcb-layout.json: button_board")
     L.append("back_envelope_height = %.2f;" % B.P["bottom_height"])
     L.append("// back-side parts: [name, x0, y0, x1, y1, height]")
     items = []
@@ -60,7 +74,7 @@ def side_svg():
     M = 40
     W, H = B.P["W"], B.P["H"]
     t = B.P["thickness"]
-    top_h = max(B.P["btn_height"], B.P["oled_thickness"] + B.P["oled_standoff"])
+    top_h = max(B.P["btn_height"] if B.VARIANT == "base" else 0.0, B.P["oled_thickness"] + B.P["oled_standoff"])
     bot_h = B.P["bottom_height"]
     wpx = int(W * S + 2 * M)
     hpx = int((top_h + t + bot_h) * S + 2 * M + 60)
@@ -84,7 +98,7 @@ def side_svg():
     gx0 = B.D["oled_pin_x"] + B.P["glass_to_pin"]
     rect(gx0, so + 1.2, gx0 + B.P["glass_w"], so + B.P["oled_thickness"], "#05070b")
     rect(B.D["oled_pin_x"] - 1.3, 0, B.D["oled_pin_x"] + 1.3, so, "#555")
-    for ref in ("S3", "S1", "S2"):
+    for ref in [r for r in ("S3", "S1", "S2") if r in B.PARTS]:
         q = B.PARTS[ref]
         rect(q["x"] - 6, 0, q["x"] + 6, 4.3, "#3a3a40", ref)
         rect(q["x"] - B.P["btn_cap_d"] / 2, 4.3, q["x"] + B.P["btn_cap_d"] / 2, 5.5, "#202024")
@@ -103,8 +117,9 @@ def side_svg():
     # dimension: envelope
     p.append('<line x1="%d" y1="%.1f" x2="%d" y2="%.1f" stroke="#b00" stroke-dasharray="4 3"/>' % (M, y0 + (t + bot_h) * S, M + W * S, y0 + (t + bot_h) * S))
     p.append('<text x="%d" y="%.1f" font-size="10" fill="#b00">obwiednia tyłu: %.1f mm pod płytką</text>' % (M + 4, y0 + (t + bot_h) * S + 12, bot_h))
-    p.append('<line x1="%d" y1="%.1f" x2="%d" y2="%.1f" stroke="#080" stroke-dasharray="4 3"/>' % (M, y0 - B.P["btn_height"] * S, M + W * S, y0 - B.P["btn_height"] * S))
-    p.append('<text x="%d" y="%.1f" font-size="10" fill="#080">góra trzpienia przycisku: %.1f mm nad płytką</text>' % (M + 4, y0 - B.P["btn_height"] * S - 4, B.P["btn_height"]))
+    if B.VARIANT == "base":
+        p.append('<line x1="%d" y1="%.1f" x2="%d" y2="%.1f" stroke="#080" stroke-dasharray="4 3"/>' % (M, y0 - B.P["btn_height"] * S, M + W * S, y0 - B.P["btn_height"] * S))
+        p.append('<text x="%d" y="%.1f" font-size="10" fill="#080">góra trzpienia przycisku: %.1f mm nad płytką</text>' % (M + 4, y0 - B.P["btn_height"] * S - 4, B.P["btn_height"]))
     p.append("</svg>")
     return "\n".join(p)
 
@@ -176,7 +191,12 @@ view('iso'); (function loop(){ requestAnimationFrame(loop); ren.render(scene,cam
 
 
 def html(d):
-    return HTML % dict(W=B.P["W"], H=B.P["H"], DATA=json.dumps(d))
+    tpl = HTML
+    if B.VARIANT != "base":       # no buttons on the main board
+        tpl = tpl.replace("['S3','S1','S2'].forEach(r=>{ const b=DATA.derived.buttons[r], c=b.centre;",
+                          "Object.keys(DATA.derived.buttons).forEach(r=>{ const b=DATA.derived.buttons[r], c=b.centre;")
+        tpl = tpl.replace("Przód (góra) = wyświetlacz i przyciski; tył = reszta.", "Przód (góra) = wyświetlacz; przyciski są na osobnej płytce; tył = reszta.")
+    return tpl % dict(W=B.P["W"], H=B.P["H"], DATA=json.dumps(d))
 
 
 def write_all(out):

@@ -110,7 +110,7 @@ def dims(c):
 def top_view(res):
     W, H = B.P["W"], B.P["H"]
     c = Canvas(int(W * S + 2 * M), int(H * S + 2 * M + 30))
-    c.title, c.side_txt = "Przód (strona TOP): wyświetlacz i przyciski", "przodu (osie: x w prawo, y w górę, początek w lewym dolnym rogu)"
+    c.title, c.side_txt = ("Przód (strona TOP): wyświetlacz i przyciski" if B.VARIANT == "base" else "Przód (strona TOP): wyświetlacz (przyciski na osobnej płytce)"), "przodu (osie: x w prawo, y w górę, początek w lewym dolnym rogu)"
     outline(c)
     traces(c, res, 0, "#c9423b")
     # bodies on top
@@ -119,7 +119,7 @@ def top_view(res):
     gx0 = B.D["oled_pin_x"] + B.P["glass_to_pin"]
     c.rect(gx0, B.D["oled_cy"] - B.P["glass_h"] / 2, gx0 + B.P["glass_w"], B.D["oled_cy"] + B.P["glass_h"] / 2, fill="#05070b", stroke="#6b7a96", sw=1)
     c.text(gx0 + B.P["glass_w"] / 2, B.D["oled_cy"], "szkło 25 × 10", 9, "#6b7a96")
-    for ref in ("S3", "S1", "S2"):
+    for ref in [r for r in ("S3", "S1", "S2") if r in B.PARTS]:
         p = B.PARTS[ref]
         c.rect(p["x"] - 6, p["y"] - 6, p["x"] + 6, p["y"] + 6, fill="#3a3a40", stroke="#111", sw=1.2, rx=3)
         c.circle(p["x"], p["y"], B.P["btn_cap_d"] / 2, fill="#202024", stroke="#000", sw=1)

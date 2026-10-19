@@ -11,3 +11,5 @@ Wersja robocza do pracy nad obudową. **Brak plików produkcyjnych (Gerber, KiCa
 | [pcb-layout.json](pcb-layout.json), [pcb_params.scad](pcb_params.scad) | współrzędne i wymiary dla modelowania obudowy |
 
 Generowane przez `python3 tools/pcb/build.py` z jednego źródła (`tools/pcb/board.py`, `layout.py`). Rozmieszczenie elementów z tyłu wyznacza `tools/pcb/optimize.py` (wyżarzanie symulowane z regułami geometrii); trasowanie `router.py` sprawdza wykonalność.
+
+Wariant równoległy bez przycisków na płytce (48 × 36 mm, dla obudowy-klina): [`docs/pcb-klin/`](../pcb-klin/README.md), generowany tym samym narzędziem (`build.py --variant klin`). Ta płytka i jej pliki nie zmieniają się przy pracy nad wariantem.

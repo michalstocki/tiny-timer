@@ -4,6 +4,15 @@ import json
 import os
 import sys
 
+# usage: build.py [OUT_DIR] [--variant klin]; the variant must be set before board.py is imported
+_args = sys.argv[1:]
+VARIANT = "base"
+if "--variant" in _args:
+    i = _args.index("--variant")
+    VARIANT = _args[i + 1]
+    del _args[i:i + 2]
+os.environ["PCB_VARIANT"] = VARIANT
+
 import board as B
 import layout  # noqa: F401  (fills B.LAYOUT)
 import export
@@ -11,7 +20,8 @@ import render
 import router
 import spec
 
-OUT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(__file__), "..", "..", "docs", "pcb")
+OUT = _args[0] if _args else os.path.join(os.path.dirname(__file__), "..", "..", "docs",
+                                          "pcb" if VARIANT == "base" else "pcb-" + VARIANT)
 
 
 def main():

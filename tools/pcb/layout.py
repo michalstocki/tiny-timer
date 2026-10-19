@@ -18,3 +18,7 @@ B.LAYOUT.update({
     "SPK": ("wire2", 30.70, 45.40, 90, "speaker leads"),
     "BAT": ("wire2", 15.55, 40.10, 180, "battery leads"),
 })
+
+if B.VARIANT != "base":
+    import importlib
+    importlib.import_module("layout_" + B.VARIANT)      # replaces B.LAYOUT with the variant's placement
