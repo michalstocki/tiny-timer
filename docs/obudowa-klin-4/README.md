@@ -101,7 +101,7 @@ Wymiary z katalogu Keystone M65 (s. 16: rysunki styków, s. 37: rozmieszczenie):
 
 ## 5. Płytka przycisków na płytce uniwersalnej
 
-Projektu PCB płytki przycisków nie ma i nie jest potrzebny: dane są dobrane tak, żeby wystarczyła **jednostronna płytka uniwersalna 1,6 mm z rastrem 2,54 mm** (karta B3F podaje montaż na płytce jednostronnej 1,6 mm). Dane: `docs/pcb-klin3/pcb-layout.json`, klucz `button_board` (generuje je `tools/pcb/export.py`).
+**Szablon do druku 1:1, schemat połączeń i instrukcja montażu: [`docs/plytka-przyciskow/`](../plytka-przyciskow/README.md).** Projektu PCB płytki przycisków nie ma i nie jest potrzebny: dane są dobrane tak, żeby wystarczyła **jednostronna płytka uniwersalna 1,6 mm z rastrem 2,54 mm** (karta B3F podaje montaż na płytce jednostronnej 1,6 mm). Dane: `docs/pcb-klin3/pcb-layout.json`, klucz `button_board` (generuje je `tools/pcb/export.py`).
 
 Wymiary od lewego dolnego narożnika płytki; x wzdłuż obudowy (lewy koniec przy głośniku), y w głąb (y = 0 od strony frontu), przyciski od góry:
 
