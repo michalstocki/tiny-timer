@@ -7,8 +7,9 @@ M = 30
 COL = dict(board="#2f6b3a", edge="#12301a", f="#c83a3a", b="#2f62d0", pad="#d9b34a", hole="#ffffff", silk="#f4f4f0")
 
 
-def render(design, side="F", texts=None, title=None):
-    """texts: opisy tej strony w widoku od strony elementów (x, y wyśrodkowane); dla strony B rysowane odbite razem z płytką."""
+def render(design, side="F", texts=None, title=None, cu_texts=()):
+    """texts: opisy tej strony w widoku od strony elementów (x, y wyśrodkowane); dla strony B rysowane odbite razem z płytką.
+    cu_texts: napisy w miedzi [(warstwa, napis, x, y, wysokość, grubość)]; rysowany tylko napis warstwy tej strony."""
     mirror = side == "B"
     W, H = fab.W, fab.H
     wpx, hpx = int(W * S + 2 * M), int(H * S + 2 * M + (30 if title else 0))
@@ -30,6 +31,10 @@ def render(design, side="F", texts=None, title=None):
             if l == L:
                 o.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" stroke-opacity="%.2f" stroke-width="%.1f" '
                          'stroke-linecap="round"/>' % (X(a[0]), Y(a[1]), X(b_[0]), Y(b_[1]), c, alpha, fab.RULES["track"] * S))
+    for (L, s_, x, y, h, t) in cu_texts:
+        if L == first:
+            o.append('<text x="%.1f" y="%.1f" font-size="%.1f" fill="%s" text-anchor="middle" font-weight="bold">%s</text>'
+                     % (X(x), Y(y) + h * S * 0.35, h * S * 0.95, COL["f"] if L == 0 else COL["b"], s_))
     for (net, x, y) in design["vias"]:
         o.append('<circle cx="%.1f" cy="%.1f" r="%.1f" fill="%s"/><circle cx="%.1f" cy="%.1f" r="%.1f" fill="#fff"/>'
                  % (X(x), Y(y), fab.RULES["via_d"] / 2 * S, COL["pad"], X(x), Y(y), fab.RULES["via_drill"] / 2 * S))

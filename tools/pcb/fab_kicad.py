@@ -1,4 +1,4 @@
-"""Eksport płytki głównej do pliku KiCada (.kicad_pcb, format v7; KiCad 7/8/9 go otwiera).
+"""Eksport płytki głównej do pliku KiCada (.kicad_pcb, format v7; sprawdzony w KiCadzie 10).
 
 Układ: widok od strony elementów, elementy na F.Cu (strona elementów), strona lutowania = B.Cu. Początek arkusza przesunięty
 (X0, Y0), oś y KiCada skierowana w dół (y_kicad = Y0 + H - y). Stopki są jednorazowe (bez biblioteki): jeden element = jedna stopka
@@ -33,7 +33,7 @@ def at(x, y):
     return "(at %s %s)" % (f(kx), f(ky))
 
 
-def build(design, texts_f, texts_b, title_lines=()):
+def build(design, texts_f, texts_b, title_lines=(), cu_texts=()):
     nets = ["", ] + fab.net_names()
     nid = {n: i for i, n in enumerate(nets)}
     o = []
@@ -145,6 +145,12 @@ def build(design, texts_f, texts_b, title_lines=()):
         kx, ky = K(x, y)
         w('  (gr_text "%s" (at %s %s) (layer "B.SilkS") (tstamp %s) (effects (font (size %s %s) (thickness %s)) (justify mirror)))'
           % (s_, f(kx), f(ky), tid("tb", i, s_), f(h), f(h), f(R["silk_width"])))
+
+    # --- napisy w miedzi (bez sieci), na B.Cu lustrzane
+    for i, (L, s_, x, y, h, t) in enumerate(cu_texts):
+        kx, ky = K(x, y)
+        w('  (gr_text "%s" (at %s %s) (layer "%s") (tstamp %s) (effects (font (size %s %s) (thickness %s))%s))'
+          % (s_, f(kx), f(ky), "F.Cu" if L == 0 else "B.Cu", tid("tcu", i, s_), f(h), f(h), f(t), "" if L == 0 else " (justify mirror)"))
 
     # --- miedź
     for i, (net, L, a, b) in enumerate(design["tracks"]):

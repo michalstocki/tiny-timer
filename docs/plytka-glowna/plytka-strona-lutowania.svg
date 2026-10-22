@@ -91,6 +91,7 @@
 <line x1="258.0" y1="481.2" x2="253.2" y2="481.2" stroke="#2f62d0" stroke-opacity="1.00" stroke-width="7.2" stroke-linecap="round"/>
 <line x1="526.8" y1="433.2" x2="805.2" y2="433.2" stroke="#2f62d0" stroke-opacity="1.00" stroke-width="7.2" stroke-linecap="round"/>
 <line x1="805.2" y1="433.2" x2="858.0" y2="486.0" stroke="#2f62d0" stroke-opacity="1.00" stroke-width="7.2" stroke-linecap="round"/>
+<text x="720.0" y="544.1" font-size="27.4" fill="#2f62d0" text-anchor="middle" font-weight="bold">BOT</text>
 <circle cx="464.4" cy="373.2" r="9.6" fill="#d9b34a"/><circle cx="464.4" cy="373.2" r="4.8" fill="#fff"/>
 <rect x="292.8" y="247.2" width="40.8" height="40.8" fill="#d9b34a"/>
 <circle cx="313.2" cy="267.6" r="10.8" fill="#fff"/>

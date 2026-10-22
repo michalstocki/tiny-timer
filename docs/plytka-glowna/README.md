@@ -40,7 +40,8 @@ Nazwy opcji w formularzach fabryk różnią się, ale wszystkie powyższe warto�
 - **Zgodność z obudową:** żaden element nie został przesunięty, obrysy i wysokości są z `board.py`, więc wynik kolizji z [README klina 4](../obudowa-klin-4/README.md) pozostaje ważny. Zmienił się tylko rozstaw nóżek C3 (patrz niżej), w obrysie elementu.
 
 - **KiCad 10.0.7** (`export_fab.sh`): plik wczytuje się bez błędów; DRC KiCada: 0 błędów, 0 niepołączonych pól. Zostały same dopuszczalne ostrzeżenia: 18 × brak biblioteki `TT` (stopki są wbudowane w plik), 32 × obrys elementu na polu (maska go przytnie), 4 × stykające się obrysy C2 i C3. Dodatkowo DRC z ostrzejszymi regułami (odstęp 0,25 mm, miedź–krawędź 0,5 mm, otwór–otwór 0,5 mm): 0 błędów; test ujemny z odstępem 0,29 mm wskazuje dwa miejsca z 0,28 mm przy U1.5, czyli KiCad liczy to samo co własny DRC.
-- **Gerbery** obejrzane w GerbView (wszystkie warstwy razem) i sprawdzone w plikach: obrys 40 × 24 mm z R3, 43 pola i 1 przelotka na obu warstwach miedzi, 45 otworów w masce na każdej stronie (43 pola + 2 otwory M2,5; przelotka pod maską), opis B odbity poprawnie, wiercenia PTH Ø0,4 (przelotka), Ø0,8, Ø0,9, Ø1,2 i osobny plik NPTH z 2 × Ø2,7.
+- **Napisy w miedzi** (na prośbę fabryki, do kontroli, że warstwy nie są zamienione ani odbite): „TOP” na F.Cu w prawym górnym rogu strony elementów i „BOT” na B.Cu nad napisem TT-MAIN, lustrzany, więc czyta się od strony lutowania. Wysokość 1,2 mm, kreska 0,25 mm, bez sieci. Miejsce wybiera [`fab_cutext.py`](../../tools/pcb/fab_cutext.py): największy odstęp od miedzi, poza opisami i strefami otworów M2,5. DRC KiCada nie zgłasza ich nawet przy odstępie 0,4 mm; na renderze obu stron czytają się prosto.
+- **Gerbery** obejrzane w GerbView (wszystkie warstwy razem) i sprawdzone w plikach: obrys 40 × 24 mm z R3, 43 pola, 1 przelotka i napis (TOP/BOT) na obu warstwach miedzi, 45 otworów w masce na każdej stronie (43 pola + 2 otwory M2,5; przelotka pod maską), opis B odbity poprawnie, wiercenia PTH Ø0,4 (przelotka), Ø0,8, Ø0,9, Ø1,2 i osobny plik NPTH z 2 × Ø2,7.
 - **Poprawka po pierwszym eksporcie:** napis „TT-MAIN v1.0” wychodził 0,4 mm poza narożnik płytki, bo generator opisów zakładał zbyt wąską czcionkę (0,62 zamiast zmierzonych 0,83 wysokości na znak) i nie sprawdzał łuków narożników. Po poprawce w [`fab_silk.py`](../../tools/pcb/fab_silk.py) opisy przesunęły się o ułamki milimetra (napis DISP na stronie lutowania jest teraz pod polami), żaden nie zniknął; elementy, pola i ścieżki bez zmian.
 
 ## Zmiany względem projektu `pcb-klin3`
@@ -52,6 +53,7 @@ Nazwy opcji w formularzach fabryk różnią się, ale wszystkie powyższe warto�
 | Kwadratowe pola: pin 1 U1, plus C3, anoda D1, **BAT+**, KEY1 (GND), DISP1 (SDA) | rozpoznanie polaryzacji i początku grupy bez opisu |
 | Nowe trasowanie (czysty router 45°, 1 przelotka, 276 mm ścieżek) | poprzednie było tylko próbą wykonalności na siatce 0,25 mm |
 | Opisy: oznaczenia i obrysy elementów (strona elementów), nazwy pól i numery pinów (strona lutowania) | ułatwienie montażu i pomiarów |
+| Napisy „TOP” / „BOT” w miedzi | wymaganie fabryki: kontrola strony i odbicia warstw po wytrawieniu |
 
 ## Ryzyka i rzeczy do sprawdzenia przed zamówieniem
 
@@ -70,4 +72,4 @@ python3 tools/pcb/fab_build.py --reroute    # trasuje od nowa (1-3 min) i nadpis
 bash tools/pcb/export_fab.sh                # (komputer z KiCadem 8-10) DRC KiCada + Gerbery + wiercenia + zip
 ```
 
-Moduły: [`fab.py`](../../tools/pcb/fab.py) (stopki, pola, opisy), [`fab_router.py`](../../tools/pcb/fab_router.py), [`fab_drc.py`](../../tools/pcb/fab_drc.py), [`fab_silk.py`](../../tools/pcb/fab_silk.py), [`fab_kicad.py`](../../tools/pcb/fab_kicad.py), [`fab_render.py`](../../tools/pcb/fab_render.py), [`fab_plan.py`](../../tools/pcb/fab_plan.py).
+Moduły: [`fab.py`](../../tools/pcb/fab.py) (stopki, pola, opisy), [`fab_router.py`](../../tools/pcb/fab_router.py), [`fab_drc.py`](../../tools/pcb/fab_drc.py), [`fab_silk.py`](../../tools/pcb/fab_silk.py), [`fab_cutext.py`](../../tools/pcb/fab_cutext.py) (napisy w miedzi), [`fab_kicad.py`](../../tools/pcb/fab_kicad.py), [`fab_render.py`](../../tools/pcb/fab_render.py), [`fab_plan.py`](../../tools/pcb/fab_plan.py).

@@ -91,6 +91,7 @@
 <line x1="807.6" y1="296.4" x2="846.0" y2="258.0" stroke="#c83a3a" stroke-opacity="1.00" stroke-width="7.2" stroke-linecap="round"/>
 <line x1="843.6" y1="255.6" x2="819.6" y2="231.6" stroke="#c83a3a" stroke-opacity="1.00" stroke-width="7.2" stroke-linecap="round"/>
 <line x1="819.6" y1="231.6" x2="819.6" y2="207.6" stroke="#c83a3a" stroke-opacity="1.00" stroke-width="7.2" stroke-linecap="round"/>
+<text x="918.0" y="88.1" font-size="27.4" fill="#c83a3a" text-anchor="middle" font-weight="bold">TOP</text>
 <circle cx="555.6" cy="373.2" r="9.6" fill="#d9b34a"/><circle cx="555.6" cy="373.2" r="4.8" fill="#fff"/>
 <rect x="686.4" y="247.2" width="40.8" height="40.8" fill="#d9b34a"/>
 <circle cx="706.8" cy="267.6" r="10.8" fill="#fff"/>

@@ -118,6 +118,7 @@ def main():
             print("  - " + e)
         return 1
     print("DRC i LVS: OK (0 błędów; każda sieć w jednym kawałku, brak zwarć)")
+    import fab_cutext
     import fab_kicad
     import fab_render
     import fab_silk
@@ -126,12 +127,13 @@ def main():
     for w_ in wf + wb:
         print("  uwaga (opisy): " + w_)
     OUT.mkdir(parents=True, exist_ok=True)
-    pcb = fab_kicad.build(design, tf, tb)
+    cu_texts = fab_cutext.placements(design, tf, tb)
+    pcb = fab_kicad.build(design, tf, tb, cu_texts=cu_texts)
     assert fab_kicad.balanced(pcb), "niezbalansowane nawiasy w pliku KiCada"
     (OUT / "tt-main.kicad_pcb").write_text(pcb)
     for side, name, ttl in (("F", "plytka-strona-elementow", "Strona elementów (F)"),
                             ("B", "plytka-strona-lutowania", "Strona lutowania (B), widok odbity")):
-        (OUT / (name + ".svg")).write_text(fab_render.render(design, side, tf if side == "F" else tb, ttl))
+        (OUT / (name + ".svg")).write_text(fab_render.render(design, side, tf if side == "F" else tb, ttl, cu_texts))
     import fab_plan
     (OUT / "plan-montazu.svg").write_text(fab_plan.plan_montazu(design))
     (OUT / "plan-pomiarow.svg").write_text(fab_plan.plan_pomiarow(design))
