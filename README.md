@@ -1,6 +1,6 @@
 # Minutnik na ATtiny13A
 
-Firmware w czystym C (`avr-gcc -Os`, bez Arduino core), instrukcja montażu na płytce stykowej, programowanie przez Arduino UNO, kalibracja i testy odbiorcze. Materiały dla użytkownika są po polsku. Pełne podsumowanie, w tym co jest sprawdzone, a co nie: **[docs/raport-koncowy.md](docs/raport-koncowy.md)**.
+Firmware w czystym C (`avr-gcc -Os`, bez Arduino core), instrukcja montażu na płytce stykowej, programowanie przez Arduino UNO, kalibracja i testy odbiorcze. Materiały dla użytkownika są po polsku.
 
 | Co | Gdzie |
 | --- | --- |

@@ -1,3 +1,5 @@
 .idea
+.DS_Store
+/firmware/build
 
 __pycache__/
