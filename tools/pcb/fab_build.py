@@ -99,7 +99,7 @@ def write_bom():
     import csv
     OUT.mkdir(parents=True, exist_ok=True)
     with open(OUT / "bom.csv", "w", newline="") as fh:
-        w = csv.writer(fh, delimiter=";")
+        w = csv.writer(fh, delimiter=";", lineterminator="\n")
         w.writerow(["oznaczenie", "ilość", "wartość", "uwagi"])
         w.writerows(BOM)
 
