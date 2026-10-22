@@ -1,0 +1,718 @@
+{
+ "units": "mm",
+ "frame": "front view (top side), origin lower-left of the outline, +x right, +y up",
+ "board": {
+  "width": 40.0,
+  "height": 24.0,
+  "thickness": 1.6,
+  "corner_radius": 3.0
+ },
+ "mounting_holes": [
+  {
+   "x": 3.5,
+   "y": 3.5,
+   "diameter": 2.7,
+   "keepout_radius": 3.2
+  },
+  {
+   "x": 36.5,
+   "y": 20.5,
+   "diameter": 2.7,
+   "keepout_radius": 3.2
+  }
+ ],
+ "parts": {
+  "U1": {
+   "footprint": "dip8",
+   "side": "bottom",
+   "value": "ATtiny13A in DIP-8 socket",
+   "rotation": 180,
+   "height_above_board": 4.5,
+   "pads": {
+    "1": {
+     "x": 11.8,
+     "y": 14.1
+    },
+    "2": {
+     "x": 11.8,
+     "y": 16.64
+    },
+    "3": {
+     "x": 11.8,
+     "y": 19.18
+    },
+    "4": {
+     "x": 11.8,
+     "y": 21.72
+    },
+    "5": {
+     "x": 19.42,
+     "y": 21.72
+    },
+    "6": {
+     "x": 19.42,
+     "y": 19.18
+    },
+    "7": {
+     "x": 19.42,
+     "y": 16.64
+    },
+    "8": {
+     "x": 19.42,
+     "y": 14.1
+    }
+   },
+   "body": [
+    10.4,
+    12.7,
+    20.8,
+    23.0
+   ]
+  },
+  "R1": {
+   "footprint": "res_v",
+   "side": "bottom",
+   "value": "15 k",
+   "rotation": 0,
+   "height_above_board": 7.5,
+   "pads": {
+    "1": {
+     "x": 11.75,
+     "y": 5.15
+    },
+    "2": {
+     "x": 9.21,
+     "y": 5.15
+    }
+   },
+   "body": [
+    7.75,
+    3.65,
+    13.25,
+    6.65
+   ]
+  },
+  "R2": {
+   "footprint": "res_v",
+   "side": "bottom",
+   "value": "470",
+   "rotation": 180,
+   "height_above_board": 7.5,
+   "pads": {
+    "1": {
+     "x": 22.85,
+     "y": 20.25
+    },
+    "2": {
+     "x": 25.39,
+     "y": 20.25
+    }
+   },
+   "body": [
+    21.35,
+    18.75,
+    26.85,
+    21.75
+   ]
+  },
+  "R3": {
+   "footprint": "res_v",
+   "side": "bottom",
+   "value": "47 k",
+   "rotation": 180,
+   "height_above_board": 7.5,
+   "pads": {
+    "1": {
+     "x": 23.3,
+     "y": 10.4
+    },
+    "2": {
+     "x": 25.84,
+     "y": 10.4
+    }
+   },
+   "body": [
+    21.8,
+    8.9,
+    27.3,
+    11.9
+   ]
+  },
+  "R4": {
+   "footprint": "res_h",
+   "side": "bottom",
+   "value": "33, 1/2 W",
+   "rotation": 180,
+   "height_above_board": 4.0,
+   "pads": {
+    "1": {
+     "x": 21.85,
+     "y": 5.05
+    },
+    "2": {
+     "x": 34.55,
+     "y": 5.05
+    }
+   },
+   "body": [
+    23.65,
+    3.05,
+    32.75,
+    7.05
+   ]
+  },
+  "R5": {
+   "footprint": "res_v",
+   "side": "bottom",
+   "value": "8.2 k",
+   "rotation": 180,
+   "height_above_board": 7.5,
+   "pads": {
+    "1": {
+     "x": 15.6,
+     "y": 3.0
+    },
+    "2": {
+     "x": 18.14,
+     "y": 3.0
+    }
+   },
+   "body": [
+    14.1,
+    1.5,
+    19.6,
+    4.5
+   ]
+  },
+  "R6": {
+   "footprint": "res_v",
+   "side": "bottom",
+   "value": "8.2 k",
+   "rotation": 270,
+   "height_above_board": 7.5,
+   "pads": {
+    "1": {
+     "x": 32.0,
+     "y": 12.15
+    },
+    "2": {
+     "x": 32.0,
+     "y": 14.69
+    }
+   },
+   "body": [
+    30.5,
+    10.65,
+    33.5,
+    16.15
+   ]
+  },
+  "C1": {
+   "footprint": "cap5",
+   "side": "bottom",
+   "value": "100 nF",
+   "rotation": 180,
+   "height_above_board": 6.0,
+   "pads": {
+    "1": {
+     "x": 15.55,
+     "y": 7.2
+    },
+    "2": {
+     "x": 20.63,
+     "y": 7.2
+    }
+   },
+   "body": [
+    15.05,
+    5.0,
+    21.15,
+    9.4
+   ]
+  },
+  "C2": {
+   "footprint": "cap5",
+   "side": "bottom",
+   "value": "100 nF",
+   "rotation": 270,
+   "height_above_board": 6.0,
+   "pads": {
+    "1": {
+     "x": 6.05,
+     "y": 9.5
+    },
+    "2": {
+     "x": 6.05,
+     "y": 14.58
+    }
+   },
+   "body": [
+    3.85,
+    9.0,
+    8.25,
+    15.1
+   ]
+  },
+  "C3": {
+   "footprint": "elco5",
+   "side": "bottom",
+   "value": "100 uF",
+   "rotation": 270,
+   "height_above_board": 8.0,
+   "pads": {
+    "+": {
+     "x": 7.1,
+     "y": 16.65
+    },
+    "-": {
+     "x": 7.1,
+     "y": 19.19
+    }
+   },
+   "body": [
+    4.5,
+    15.45,
+    9.7,
+    20.45
+   ]
+  },
+  "D1": {
+   "footprint": "led",
+   "side": "bottom",
+   "value": "LED",
+   "rotation": 270,
+   "height_above_board": 8.7,
+   "pads": {
+    "A": {
+     "x": 36.6,
+     "y": 6.85
+    },
+    "K": {
+     "x": 36.6,
+     "y": 9.39
+    }
+   },
+   "body": [
+    33.9,
+    5.55,
+    39.3,
+    10.75
+   ]
+  },
+  "Q1": {
+   "footprint": "to92",
+   "side": "bottom",
+   "value": "BC547B",
+   "rotation": 270,
+   "height_above_board": 5.5,
+   "pads": {
+    "C": {
+     "x": 22.9,
+     "y": 12.71
+    },
+    "B": {
+     "x": 22.9,
+     "y": 15.25
+    },
+    "E": {
+     "x": 22.9,
+     "y": 17.79
+    }
+   },
+   "body": [
+    22.2,
+    12.65,
+    27.1,
+    17.85
+   ]
+  },
+  "SPK": {
+   "footprint": "wire2",
+   "side": "bottom",
+   "value": "speaker leads",
+   "rotation": 90,
+   "height_above_board": 0.0,
+   "pads": {
+    "1": {
+     "x": 35.1,
+     "y": 14.9
+    },
+    "2": {
+     "x": 35.1,
+     "y": 12.36
+    }
+   },
+   "body": [
+    33.9,
+    11.1,
+    36.3,
+    16.1
+   ]
+  },
+  "BAT": {
+   "footprint": "wire2",
+   "side": "bottom",
+   "value": "battery leads",
+   "rotation": 0,
+   "height_above_board": 0.0,
+   "pads": {
+    "1": {
+     "x": 12.95,
+     "y": 8.3
+    },
+    "2": {
+     "x": 10.41,
+     "y": 8.3
+    }
+   },
+   "body": [
+    9.15,
+    7.1,
+    14.15,
+    9.5
+   ]
+  },
+  "KEY": {
+   "footprint": "wire4",
+   "side": "bottom",
+   "value": "button board leads",
+   "rotation": 90,
+   "height_above_board": 0.0,
+   "pads": {
+    "1": {
+     "x": 28.9,
+     "y": 20.45
+    },
+    "2": {
+     "x": 28.9,
+     "y": 16.95
+    },
+    "3": {
+     "x": 28.9,
+     "y": 13.45
+    },
+    "4": {
+     "x": 28.9,
+     "y": 9.95
+    }
+   },
+   "body": [
+    27.7,
+    8.75,
+    30.1,
+    21.65
+   ]
+  },
+  "DISP": {
+   "footprint": "wire4",
+   "side": "bottom",
+   "value": "display module leads",
+   "rotation": 0,
+   "height_above_board": 0.0,
+   "pads": {
+    "1": {
+     "x": 20.25,
+     "y": 11.15
+    },
+    "2": {
+     "x": 16.75,
+     "y": 11.15
+    },
+    "3": {
+     "x": 13.25,
+     "y": 11.15
+    },
+    "4": {
+     "x": 9.75,
+     "y": 11.15
+    }
+   },
+   "body": [
+    8.55,
+    9.95,
+    21.45,
+    12.35
+   ]
+  }
+ },
+ "nets": {
+  "VCC": [
+   [
+    "U1",
+    "8"
+   ],
+   [
+    "R1",
+    "2"
+   ],
+   [
+    "R5",
+    "2"
+   ],
+   [
+    "R4",
+    "2"
+   ],
+   [
+    "C1",
+    "2"
+   ],
+   [
+    "C2",
+    "2"
+   ],
+   [
+    "C3",
+    "+"
+   ],
+   [
+    "DISP",
+    "3"
+   ],
+   [
+    "BAT",
+    "1"
+   ]
+  ],
+  "GND": [
+   [
+    "U1",
+    "4"
+   ],
+   [
+    "Q1",
+    "E"
+   ],
+   [
+    "R3",
+    "2"
+   ],
+   [
+    "R6",
+    "2"
+   ],
+   [
+    "C1",
+    "1"
+   ],
+   [
+    "C2",
+    "1"
+   ],
+   [
+    "C3",
+    "-"
+   ],
+   [
+    "DISP",
+    "4"
+   ],
+   [
+    "BAT",
+    "2"
+   ],
+   [
+    "KEY",
+    "1"
+   ]
+  ],
+  "RESET": [
+   [
+    "U1",
+    "1"
+   ],
+   [
+    "R1",
+    "1"
+   ]
+  ],
+  "PB3": [
+   [
+    "U1",
+    "2"
+   ],
+   [
+    "KEY",
+    "2"
+   ]
+  ],
+  "PB4": [
+   [
+    "U1",
+    "3"
+   ],
+   [
+    "R5",
+    "1"
+   ],
+   [
+    "KEY",
+    "3"
+   ]
+  ],
+  "S3LOW": [
+   [
+    "R6",
+    "1"
+   ],
+   [
+    "KEY",
+    "4"
+   ]
+  ],
+  "SDA": [
+   [
+    "U1",
+    "5"
+   ],
+   [
+    "DISP",
+    "1"
+   ]
+  ],
+  "SCL": [
+   [
+    "U1",
+    "7"
+   ],
+   [
+    "DISP",
+    "2"
+   ]
+  ],
+  "PB1": [
+   [
+    "U1",
+    "6"
+   ],
+   [
+    "R2",
+    "1"
+   ]
+  ],
+  "BASE": [
+   [
+    "R2",
+    "2"
+   ],
+   [
+    "Q1",
+    "B"
+   ],
+   [
+    "R3",
+    "1"
+   ]
+  ],
+  "COLL": [
+   [
+    "Q1",
+    "C"
+   ],
+   [
+    "SPK",
+    "2"
+   ],
+   [
+    "D1",
+    "A"
+   ]
+  ],
+  "SPKR": [
+   [
+    "SPK",
+    "1"
+   ],
+   [
+    "D1",
+    "K"
+   ],
+   [
+    "R4",
+    "1"
+   ]
+  ]
+ },
+ "variant": "klin3",
+ "derived": {
+  "board_center": [
+   20.0,
+   12.0
+  ],
+  "back_envelope_height": 9.0,
+  "note": "the board is mounted component side INWARDS on the rear wall of the enclosure; the TOP side (solder joints, trimmed leads up to 2.0 mm) faces the wall"
+ },
+ "display_module": {
+  "note": "SSD1306 128x32 0.91\" module glued to the inside of the front panel, wired to the pads DISP 1..4",
+  "outline": [
+   38.0,
+   12.0
+  ],
+  "thickness": 4.0,
+  "glass": [
+   25.0,
+   10.0
+  ],
+  "pin_to_end": 1.5,
+  "glass_to_pin": 5.0,
+  "header_standoff": 2.5,
+  "pins": [
+   "SDA",
+   "SCL",
+   "VCC",
+   "GND"
+  ],
+  "wires": {
+   "DISP1": "SDA",
+   "DISP2": "SCL",
+   "DISP3": "VCC",
+   "DISP4": "GND"
+  }
+ },
+ "button_board": {
+  "note": "separate board with the 3 buttons, wired to the KEY pads of the main board; fits a 2.54 mm perfboard",
+  "width": 50.0,
+  "depth": 16.0,
+  "thickness": 1.6,
+  "corner_radius": 2.0,
+  "grid": 2.54,
+  "buttons": [
+   {
+    "label": "minus",
+    "ref": "S3",
+    "x": 7.22,
+    "y": 8.0
+   },
+   {
+    "label": "run",
+    "ref": "S1",
+    "x": 25.0,
+    "y": 8.0
+   },
+   {
+    "label": "plus",
+    "ref": "S2",
+    "x": 42.78,
+    "y": 8.0
+   }
+  ],
+  "mounting_holes": [
+   {
+    "x": 16.11,
+    "y": 2.92,
+    "diameter": 2.2
+   },
+   {
+    "x": 33.89,
+    "y": 13.08,
+    "diameter": 2.2
+   }
+  ],
+  "wires": {
+   "KEY1": "GND (S1, S2 common)",
+   "KEY2": "PB3 (S1 run)",
+   "KEY3": "PB4 (S2 plus, S3 minus)",
+   "KEY4": "S3 low side (to R6 on the main board)"
+  }
+ }
+}
