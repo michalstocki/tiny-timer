@@ -2,19 +2,20 @@
 
 Dwuwarstwowa płytka **40 × 24 mm** z elementami THT dla obudowy [klin 4](../obudowa-klin-4/README.md). Rozmieszczenie, zarys, otwory M2,5 i wysokości są z [`pcb-klin3`](../pcb-klin3/README.md) i **nie zostały zmienione**, więc model obudowy pozostaje ważny. Nowe jest trasowanie, stopki produkcyjne, opisy i pliki do fabryki.
 
-**Status: projekt gotowy, pliki Gerber jeszcze nie wyeksportowane.** Plik KiCada ([`tt-main.kicad_pcb`](tt-main.kicad_pcb)) wygenerowałem skryptem na komputerze bez KiCada, więc nie był jeszcze otwarty w KiCadzie. Gerbery i niezależny DRC robi jeden skrypt: `bash tools/pcb/export_fab.sh` (komputer z KiCadem 8/9). Dopiero jego wynik, `produkcja/tt-main-gerber.zip`, wysyłasz do fabryki. Do tego czasu zamawiać nie należy.
+**Status: Gerbery wyeksportowane i sprawdzone w KiCadzie 10.0.7** (DRC KiCada bez błędów, także z regułą odstępu 0,25 mm; Gerbery obejrzane w GerbView). Do fabryki wysyłasz [`produkcja/tt-main-gerber.zip`](produkcja/tt-main-gerber.zip). Przed zamówieniem zmierz jeszcze wysokość C3 (ryzyko 2).
 
 ## Pliki
 
 | Plik | Co to |
 | --- | --- |
-| [`tt-main.kicad_pcb`](tt-main.kicad_pcb) | projekt dla KiCada (format v7, otwiera się w 7/8/9): obrys, otwory, stopki, sieci, ścieżki, opisy |
+| [`tt-main.kicad_pcb`](tt-main.kicad_pcb) | projekt dla KiCada (format v7, sprawdzony w KiCadzie 10.0.7): obrys, otwory, stopki, sieci, ścieżki, opisy |
 | [`trasowanie.json`](trasowanie.json) | zapisane trasowanie (źródło dla pliku KiCada) |
 | [`plytka-strona-elementow.svg`](plytka-strona-elementow.svg), [`plytka-strona-lutowania.svg`](plytka-strona-lutowania.svg) | podglądy obu stron z miedzią i opisami |
 | [`plan-montazu.svg`](plan-montazu.svg), [`plan-pomiarow.svg`](plan-pomiarow.svg) | rysunki do instrukcji |
 | [`instrukcja-montazu.md`](instrukcja-montazu.md) | montaż krok po kroku z kontrolami |
 | [`bom.csv`](bom.csv) | lista części |
-| `produkcja/` | po `export_fab.sh`: Gerbery, wiercenia, raport DRC KiCada, zip dla fabryki |
+| [`produkcja/tt-main-gerber.zip`](produkcja/tt-main-gerber.zip) | **plik do wysłania do fabryki**: 7 warstw Gerber, wiercenia PTH i NPTH (Excellon, mm), plik zadania `.gbrjob` |
+| `produkcja/` (reszta) | wynik `export_fab.sh`: rozpakowane Gerbery (`gerber/`), raporty DRC KiCada (`drc-kicad.txt`, `drc-kicad-bledy.txt`), mapy wierceń (`mapa-wiercen/`, poza zipem), podglądy `kicad-F.svg` i `kicad-B.svg` |
 
 ## Parametry do zamówienia (typowa fabryka 2-warstwowa, np. JLCPCB lub PCBWay)
 
@@ -38,6 +39,10 @@ Nazwy opcji w formularzach fabryk różnią się, ale wszystkie powyższe warto�
 - **Netlista** zgodna z referencją z [`tools/breadboard/design.py`](../../tools/breadboard/design.py) (ta sama, z której powstała instrukcja na płytce stykowej), po pominięciu przycisków, modułu OLED i opcjonalnych R7/R8.
 - **Zgodność z obudową:** żaden element nie został przesunięty, obrysy i wysokości są z `board.py`, więc wynik kolizji z [README klina 4](../obudowa-klin-4/README.md) pozostaje ważny. Zmienił się tylko rozstaw nóżek C3 (patrz niżej), w obrysie elementu.
 
+- **KiCad 10.0.7** (`export_fab.sh`): plik wczytuje się bez błędów; DRC KiCada: 0 błędów, 0 niepołączonych pól. Zostały same dopuszczalne ostrzeżenia: 18 × brak biblioteki `TT` (stopki są wbudowane w plik), 32 × obrys elementu na polu (maska go przytnie), 4 × stykające się obrysy C2 i C3. Dodatkowo DRC z ostrzejszymi regułami (odstęp 0,25 mm, miedź–krawędź 0,5 mm, otwór–otwór 0,5 mm): 0 błędów; test ujemny z odstępem 0,29 mm wskazuje dwa miejsca z 0,28 mm przy U1.5, czyli KiCad liczy to samo co własny DRC.
+- **Gerbery** obejrzane w GerbView (wszystkie warstwy razem) i sprawdzone w plikach: obrys 40 × 24 mm z R3, 43 pola i 1 przelotka na obu warstwach miedzi, 45 otworów w masce na każdej stronie (43 pola + 2 otwory M2,5; przelotka pod maską), opis B odbity poprawnie, wiercenia PTH Ø0,4 (przelotka), Ø0,8, Ø0,9, Ø1,2 i osobny plik NPTH z 2 × Ø2,7.
+- **Poprawka po pierwszym eksporcie:** napis „TT-MAIN v1.0” wychodził 0,4 mm poza narożnik płytki, bo generator opisów zakładał zbyt wąską czcionkę (0,62 zamiast zmierzonych 0,83 wysokości na znak) i nie sprawdzał łuków narożników. Po poprawce w [`fab_silk.py`](../../tools/pcb/fab_silk.py) opisy przesunęły się o ułamki milimetra (napis DISP na stronie lutowania jest teraz pod polami), żaden nie zniknął; elementy, pola i ścieżki bez zmian.
+
 ## Zmiany względem projektu `pcb-klin3`
 
 | Zmiana | Po co |
@@ -50,7 +55,7 @@ Nazwy opcji w formularzach fabryk różnią się, ale wszystkie powyższe warto�
 
 ## Ryzyka i rzeczy do sprawdzenia przed zamówieniem
 
-1. **Plik KiCada nie był otwarty w KiCadzie.** Format jest zgodny z KiCadem 7, ale pierwsze otwarcie może wskazać drobne problemy (brakujące wersje bibliotek nie mają znaczenia: stopki są wbudowane). `export_fab.sh` uruchamia DRC KiCada i przerwie eksport, jeśli znajdzie błędy. Flagi `kicad-cli` w skrypcie nie były wykonane: gdy któraś jest nieznana w Twojej wersji, sprawdź `kicad-cli pcb export gerbers --help`.
+1. **Podgląd fabryki.** Pliki sprawdziłem w KiCadzie, ale nie w podglądzie Gerberów u fabryki (wymaga wgrania na jej stronę). Po wgraniu zipa sprawdź, czy fabryka rozpoznała 2 warstwy i wymiar 40 × 24 mm i czy obrazek zgadza się z `produkcja/kicad-F.svg`.
 2. **Wysokość C3.** Model obudowy zakłada **8,0 mm** (to założenie z [specyfikacji płytki](../pcb-klin3/specyfikacja-plytki.md), nie pomiar). Typowy elektrolit 100 µF/16 V Ø5 mm ma 11 mm, więc ten, który masz, może nie mieścić się pod sufitem obudowy. Zmierz go suwmiarką przed zamówieniem płytki: jeśli ma 11 mm, potrzebna jest niższa wersja (Ø5 × 7 mm, o ile dostępna) albo sprawdzenie, ile miejsca naprawdę jest nad C3 w modelu obudowy.
 3. **Opisy na gęstej płytce.** Nie wszystkie opisy pól się zmieściły (np. pełna lista pinów DISP i KEY, plus BAT). Zamiast urwanych napisów jest nazwa grupy albo nic, a kolejność pinów i kwadratowe pole = pin 1 opisuje [instrukcja](instrukcja-montazu.md) i `plan-pomiarow.svg`.
 4. **Grubość opisu 0,15 mm i wysokość 1,0 mm** są na dolnej granicy czytelności u tanich fabryk. Jeśli opis wyjdzie nieczytelny, nie ma to wpływu na działanie.
@@ -62,7 +67,7 @@ Nazwy opcji w formularzach fabryk różnią się, ale wszystkie powyższe warto�
 ```bash
 python3 tools/pcb/fab_build.py              # DRC/LVS, plik KiCada, podglądy, BOM (używa zapisanego trasowania)
 python3 tools/pcb/fab_build.py --reroute    # trasuje od nowa (1-3 min) i nadpisuje trasowanie.json
-bash tools/pcb/export_fab.sh                # (komputer z KiCadem) DRC KiCada + Gerbery + wiercenia + zip
+bash tools/pcb/export_fab.sh                # (komputer z KiCadem 8-10) DRC KiCada + Gerbery + wiercenia + zip
 ```
 
 Moduły: [`fab.py`](../../tools/pcb/fab.py) (stopki, pola, opisy), [`fab_router.py`](../../tools/pcb/fab_router.py), [`fab_drc.py`](../../tools/pcb/fab_drc.py), [`fab_silk.py`](../../tools/pcb/fab_silk.py), [`fab_kicad.py`](../../tools/pcb/fab_kicad.py), [`fab_render.py`](../../tools/pcb/fab_render.py), [`fab_plan.py`](../../tools/pcb/fab_plan.py).

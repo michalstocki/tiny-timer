@@ -181,27 +181,27 @@
 <circle cx="114.0" cy="522.0" r="32.4" fill="#fff" stroke="#12301a" stroke-width="1.5"/>
 <circle cx="906.0" cy="114.0" r="32.4" fill="#fff" stroke="#12301a" stroke-width="1.5"/>
 <text x="668.4" y="249.6" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">KEY</text>
-<text x="390.0" y="291.6" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">DISP</text>
-<text x="618.0" y="309.4" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">C</text>
-<text x="541.2" y="248.4" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">B</text>
-<text x="541.2" y="187.4" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">E</text>
-<text x="927.6" y="287.3" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">SPK</text>
+<text x="439.2" y="396.0" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">DISP</text>
+<text x="625.2" y="309.4" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">C</text>
+<text x="534.0" y="248.4" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">B</text>
+<text x="534.0" y="187.4" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">E</text>
+<text x="942.0" y="287.3" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">SPK</text>
 <text x="404.6" y="184.6" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">U1</text>
-<text x="281.5" y="529.2" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">R1</text>
-<text x="608.9" y="90.0" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">R2</text>
-<text x="619.7" y="403.2" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">R3</text>
+<text x="281.5" y="543.6" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">R1</text>
+<text x="608.9" y="75.6" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">R2</text>
+<text x="619.7" y="417.6" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">R3</text>
 <text x="706.8" y="493.2" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">R4</text>
-<text x="434.9" y="504.0" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">R5</text>
+<text x="434.9" y="489.6" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">R5</text>
 <text x="798.0" y="210.7" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">R6</text>
 <text x="464.2" y="441.6" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">C1</text>
 <text x="175.2" y="325.4" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">C2</text>
-<text x="147.6" y="190.8" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">C3</text>
-<text x="855.6" y="419.5" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">D1</text>
-<text x="627.1" y="200.9" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">Q1</text>
-<text x="267.6" y="276.0" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">1</text>
-<text x="274.8" y="93.1" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">4</text>
-<text x="457.7" y="93.1" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">5</text>
-<text x="457.7" y="276.0" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">8</text>
-<text x="882.0" y="583.2" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">TT-MAIN v1.0</text>
+<text x="200.4" y="123.6" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">C3</text>
+<text x="841.2" y="419.5" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">D1</text>
+<text x="637.3" y="190.7" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">Q1</text>
+<text x="262.8" y="276.0" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">1</text>
+<text x="267.6" y="93.1" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">4</text>
+<text x="450.5" y="93.1" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">5</text>
+<text x="450.5" y="276.0" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">8</text>
+<text x="798.0" y="583.2" font-size="22.8" fill="#f4f4f0" text-anchor="middle" font-weight="bold">TT-MAIN v1.0</text>
 <text x="30" y="656" font-size="15" fill="#222">Strona lutowania (B), widok odbity</text>
 </svg>

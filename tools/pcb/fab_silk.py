@@ -15,7 +15,8 @@ import board as B  # noqa: E402
 import fab_drc
 
 H = fab.RULES["silk_height"]
-CHAR_W = 0.62                         # szerokość znaku w proporcji do wysokości (czcionka kreskowa KiCada ok. 0,6)
+CHAR_W = 0.85                         # szerokość znaku w proporcji do wysokości (zmierzona w Gerberze KiCada 10: 0,83 z kreską)
+EDGE = 0.6                            # najmniejszy odstęp opisu od krawędzi płytki (także od łuku narożnika)
 
 REFS = ["U1", "R1", "R2", "R3", "R4", "R5", "R6", "C1", "C2", "C3", "D1", "Q1"]
 GROUPS = {"KEY": "KEY", "DISP": "DISP", "BAT": "BAT", "SPK": "SPK"}
@@ -71,8 +72,14 @@ class Placer:
         self.warns = []
 
     def ok(self, b):
-        if b[0] < 0.6 or b[1] < 0.6 or b[2] > fab.W - 0.6 or b[3] > fab.H - 0.6:
+        if b[0] < EDGE or b[1] < EDGE or b[2] > fab.W - EDGE or b[3] > fab.H - EDGE:
             return False
+        r = fab.CORNER_R
+        for px in (b[0], b[2]):
+            for py in (b[1], b[3]):
+                cx, cy = min(max(px, r), fab.W - r), min(max(py, r), fab.H - r)
+                if math.hypot(px - cx, py - cy) > r - EDGE:
+                    return False
         if any(box_hits_circle(b, mx, my, fab.MOUNT_KEEPOUT - 0.4) for mx, my in fab.HOLES):
             return False
         if any(box_hits_circle(b, cx, cy, r) for cx, cy, r in self.pads):

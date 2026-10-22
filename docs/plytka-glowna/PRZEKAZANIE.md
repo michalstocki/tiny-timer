@@ -2,6 +2,8 @@
 
 Dokument dla sesji Claude Code uruchomionej na komputerze, na którym jest zainstalowany KiCad (8 lub 9). Poprzednia sesja nie miała KiCada, więc zrobiła wszystko poza eksportem plików produkcyjnych i niezależnym DRC KiCada.
 
+**Stan 2026-10-22: kroki 1–5 wykonane w KiCadzie 10.0.7** (szczegóły w [README](README.md), sekcja „Co sprawdziłem”). Plik dla fabryki: `produkcja/tt-main-gerber.zip`. Otwarte zostają: wysokość C3 i podgląd w serwisie fabryki.
+
 ## Kontekst
 
 - Repozytorium `tiny-timer`, gałąź **`claude/pcb-buttons-design-5fa3bc`** (wypchnięta na `origin`). Zacznij od `git fetch && git checkout claude/pcb-buttons-design-5fa3bc && git pull`.
