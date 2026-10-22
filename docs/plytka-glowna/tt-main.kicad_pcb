@@ -1,5 +1,5 @@
 (kicad_pcb (version 20221018) (generator tt_fab)
-  (general (thickness 1.6) (legacy_teardrops no))
+  (general (thickness 1.6))
   (paper "A4")
   (title_block (title "TT-MAIN") (rev "1.0") (comment 1 "Minutnik ATtiny13A, plytka glowna 40x24 mm (obudowa klin 4)"))
   (layers

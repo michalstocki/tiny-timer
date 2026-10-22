@@ -10,7 +10,7 @@ TT_NOHOOK=1 /Applications/Blender.app/Contents/MacOS/Blender --background --pyth
 /Applications/Blender.app/Contents/MacOS/Blender --background docs/obudowa-klin-4/obudowa-klin-4.blend --python tools/enclosure/check_assembly_wedge4.py -- blokada
 ```
 
-Skrypty: [`build_wedge4.py`](../../tools/enclosure/build_wedge4.py) (model), [`wedge4_solver.py`](../../tools/enclosure/wedge4_solver.py) (przekrój), [`check_assembly_wedge4.py`](../../tools/enclosure/check_assembly_wedge4.py) (zdejmowanie, ogniwa, blokada). Płytka główna bez zmian: [`docs/pcb-klin3/`](../pcb-klin3/README.md) (40 × 24 mm, obrócona o 180° względem klina 3.1, więc pola DISP i KEY są przy dolnej krawędzi). Płytka przycisków ma nowy rozstaw pod płytkę uniwersalną (punkt 5).
+Skrypty: [`build_wedge4.py`](../../tools/enclosure/build_wedge4.py) (model), [`wedge4_solver.py`](../../tools/enclosure/wedge4_solver.py) (przekrój), [`check_assembly_wedge4.py`](../../tools/enclosure/check_assembly_wedge4.py) (zdejmowanie, ogniwa, blokada). Płytka główna bez zmian: [`docs/pcb-klin3/`](../pcb-klin3/README.md) (projekt do zamówienia i instrukcja montażu: [`docs/plytka-glowna/`](../plytka-glowna/README.md)) (40 × 24 mm, obrócona o 180° względem klina 3.1, więc pola DISP i KEY są przy dolnej krawędzi). Płytka przycisków ma nowy rozstaw pod płytkę uniwersalną (punkt 5).
 
 ## Wymiary
 

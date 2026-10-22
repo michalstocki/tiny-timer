@@ -33,6 +33,8 @@ Płytka leży elementami do wnętrza na tylnej ściance pokrywy, laminat 2,5 mm 
 - Przekrój obudowy nie zależy tu od konkretnego ziarna: 16 rozmieszczeń o rozmiarach 38 × 24 … 46 × 22 daje ten sam bok trójkąta (72 mm), bo wymiarowa jest obwiednia, nie układ.
 - Kontrola w `build.py`: **0 naruszeń rozmieszczenia, 0 sieci niepołączonych** w sprawdzeniu trasowania (242 odcinki, 1 przelotka, 43 piny). To sprawdzenie wykonalności prostym routerem siatkowym, nie finalna miedź.
 
+> **Projekt do zamówienia (trasowanie, plik KiCada, instrukcja montażu): [`docs/plytka-glowna/`](../plytka-glowna/README.md).** Ten katalog zostaje źródłem rozmieszczenia i opisu mechanicznego.
+
 ## Do sprawdzenia przed zamówieniem
 
 1. Płytka **przycisków** ma tu 50 × 16 mm (przyciski w x = 7,22, 25,00, 42,78, czyli co 17,78 mm = 7 oczek rastra 2,54; otwory M2 w (16,11; 2,92) i (33,89; 13,08)), czyli inaczej niż 52 × 16 mm w „klinie”. Projektu PCB nie ma: rozstaw dobrany tak, żeby wystarczyła płytka uniwersalna, opis montażu w [README klina 4](../obudowa-klin-4/README.md#5-płytka-przycisków-na-płytce-uniwersalnej), szablon 1:1, schemat i instrukcja w [`docs/plytka-przyciskow/`](../plytka-przyciskow/README.md). Do klina 4 przyciski były co 18 mm (pliki klina 3 i 3.1 są z tym rozstawem).

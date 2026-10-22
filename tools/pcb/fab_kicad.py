@@ -39,7 +39,7 @@ def build(design, texts_f, texts_b, title_lines=()):
     o = []
     w = o.append
     w('(kicad_pcb (version 20221018) (generator tt_fab)')
-    w('  (general (thickness %s) (legacy_teardrops no))' % f(fab.THICKNESS))
+    w('  (general (thickness %s))' % f(fab.THICKNESS))
     w('  (paper "A4")')
     w('  (title_block (title "TT-MAIN") (rev "1.0") (comment 1 "Minutnik ATtiny13A, plytka glowna 40x24 mm (obudowa klin 4)"))')
     w('  (layers')
