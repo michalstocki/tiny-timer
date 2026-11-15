@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# Eksport plików produkcyjnych płytki głównej z docs/plytka-glowna/tt-main.kicad_pcb przez kicad-cli (KiCad 8, 9 lub 10;
-# sprawdzony na 10.0.7).
-# Uruchamiać na komputerze z KiCadem:   bash tools/pcb/export_fab.sh
-# Wynik: docs/plytka-glowna/produkcja/ (gerber/, drc-kicad.txt, tt-main-gerber.zip). Zip wysyłasz do fabryki.
+# Eksport plików produkcyjnych z pliku KiCada przez kicad-cli (KiCad 8, 9 lub 10; sprawdzony na 10.0.7).
+# Uruchamiać na komputerze z KiCadem:
+#   bash tools/pcb/export_fab.sh                     # płytka główna: docs/plytka-glowna/tt-main.kicad_pcb -> docs/plytka-glowna/produkcja/
+#   bash tools/pcb/export_fab.sh docs/plytka-przyciskow/tt-buttons.kicad_pcb docs/plytka-przyciskow/produkcja
+# Wynik: <katalog>/ (gerber/, drc-kicad.txt, <nazwa>-gerber.zip). Zip wysyłasz do fabryki.
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 
@@ -15,8 +16,9 @@ fi
 command -v "$KC" >/dev/null 2>&1 || [ -x "$KC" ] || { echo "Nie znaleziono kicad-cli (ustaw KICAD_CLI=/ścieżka/do/kicad-cli)"; exit 1; }
 echo "kicad-cli: $KC ($("$KC" version 2>/dev/null || true))"
 
-PCB=docs/plytka-glowna/tt-main.kicad_pcb
-OUT=docs/plytka-glowna/produkcja
+PCB="${1:-docs/plytka-glowna/tt-main.kicad_pcb}"
+OUT="${2:-docs/plytka-glowna/produkcja}"
+ZIP="$(basename "$PCB" .kicad_pcb)-gerber.zip"
 rm -rf "$OUT"
 mkdir -p "$OUT/gerber"
 
@@ -44,6 +46,6 @@ SVG_MODE=()
 "$KC" pcb export svg "${SVG_MODE[@]}" --layers "B.Cu,B.SilkS,Edge.Cuts" --mirror --exclude-drawing-sheet --fit-page-to-board --output "$OUT/kicad-B.svg" "$PCB"
 
 echo "== 5. Archiwum do wysłania do fabryki"
-( cd "$OUT/gerber" && rm -f ../tt-main-gerber.zip && zip -q ../tt-main-gerber.zip ./* )
-ls -l "$OUT/gerber" "$OUT/tt-main-gerber.zip"
+( cd "$OUT/gerber" && rm -f "../$ZIP" && zip -q "../$ZIP" ./* )
+ls -l "$OUT/gerber" "$OUT/$ZIP"
 echo "Gotowe. Przed zamówieniem otwórz zip w podglądzie fabryki (np. JLCPCB) i porównaj z podglądami SVG."

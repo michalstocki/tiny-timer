@@ -628,7 +628,8 @@ pin_x = -MOD_L / 2 + MOD_PIN_END
 to_world(box("przewody_OLED", pin_x - 1.3, -5.3, -MODULE_T - WIRE_H, pin_x + 1.3 + 6.0, 5.3, -MODULE_T, "Wyswietlacz",
              (0.15, 0.15, 0.17, 1)), M_DISP)
 
-bpcb = finish("PCB_przyciski", rrect_bm(0, 0, -BT, BB_W, BB_D, 0, 2.0), "Plytka_przyciskow", C_PCB)
+BB_EXTRA = float(os.environ.get("TT_BB_EXTRA", "0"))  # 2 = płytka drukowana TT-BTN (54 mm, o 2 mm szersza z każdej strony)
+bpcb = finish("PCB_przyciski", rrect_bm(-BB_EXTRA, 0, -BT, BB_W + BB_EXTRA, BB_D, 0, 2.0), "Plytka_przyciskow", C_PCB)
 for bx, by in BTN_SCREW:
     cut(bpcb, cyl("o", bx, by, -BT - 0.5, 0.5, 1.1, seg=20))
 to_world(bpcb, M_BTN)

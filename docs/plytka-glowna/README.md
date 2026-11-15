@@ -32,6 +32,8 @@ Dwuwarstwowa płytka **40 × 24 mm** z elementami THT dla obudowy [klin 4](../ob
 
 Nazwy opcji w formularzach fabryk różnią się, ale wszystkie powyższe wartości są standardowe. **Zamów kilka sztuk**: płytka jest mała i tania, a pierwsza wersja zawsze może wymagać poprawki.
 
+**Płytka przycisków** ma osobny projekt i osobne Gerbery: [`docs/plytka-przyciskow/`](../plytka-przyciskow/README.md#płytka-drukowana-tt-btn-zamówienie-na-pcbway). Zamawiaj obie jako dwie pozycje „Single pieces” w jednym koszyku. Panel z obiema płytkami kosztuje w PCBWay kilka razy więcej (porównanie cen w tamtym README).
+
 ## Co sprawdziłem
 
 - **DRC własny** ([`tools/pcb/fab_drc.py`](../../tools/pcb/fab_drc.py)), na dokładnej geometrii: 0 błędów. Najmniejszy odstęp miedzi **0,28 mm** (wymagane 0,25), miedź ≥ 0,5 mm od krawędzi płytki, miedź ≥ 3,0 mm od osi otworów M2,5, pierścienie pól ≥ 0,4 mm, przelotka 0,8/0,4 (pierścień 0,2 mm), odstęp otworów ≥ 1,18 mm. Test ujemny: usunięta ścieżka, ścieżka w polu innej sieci i miedź przy krawędzi są wykrywane.
