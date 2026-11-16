@@ -1,4 +1,88 @@
-# Płytka przycisków na płytce uniwersalnej (obudowa klin 4)
+# Płytka przycisków (obudowa klin 4)
+
+Trzy przyciski Omron B3F-4055 (S3 „−”, S1 „run”, S2 „+”) i cztery przewody do pól KEY płytki głównej. Są dwie wersje o tym samym położeniu przycisków, otworów M2 i pól przewodów:
+
+| Wersja | Dla kogo |
+| --- | --- |
+| **[Płytka drukowana TT-BTN](#płytka-drukowana-tt-btn-zamówienie-na-pcbway)** (54 × 16 mm, 2 warstwy) | zalecana: bez pracy warsztatowej, zamówienie razem z płytką główną |
+| [Płytka uniwersalna](#płytka-przycisków-na-płytce-uniwersalnej) (50 × 16 mm, raster 2,54) | gdy masz płytkę uniwersalną pod ręką i nie chcesz czekać na fabrykę |
+
+## Płytka drukowana TT-BTN (zamówienie na PCBWay)
+
+| Plik | Co to |
+| --- | --- |
+| [`tt-buttons.kicad_pcb`](tt-buttons.kicad_pcb) | projekt dla KiCada (format v7, sprawdzony w KiCadzie 10.0.7): obrys, stopki, sieci, ścieżki, opisy |
+| [`produkcja/tt-buttons-gerber.zip`](produkcja/tt-buttons-gerber.zip) | **plik do wysłania do fabryki**: 7 warstw Gerber, wiercenia PTH i NPTH (Excellon, mm), plik zadania `.gbrjob` |
+| `produkcja/` (reszta) | rozpakowane Gerbery, raporty DRC KiCada, mapy wierceń (poza zipem), podglądy `kicad-F.svg` i `kicad-B.svg` |
+| [`plytka-przyciskow-pcb-top.png`](plytka-przyciskow-pcb-top.png), [`plytka-przyciskow-pcb-bottom.png`](plytka-przyciskow-pcb-bottom.png) | render KiCada obu stron |
+
+![strona elementów](plytka-przyciskow-pcb-top.png)
+
+![strona lutowania](plytka-przyciskow-pcb-bottom.png)
+
+### Zamówienie
+
+Płytka główna ([`docs/plytka-glowna/`](../plytka-glowna/README.md)) i płytka przycisków to **dwa osobne projekty i dwa osobne zamówienia**, oba jako „Single pieces”. Wrzuć oba do jednego koszyka, wtedy wysyłka jest jedna.
+
+| Parametr w formularzu PCBWay | Płytka przycisków | Płytka główna |
+| --- | --- | --- |
+| Board type | Single pieces | Single pieces |
+| Different design in panel | 1 | 1 |
+| Size | **54 × 16 mm** | 40 × 24 mm |
+| Quantity | 5 | 5 |
+| Layers / Material / Thickness | 2 / FR-4 / 1,6 mm | 2 / FR-4 / 1,6 mm |
+| Pozostałe | domyślne (HASL, zielona maska, biały opis, miedź 1 oz) | jak w [README płytki głównej](../plytka-glowna/README.md#parametry-do-zamówienia-typowa-fabryka-2-warstwowa-np-jlcpcb-lub-pcbway) |
+
+**Dlaczego nie jeden plik z obiema płytkami (panel).** Sprawdziłem w kalkulatorze PCBWay (15.11.2026, 2 warstwy, FR-4 1,6 mm, opcje domyślne, ceny bez wysyłki). Najniższa stawka obejmuje tylko 5 sztuk **jednego** projektu do 100 × 100 mm. Każde połączenie płytek w jednym pliku podnosi cenę:
+
+| Wariant | Sztuk | Cena |
+| --- | --- | --- |
+| 1 projekt, Single pieces (40 × 24, 54 × 16 albo do 100 × 100 mm) | 5 | **5,00 USD** |
+| to samo | 10 / 20 | 18,69 / 22,33 USD |
+| 2 projekty w jednym pliku, Single pieces | 5 | 27,00 USD |
+| panel klienta z mostkami, 1 zestaw (główna + przyciski) | 5 paneli | 36,10 USD |
+| panel klienta, 2 zestawy, 100 × 50 mm | 5 paneli | 39,99 USD |
+| panel klienta, 3 zestawy, 100 × 100 mm | 5 paneli | 47,04 USD |
+
+Dwie osobne płytki to więc 10 USD za 5 kompletów. PCBWay nie nacina też płytek tak małych jak nasze: według jej zasad V-cut wymaga co najmniej 60 × 45 mm. Każdy panel trzeba by łączyć mostkami z otworami, a to ich formularz liczy jako panel klienta („Panel by Customer”, zob. [Confirm the panel way of the boards](https://www.pcbway.com/helpcenter/panel_issues/Confirm_the_panel_way_of_the_boards.html), [PCB Panel Creation](https://www.pcbway.com/pcb_prototype/PCB_Panel_Creation.html), [V-Scoring](https://www.pcbway.com/pcb_prototype/PCB_V_Scoring.html)). Ceny są orientacyjne: kalkulator zaznacza, że cenę ostateczną ustala PCBWay po weryfikacji, i ceny mogą się zmienić.
+
+### Projekt
+
+- **Zarys 54 × 16 mm** z narożnikami R2, o 2 mm szerszy z każdej strony niż płytka uniwersalna. Przy 50 mm otwory skrajnych nóżek (rozstaw 12,5 mm według karty) leżałyby 0,4 mm od krawędzi, a pola wychodziłyby poza płytkę. Przyciski, otwory M2 i pola przewodów są w tych samych miejscach względem obudowy, a w tabeli niżej współrzędne są przesunięte o 2 mm. Szerszy zarys sprawdziłem w modelu obudowy klin 4 (`TT_BB_EXTRA=2` w [`build_wedge4.py`](../../tools/enclosure/build_wedge4.py)): 0 kolizji w 104 parach, zdejmowanie pokrywy bez kolizji.
+- **Stopka B3F-4055 według karty:** 4 pola Ø2,2 z otworem Ø1,2 w rozstawie 12,5 × 5,0 mm i dwa otwory **Ø1,8 bez metalizacji na kołki ustalające** (9,0 mm od siebie). Kołków nie trzeba ścinać.
+- **Pola przewodów** Ø2,0 z otworem 1,2 mm, jak pola KEY na płytce głównej. Są w tych samych miejscach co oczka G4, G6, N4 i N2 na płytce uniwersalnej. KEY1 (GND) ma pole kwadratowe, tak jak na płytce głównej. Opisy K1…K4 są na obu stronach.
+- **Ścieżki** 0,30 mm, ręcznie, pod kątem 45°. Strona lutowania (B.Cu): rzędy nóżek każdego przycisku, GND od S1 do S2 i odejścia do K1, K2 i K4. Strona elementów (F.Cu): jedna ścieżka PB4 od S3 przez K3, osią przycisków pod S1, do S2. Schemat jest ten sam co niżej, nie ma przewodów rozdzielczych.
+- **Otwory M2** Ø2,2 bez metalizacji. Miedź trzyma się z daleka od łba wkręta (od strony lutowania) i od słupka pokrywy (od strony elementów): ścieżki co najmniej 2,3 mm od osi, pola 3,4 mm.
+- Opisy: oznaczenia S1…S3 i symbole −, RUN, + na stronie elementów. Na stronie lutowania napis TT-BTN v1.0 i strzałka „glosnik ->” wskazująca stronę głośnika. Napisy „TOP” i „BOT” w miedzi, jak na płytce głównej (kontrola, czy warstwy nie są zamienione).
+
+| Element | Położenie [mm] od lewego dolnego narożnika (widok od strony elementów) |
+| --- | --- |
+| S3 „−”, S1 „run”, S2 „+” (środki) | 9,22 / 27,00 / 44,78; y = 8,00 |
+| otwory M2 Ø2,2 | (18,11; 2,92) i (35,89; 13,08) |
+| K1 GND (kwadratowe), K2 PB3 | (35,89; 8,00), (35,89; 2,92) |
+| K3 PB4, K4 do R6 | (18,11; 8,00), (18,11; 13,08) |
+
+### Montaż
+
+1. Sprawdź przyciski multimetrem (krok 0 niżej). Wynik decyduje o schemacie.
+2. Włóż trzy przyciski od strony elementów (kołki wchodzą w otwory Ø1,8), dociśnij do laminatu i zalutuj od strony lutowania (12 lutów). Nie myj płytki z przyciskami.
+3. Przewody KEY1…KEY4 przełóż od strony lutowania przez pola K1…K4 i zalutuj od strony elementów, z końcówką do 1 mm (nad płytką jest 6,8 mm do sufitu pokrywy). Kolory i pola płytki głównej jak w tabeli „Połączenia na płytce” niżej.
+4. Kontrola multimetrem jak w kroku 10 niżej. Montaż w pokrywie: dwa wkręty M2 × 6 od strony lutowania, lewa krawędź (strzałka „glosnik ->”) od strony głośnika.
+
+### Co sprawdziłem
+
+- **Kontrola własna** ([`tools/pcb/fab_buttons.py`](../../tools/pcb/fab_buttons.py)): każda z 4 sieci w jednym kawałku, odstęp miedzi co najmniej 0,25 mm (najmniejszy jest **0,35 mm**), miedź co najmniej 0,5 mm od krawędzi, otwory kołków i M2 ze strefami wolnymi od miedzi. Test ujemny: usunięta ścieżka, ścieżka przy polu innej sieci i ścieżka przy M2 są wykrywane. Pierwsza wersja trasy przechodziła 0,13 mm od narożnika kwadratowego pola KEY1. Wykrył to DRC KiCada, bo moja kontrola liczyła pola jako okrągłe. Kontrola liczy teraz kwadraty jako kwadraty i na starej trasie podaje te same odległości co KiCad.
+- **KiCad 10.0.7** ([`export_fab.sh`](../../tools/pcb/export_fab.sh)): DRC bez błędów, 0 niepołączonych pól. Zostało 9 ostrzeżeń o braku biblioteki `TT` (stopki są wbudowane w plik). Gerbery i wiercenia: PTH Ø1,2 (12 nóżek i 4 pola przewodów), NPTH Ø1,8 (6 kołków) i Ø2,2 (2 × M2).
+- **Nie sprawdziłem** podglądu Gerberów w PCBWay (wymaga wgrania pliku na ich stronę) ani dopasowania na fizycznym B3F-4055. Po wgraniu zipa sprawdź, czy PCBWay rozpoznał 2 warstwy i wymiar 54 × 16 mm.
+
+### Regeneracja
+
+```bash
+python3 tools/pcb/fab_buttons.py                                                                 # kontrola + tt-buttons.kicad_pcb
+bash tools/pcb/export_fab.sh docs/plytka-przyciskow/tt-buttons.kicad_pcb docs/plytka-przyciskow/produkcja   # DRC KiCada, Gerbery, zip
+```
+
+## Płytka przycisków na płytce uniwersalnej
 
 Trzy przyciski Omron B3F-4055 (S3 „−”, S1 „run”, S2 „+”) na kawałku jednostronnej płytki uniwersalnej **50 × 16 mm**, z czterema przewodami do pól KEY płytki głównej. Zarys, otwory M2 i rozstaw przycisków są zgodne z [obudową klin 4](../obudowa-klin-4/README.md#5-płytka-przycisków-na-płytce-uniwersalnej) (dane: [`pcb-layout.json`](../pcb-klin3/pcb-layout.json), klucz `button_board`).
 
@@ -121,4 +205,4 @@ Wszystko po stronie lutowania, widok na stronie 2 PDF (obrócony jak kartka wok�
 2. **Karta nie podaje warunków lutowania** (w pliku jest tylko „mycie niemożliwe”): lutuj krótko i bez przegrzewania. Parametry ogólne Omron dla przełączników dotykowych leżą w osobnym dokumencie „Safety Precautions”, którego nie sprawdzałem.
 3. **Skrajne rzędy oczek** są przecięte linią cięcia (punkt wyżej): to wynika z geometrii obudowy i nie wpływa na działanie. Jeśli zależy Ci na czystym brzegu, trzeba by zmienić rozstaw przycisków albo wymiar obudowy.
 4. **Przewody i luz w pokrywie:** wysokość lutów i przewodów po stronie lutowania nie była sprawdzana modelem 3D (przyjęto do 1,9 mm jak dla nóżek).
-5. **Płytka główna** nie jest częścią tej paczki i nadal nie ma plików produkcyjnych (zob. [`docs/pcb-klin3/README.md`](../pcb-klin3/README.md): trasowanie jest próbą wykonalności, a nie ostatecznym projektem miedzi).
+5. **Płytka główna** ma osobny projekt i pliki produkcyjne w [`docs/plytka-glowna/`](../plytka-glowna/README.md); wersja drukowana płytki przycisków jest opisana na początku tego pliku.
