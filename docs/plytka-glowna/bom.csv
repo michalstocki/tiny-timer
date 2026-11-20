@@ -1,0 +1,17 @@
+oznaczenie;ilość;wartość;uwagi
+U1;1;ATtiny13A-PU, DIP-8;zaprogramowany poza płytką (docs/programowanie.md), wkładany w gniazdo
+U1 (gniazdo);1;gniazdo DIP-8, rząd 7,62 mm;zwykłe lub precyzyjne, wysokość z układem do 8,5 mm
+R1;1;15 kΩ, 1/4 W;stojący, raster 2,54 mm
+R2;1;470 Ω, 1/4 W;stojący, raster 2,54 mm
+R3;1;47 kΩ, 1/4 W;stojący, raster 2,54 mm
+R5, R6;2;8,2 kΩ, 1/4 W;"stojące, raster 2,54 mm; R5 i R6 muszą być jednakowe (dzielnik przycisków)"
+R4;1;33 Ω, 1/2 W;leżący, raster 12,7 mm, korpus do 9 × 3,2 mm
+C1, C2;2;100 nF (104), 50 V;ceramiczny lub foliowy, raster 5,08 mm, wysokość do 6 mm
+C3;1;100 µF, min. 10 V;elektrolit Ø5 mm, raster 2,0 mm, wysokość do 8 mm (zob. README)
+D1;1;LED 5 mm, dowolna;dioda zabezpieczająca równolegle do głośnika
+Q1;1;BC547A (lub B/C), TO-92;sterowanie głośnikiem
+DISP;4;przewód 0,14 mm², silikonowy, ok. 60 mm;czerwony, czarny, zielony, żółty do modułu OLED (lub przewody Dupont żeńskie przecięte)
+KEY;4;przewód 0,14 mm², silikonowy;czarny, pomarańczowy, niebieski, zielony do płytki przycisków
+BAT;2;przewód 0,14-0,25 mm², silikonowy;czerwony (+) i czarny (−) od styków koszyka
+SPK;2;przewód 0,14 mm², silikonowy;dwa przewody od głośnika (bez polaryzacji)
+MH1, MH2;2;wkręt samogwintujący M2,5 × 5 mm;"łeb od strony elementów; nie dłuższe niż 5,6 mm (ścianka za słupkiem ma 0,5 mm)"

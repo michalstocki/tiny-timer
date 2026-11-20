@@ -1,0 +1,45 @@
+** Drc report for tt-buttons.kicad_pcb **
+** Created on 2026-11-15T19:18:07 **
+** Report includes: Errors, Warnings, Exclusions **
+
+** Found 9 DRC violations **
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(109.2200 mm, 108.0000 mm): Footprint S3
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(127.0000 mm, 108.0000 mm): Footprint S1
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(144.7800 mm, 108.0000 mm): Footprint S2
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(135.8900 mm, 108.0000 mm): Footprint KEY1
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(135.8900 mm, 113.0800 mm): Footprint KEY2
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(118.1100 mm, 108.0000 mm): Footprint KEY3
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(118.1100 mm, 102.9200 mm): Footprint KEY4
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(118.1100 mm, 113.0800 mm): Footprint MH1
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(135.8900 mm, 102.9200 mm): Footprint MH2
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** Ignored checks **
+    - Footprint has no courtyard defined
+    - Track endpoint not centered on via
+    - Tuning profile track geometries
+    - Footprint doesn't match symbol's footprint filters
+    - Footprint component type doesn't match footprint pads
+
+** End of Report **

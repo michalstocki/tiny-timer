@@ -1,0 +1,216 @@
+** Drc report for tt-main.kicad_pcb **
+** Created on 2026-10-22T16:24:08 **
+** Report includes: Errors, Warnings, Exclusions **
+
+** Found 54 DRC violations **
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(128.2000 mm, 109.9000 mm): Footprint U1
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(128.2500 mm, 118.8500 mm): Footprint R1
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(117.1500 mm, 103.7500 mm): Footprint R2
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(116.7000 mm, 113.6000 mm): Footprint R3
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(118.1500 mm, 118.9500 mm): Footprint R4
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(124.4000 mm, 121.0000 mm): Footprint R5
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(108.0000 mm, 111.8500 mm): Footprint R6
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(124.4500 mm, 116.8000 mm): Footprint C1
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(133.9500 mm, 114.5000 mm): Footprint C2
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(132.9000 mm, 107.3500 mm): Footprint C3
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(103.4000 mm, 117.1500 mm): Footprint D1
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(117.1000 mm, 108.7500 mm): Footprint Q1
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(104.9000 mm, 109.1000 mm): Footprint SPK
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(127.0500 mm, 115.7000 mm): Footprint BAT
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(111.1000 mm, 103.5500 mm): Footprint KEY
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(119.7500 mm, 112.8500 mm): Footprint DISP
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(136.5000 mm, 120.5000 mm): Footprint MH1
+[lib_footprint_issues]: Obecna konfiguracja nie zawiera biblioteki footprintów 'TT'
+    Local override; warning
+    @(103.5000 mm, 103.5000 mm): Footprint MH2
+[silk_overlap]: Silkscreen clearance
+    Rule: ograniczenia w konfiguracji płytki dla opisów; warning
+    @(132.9000 mm, 108.9500 mm): Segment z C3 na F.Silkscreen
+    @(131.8500 mm, 108.9200 mm): Segment z C2 na F.Silkscreen
+[silk_overlap]: Silkscreen clearance
+    Rule: ograniczenia w konfiguracji płytki dla opisów; warning
+    @(131.8500 mm, 108.9200 mm): Segment z C2 na F.Silkscreen
+    @(133.4072 mm, 108.9000 mm): Segment z C3 na F.Silkscreen
+[silk_overlap]: Silkscreen clearance
+    Rule: ograniczenia w konfiguracji płytki dla opisów; warning
+    @(131.9050 mm, 108.7521 mm): Segment z C3 na F.Silkscreen
+    @(131.8500 mm, 108.9200 mm): Segment z C2 na F.Silkscreen
+[silk_overlap]: Silkscreen clearance
+    Rule: ograniczenia w konfiguracji płytki dla opisów; warning
+    @(131.8500 mm, 108.9200 mm): Segment z C2 na F.Silkscreen
+    @(132.3928 mm, 108.9000 mm): Segment z C3 na F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(129.7000 mm, 118.8500 mm): Segment z R1 na F.Silkscreen
+    @(130.7900 mm, 118.8500 mm): Pole PTH 2 [VCC] na R1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(122.9500 mm, 121.0000 mm): Segment z R5 na F.Silkscreen
+    @(121.8600 mm, 121.0000 mm): Pole PTH 2 [VCC] na R5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(116.2792 mm, 111.0053 mm): Segment z Q1 na F.Silkscreen
+    @(117.1000 mm, 111.2900 mm): Pole PTH C [COLL] na Q1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(116.6832 mm, 111.1135 mm): Segment z Q1 na F.Silkscreen
+    @(117.1000 mm, 111.2900 mm): Pole PTH C [COLL] na Q1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(117.1000 mm, 111.1500 mm): Segment z Q1 na F.Silkscreen
+    @(117.1000 mm, 111.2900 mm): Pole PTH C [COLL] na Q1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(117.5168 mm, 111.1135 mm): Segment z Q1 na F.Silkscreen
+    @(117.1000 mm, 111.2900 mm): Pole PTH C [COLL] na Q1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(117.9208 mm, 111.0053 mm): Segment z Q1 na F.Silkscreen
+    @(117.1000 mm, 111.2900 mm): Pole PTH C [COLL] na Q1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(117.9208 mm, 106.4947 mm): Segment z Q1 na F.Silkscreen
+    @(117.1000 mm, 106.2100 mm): Pole PTH E [GND] na Q1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(117.5168 mm, 106.3865 mm): Segment z Q1 na F.Silkscreen
+    @(117.1000 mm, 106.2100 mm): Pole PTH E [GND] na Q1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(117.1000 mm, 106.3500 mm): Segment z Q1 na F.Silkscreen
+    @(117.1000 mm, 106.2100 mm): Pole PTH E [GND] na Q1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(116.6832 mm, 106.3865 mm): Segment z Q1 na F.Silkscreen
+    @(117.1000 mm, 106.2100 mm): Pole PTH E [GND] na Q1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(116.2792 mm, 106.4947 mm): Segment z Q1 na F.Silkscreen
+    @(117.1000 mm, 106.2100 mm): Pole PTH E [GND] na Q1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(118.3000 mm, 106.6715 mm): Segment z Q1 na F.Silkscreen
+    @(117.1000 mm, 106.2100 mm): Pole PTH E [GND] na Q1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(115.7000 mm, 103.7500 mm): Segment z R2 na F.Silkscreen
+    @(114.6100 mm, 103.7500 mm): Pole PTH 2 [BASE] na R2
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(117.2549 mm, 112.2604 mm): Segment z R3 na F.Silkscreen
+    @(117.1000 mm, 111.2900 mm): Pole PTH C [COLL] na Q1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(116.9829 mm, 112.1779 mm): Segment z R3 na F.Silkscreen
+    @(117.1000 mm, 111.2900 mm): Pole PTH C [COLL] na Q1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(115.2500 mm, 113.6000 mm): Segment z R3 na F.Silkscreen
+    @(114.1600 mm, 113.6000 mm): Pole PTH 2 [GND] na R3
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(117.2000 mm, 118.9500 mm): Segment z R4 na F.Silkscreen
+    @(118.1500 mm, 118.9500 mm): Pole PTH 1 [SPKR] na R4
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(124.9500 mm, 118.9000 mm): Segment z C1 na F.Silkscreen
+    @(118.1500 mm, 118.9500 mm): Pole PTH 1 [SPKR] na R4
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(118.8700 mm, 118.9000 mm): Segment z C1 na F.Silkscreen
+    @(118.1500 mm, 118.9500 mm): Pole PTH 1 [SPKR] na R4
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(118.8700 mm, 118.9000 mm): Segment z C1 na F.Silkscreen
+    @(119.3700 mm, 116.8000 mm): Pole PTH 2 [VCC] na C1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(124.9500 mm, 114.7000 mm): Segment z C1 na F.Silkscreen
+    @(124.4500 mm, 116.8000 mm): Pole PTH 1 [GND] na C1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(136.0500 mm, 115.0000 mm): Segment z C2 na F.Silkscreen
+    @(133.9500 mm, 114.5000 mm): Pole PTH 1 [GND] na C2
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(131.8500 mm, 108.9200 mm): Segment z C2 na F.Silkscreen
+    @(133.9500 mm, 109.4200 mm): Pole PTH 2 [VCC] na C2
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(132.9000 mm, 108.9500 mm): Segment z C3 na F.Silkscreen
+    @(133.9500 mm, 109.4200 mm): Pole PTH 2 [VCC] na C2
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(133.4072 mm, 108.9000 mm): Segment z C3 na F.Silkscreen
+    @(133.9500 mm, 109.4200 mm): Pole PTH 2 [VCC] na C2
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(133.8950 mm, 108.7521 mm): Segment z C3 na F.Silkscreen
+    @(133.9500 mm, 109.4200 mm): Pole PTH 2 [VCC] na C2
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(130.9000 mm, 105.4500 mm): Segment z C3 na F.Silkscreen
+    @(132.9000 mm, 105.3500 mm): Pole PTH - [GND] na C3
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(108.0000 mm, 110.4000 mm): Segment z R6 na F.Silkscreen
+    @(108.0000 mm, 109.3100 mm): Pole PTH 2 [GND] na R6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(115.9000 mm, 110.8285 mm): Segment z Q1 na F.Silkscreen
+    @(117.1000 mm, 111.2900 mm): Pole PTH C [COLL] na Q1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(107.3000 mm, 118.9500 mm): Segment z R4 na F.Silkscreen
+    @(105.4500 mm, 118.9500 mm): Pole PTH 2 [VCC] na R4
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(101.9000 mm, 114.1500 mm): Segment z D1 na F.Silkscreen
+    @(103.4000 mm, 114.6100 mm): Pole PTH K [SPKR] na D1
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** Ignored checks **
+    - Footprint has no courtyard defined
+    - Track endpoint not centered on via
+    - Tuning profile track geometries
+    - Footprint doesn't match symbol's footprint filters
+    - Footprint component type doesn't match footprint pads
+
+** End of Report **
