@@ -1,0 +1,244 @@
+{
+ "params": {
+  "side": 67.0,
+  "len": 74.1,
+  "rb": 9.0,
+  "ra": 15.0,
+  "re": 9.0,
+  "sm": 0.9,
+  "sme": 0.75
+ },
+ "wymiary": {
+  "dl": 74.1,
+  "szer": 56.53,
+  "wys": 46.48
+ },
+ "wymiary_klin5": {
+  "dl": 74.1,
+  "szer": 59.68,
+  "wys": 45.02
+ },
+ "r_min": {
+  "podstawa": 5.38,
+  "wierzcholek": 8.97,
+  "boki": 5.49
+ },
+ "cofniecie": {
+  "podstawa": 15.59,
+  "wierzcholek": 25.98,
+  "boki": 9.0
+ },
+ "plaskie_dno": {
+  "od": 15.59,
+  "do": 51.41,
+  "klapka": [
+   9.5,
+   43.5
+  ],
+  "zapas_front": -6.39,
+  "zapas_tyl": 7.61
+ },
+ "scianka_przy_boku": {
+  "wciecie_na_WE": 1.09,
+  "podstawa_tyl": 0.91,
+  "front": 0.51
+ },
+ "luzy": {
+  "AAA_A": {
+   "klin5": 0.15,
+   "klin6": 0.15
+  },
+  "AAA_A_plus": {
+   "klin5": 3.5,
+   "klin6": 3.5
+  },
+  "AAA_B": {
+   "klin5": 0.15,
+   "klin6": 0.15
+  },
+  "AAA_B_plus": {
+   "klin5": 3.5,
+   "klin6": 3.5
+  },
+  "AAA_C": {
+   "klin5": 0.15,
+   "klin6": 0.15
+  },
+  "AAA_C_plus": {
+   "klin5": 3.5,
+   "klin6": 3.5
+  },
+  "B3F_minus": {
+   "klin5": 2.48,
+   "klin6": 2.47
+  },
+  "B3F_nozki_minus": {
+   "klin5": 8.4,
+   "klin6": 8.71
+  },
+  "B3F_nozki_plus": {
+   "klin5": 8.4,
+   "klin6": 8.71
+  },
+  "B3F_nozki_run": {
+   "klin5": 8.4,
+   "klin6": 8.71
+  },
+  "B3F_plus": {
+   "klin5": 2.48,
+   "klin6": 2.47
+  },
+  "B3F_podstawa_minus": {
+   "klin5": 1.3,
+   "klin6": 2.75
+  },
+  "B3F_podstawa_plus": {
+   "klin5": 1.3,
+   "klin6": 2.75
+  },
+  "B3F_podstawa_run": {
+   "klin5": 1.3,
+   "klin6": 2.75
+  },
+  "B3F_run": {
+   "klin5": 2.48,
+   "klin6": 2.47
+  },
+  "B3F_trzpien_minus": {
+   "klin5": -0.5,
+   "klin6": 0.95
+  },
+  "B3F_trzpien_plus": {
+   "klin5": -0.5,
+   "klin6": 0.95
+  },
+  "B3F_trzpien_run": {
+   "klin5": -0.5,
+   "klin6": 0.95
+  },
+  "Glosnik_ramka": {
+   "klin5": 4.22,
+   "klin6": 4.22
+  },
+  "Glosnik_stozek": {
+   "klin5": 7.47,
+   "klin6": 7.47
+  },
+  "OLED_modul": {
+   "klin5": 2.8,
+   "klin6": 2.8
+  },
+  "OLED_szklo": {
+   "klin5": 0.0,
+   "klin6": 0.0
+  },
+  "PCB": {
+   "klin5": 2.5,
+   "klin6": 2.32
+  },
+  "PCB_przyciski": {
+   "klin5": 3.17,
+   "klin6": 3.17
+  },
+  "el_C1": {
+   "klin5": 4.1,
+   "klin6": 4.1
+  },
+  "el_C2": {
+   "klin5": 4.1,
+   "klin6": 4.1
+  },
+  "el_C3": {
+   "klin5": 4.1,
+   "klin6": 4.1
+  },
+  "el_D1": {
+   "klin5": 4.1,
+   "klin6": 4.1
+  },
+  "el_Q1": {
+   "klin5": 4.1,
+   "klin6": 4.1
+  },
+  "el_R1": {
+   "klin5": 4.1,
+   "klin6": 4.1
+  },
+  "el_R2": {
+   "klin5": 4.1,
+   "klin6": 4.1
+  },
+  "el_R3": {
+   "klin5": 4.1,
+   "klin6": 4.1
+  },
+  "el_R4": {
+   "klin5": 4.1,
+   "klin6": 4.1
+  },
+  "el_R5": {
+   "klin5": 3.32,
+   "klin6": 3.32
+  },
+  "el_R6": {
+   "klin5": 4.1,
+   "klin6": 4.1
+  },
+  "el_U1": {
+   "klin5": 4.1,
+   "klin6": 4.1
+  },
+  "przewody_OLED": {
+   "klin5": 4.0,
+   "klin6": 4.0
+  },
+  "przycisk_L0": {
+   "klin5": 2.4,
+   "klin6": 2.4
+  },
+  "przycisk_L2": {
+   "klin5": 2.4,
+   "klin6": 2.4
+  },
+  "przycisk_P1": {
+   "klin5": 2.4,
+   "klin6": 2.4
+  },
+  "sprezyna_L1": {
+   "klin5": 2.4,
+   "klin6": 2.4
+  },
+  "sprezyna_P0": {
+   "klin5": 2.4,
+   "klin6": 2.4
+  },
+  "sprezyna_P2": {
+   "klin5": 2.4,
+   "klin6": 2.4
+  },
+  "styk_A_minus_BAT-": {
+   "klin5": 0.85,
+   "klin6": 0.31
+  },
+  "styk_C_plus_BAT+": {
+   "klin5": 0.85,
+   "klin6": 0.85
+  },
+  "styk_podwojny_lewy": {
+   "klin5": 0.85,
+   "klin6": 0.41
+  },
+  "styk_podwojny_prawy": {
+   "klin5": 0.85,
+   "klin6": 0.85
+  }
+ },
+ "najgorszy": {
+  "element": "AAA_C",
+  "zapas": 0.0
+ },
+ "bok_potrzebny": {
+  "bez_klapki": 67.0,
+  "z_plaska_klapka": 79.8
+ }
+}
