@@ -133,9 +133,12 @@ def evaluated_mesh(ob):
     return bpy.data.meshes.new_from_object(ob.evaluated_get(dg))
 
 
+SOLVER = "EXACT"      # klin 6 ustawia "MANIFOLD" (odporny na długie cienkie ścianki brył z pierścieni; wymaga brył zamkniętych)
+
+
 def boolean(target, cutter, op="DIFFERENCE", keep=False):
     m = target.modifiers.new("bool", "BOOLEAN")
-    m.operation, m.object, m.solver = op, cutter, "EXACT"
+    m.operation, m.object, m.solver = op, cutter, SOLVER
     new = evaluated_mesh(target)
     old = target.data
     target.data = new
